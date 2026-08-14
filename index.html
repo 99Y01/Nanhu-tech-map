@@ -7,7 +7,7 @@
     <meta name="description" content="OneDay Bot.">
     <link rel="icon" type="image/svg+xml" href="./assets/1d-favicon-light.svg" media="(prefers-color-scheme: light)">
     <link rel="icon" type="image/svg+xml" href="./assets/1d-favicon-dark.svg" media="(prefers-color-scheme: dark)">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover">
     <meta name="ice-meta-count" content="0">
     <meta http-equiv="origin-trial" content="AqGZbZAnoZkpiJDYTr513SzsVNTI7VM+Y/5j3X1kT4atWclRt/w8ijvfKip4vl6LcFK1HDr8Evegupuwe6nYPQkAAAB8eyJvcmlnaW4iOiJodHRwczovLzFkLmFsaWJhYmEtaW5jLmNvbTo0NDMiLCJmZWF0dXJlIjoiVW5yZXN0cmljdGVkU2hhcmVkQXJyYXlCdWZmZXIiLCJleHBpcnkiOjE3NzkxNDg4MDAsImlzU3ViZG9tYWluIjp0cnVlfQ==">
     <script async="" src="./assets/index.js" crossorigin="true"></script><script async="" src="./assets/index.js" crossorigin="true"></script><script type="text/javascript" async="" src="./assets/index(1).js" id="aplus-baxia"></script><script type="text/javascript" async="" src="./assets/index(1).js" id="aplus-baxia"></script><script async="" src="./assets/baxiaCommon.js" crossorigin="true"></script><script async="" src="./assets/awsc.js" crossorigin="true"></script><script async="" src="./assets/index.js" crossorigin="true"></script><script type="text/javascript" async="" src="./assets/index(1).js" id="aplus-baxia"></script><script>/*! 2026-07-28 17:44:38 aplus_pc.js */
@@ -736,71 +736,140 @@ button, input, textarea, select {
 /* 移动端适配 */
 @media (max-width: 768px) {
   html, body {
-    overflow-x: hidden !important;
-    width: 100% !important;
-    -webkit-text-size-adjust: 100% !important;
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
   }
-  
-  /* 主容器 */
-  #root, .oneday-container, [class*="container"] {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 !important;
-  }
-  
-  /* 地图区域 */
-  .map-container, [class*="map"], canvas {
-    width: 100% !important;
+
+  /* Header */
+  header {
     height: auto !important;
-    min-height: 300px !important;
-    overflow: auto !important;
-    -webkit-overflow-scrolling: touch !important;
+    min-height: 56px !important;
+    padding: 10px 14px !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
   }
-  
-  /* 侧边栏/企业列表 */
-  .sidebar, [class*="sidebar"], [class*="panel"], [class*="list"] {
+  header > div:first-child {
+    transform: scale(0.92) !important;
+    transform-origin: left center !important;
+  }
+  header > nav {
+    order: 3 !important;
     width: 100% !important;
+    justify-content: space-between !important;
+    padding: 5px !important;
+    gap: 4px !important;
+  }
+  header > nav > a {
+    flex: 1 1 auto !important;
+    justify-content: center !important;
+    padding: 7px 8px !important;
+    font-size: 12px !important;
+    gap: 5px !important;
+  }
+  header > nav > a > svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+  header > a:last-child {
+    padding: 8px 12px !important;
+    font-size: 12px !important;
+    border-radius: 10px !important;
+  }
+
+  /* Hero section */
+  main > div {
+    padding: 16px !important;
+  }
+  main > div > section:first-of-type {
+    gap: 16px !important;
+    margin: 0 0 14px !important;
+  }
+  main > div > section:first-of-type h1 {
+    font-size: 28px !important;
+    line-height: 1.15 !important;
+  }
+  main > div > section:first-of-type p {
+    font-size: 13px !important;
+    line-height: 1.7 !important;
+  }
+  main > div > section:first-of-type > div:last-child {
     max-width: 100% !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 8px !important;
+  }
+  main > div > section:first-of-type > div:last-child > div {
+    padding: 12px !important;
+  }
+
+  /* Map section */
+  main > div > section:nth-of-type(2) {
+    display: flex !important;
+    flex-direction: column !important;
     height: auto !important;
-    max-height: 50vh !important;
-    overflow-y: auto !important;
+    min-height: unset !important;
+    border-radius: 18px !important;
+    overflow: visible !important;
   }
-  
-  /* 弹窗适配 */
-  .modal, [class*="modal"], [class*="dialog"] {
-    width: 95% !important;
-    max-width: 95vw !important;
-    margin: 10px auto !important;
-    left: 2.5% !important;
-    right: 2.5% !important;
-  }
-  
-  /* 按钮 */
-  button, [class*="btn"], [class*="button"] {
-    min-height: 44px !important;
-    font-size: 16px !important;
-  }
-  
-  /* 文字 */
-  h1, h2, h3, [class*="title"] {
-    font-size: 18px !important;
-  }
-  
-  p, span, [class*="text"] {
-    font-size: 14px !important;
-  }
-  
-  /* 表格 */
-  table {
-    display: block !important;
+  main > div > section:nth-of-type(2) > div:first-child {
+    position: relative !important;
+    height: 56vh !important;
+    min-height: 420px !important;
+    min-width: 992px !important;
+    width: 100% !important;
     overflow-x: auto !important;
-    white-space: nowrap !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    border-radius: 18px 18px 0 0 !important;
   }
-  
-  /* 图片 */
-  img {
-    max-width: 100% !important;
-    height: auto !important;
+  main > div > section:nth-of-type(2) > div:first-child > img {
+    width: 992px !important;
+    height: calc(100% - 60px) !important;
+    left: 0 !important;
+    right: auto !important;
+    object-fit: cover !important;
+    object-position: left center !important;
+    pointer-events: auto !important;
+  }
+  main > div > section:nth-of-type(2) > div:first-child > div:last-child {
+    width: 992px !important;
+    transform: none !important;
+  }
+  /* Building markers: bigger touch targets */
+  main > div > section:nth-of-type(2) > div:first-child button {
+    transform: translate(-50%, -50%) scale(1.35) !important;
+  }
+  /* Hide debug coordinate button on mobile */
+  main > div > section:nth-of-type(2) > div:first-child > button:last-child {
+    display: none !important;
+  }
+
+  /* Sidebar */
+  main > div > section:nth-of-type(2) > aside {
+    border-left: none !important;
+    border-top: 1px solid var(--line) !important;
+    max-height: 45vh !important;
+    min-height: 280px !important;
+    overflow-y: auto !important;
+    border-radius: 0 0 18px 18px !important;
+  }
+
+  /* Modals / dialogs */
+  div[style*="position: fixed"][style*="z-index"],
+  div[style*="position:fixed"][style*="z-index"] {
+    width: 94vw !important;
+    max-width: 94vw !important;
+    left: 3vw !important;
+    right: 3vw !important;
+    top: 4vh !important;
+    bottom: 4vh !important;
+    margin: 0 !important;
+    transform: none !important;
+    border-radius: 18px !important;
+  }
+
+  /* Form inputs */
+  input, textarea, select {
+    font-size: 16px !important;
   }
 }
 </style></head>
