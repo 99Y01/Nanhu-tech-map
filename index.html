@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="./assets/1d-favicon-light.svg">
   <style>
     :root {
-      --ink: #163b3b;
+      --ink: #1a3a4a;
       --muted: #5a6d78;
       --paper: #f0f3f7;
       --cream: #fffdf7;
@@ -18,13 +18,13 @@
       --map-bg: rgb(221, 228, 238);
       --panel-bg: rgb(232, 237, 244);
       --marker-active: #1565c0;
-      --marker-disabled: #6fa8d6;
+      --marker-disabled: #8ab4c7;
+      --orange: #ff9a1a;
     }
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
     body { background: var(--paper); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
     button { font: inherit; color: inherit; }
-    
     .app { min-height: 100vh; }
     header { height: 76px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: rgba(240, 243, 247, 0.88); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 40; }
     .brand { display: flex; align-items: center; gap: 13px; }
@@ -32,17 +32,14 @@
     .brand strong { display: block; font-family: "Arial Black", "PingFang SC", sans-serif; letter-spacing: -0.04em; font-size: 19px; }
     .brand span { display: block; color: var(--muted); font-size: 11px; letter-spacing: 0.16em; margin-top: 2px; }
     nav { display: flex; gap: 7px; padding: 5px; background: rgba(255, 255, 255, 0.55); border: 1px solid var(--line); border-radius: 999px; }
-    nav button { display: flex; align-items: center; gap: 6px; border: 0; background: transparent; color: var(--ink); padding: 9px 15px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.18s; }
+    nav button { display: flex; align-items: center; gap: 6px; border: 0; background: transparent; color: var(--ink); padding: 9px 15px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 500; transition: 0.18s; }
     nav button.active { background: var(--ink); color: white; font-weight: 700; }
     nav button:hover:not(.active) { background: rgba(255,255,255,0.7); }
     .admin-btn { display: flex; align-items: center; gap: 8px; border: 1px solid var(--ink); background: transparent; color: var(--ink); padding: 10px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.18s; }
     .admin-btn:hover { background: var(--ink); color: white; }
-    
     main { padding: 24px 28px 34px; }
     .view { display: none; }
     .view.active { display: block; }
-    
-    /* Hero */
     .hero { display: flex; flex-direction: column; gap: 24px; margin: 4px 0 18px; }
     .eyebrow { display: inline-flex; gap: 8px; align-items: center; color: var(--lake-deep); font-size: 12px; font-weight: 800; letter-spacing: 0.12em; }
     .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lake); box-shadow: rgba(54, 183, 173, 0.13) 0 0 0 6px; }
@@ -53,8 +50,6 @@
     .metric { padding: 17px; border-top: 1px solid var(--ink); background: rgba(255, 255, 255, 0.36); }
     .metric b { display: block; font-family: Georgia, serif; font-size: 30px; font-weight: normal; }
     .metric span { color: var(--muted); font-size: 11px; }
-    
-    /* Map section */
     .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 385px; height: 680px; border: 1px solid var(--line); border-radius: 28px; background: var(--panel-bg); overflow: hidden; box-shadow: var(--shadow); }
     .map-area { position: relative; overflow: hidden; background: var(--map-bg); cursor: default; }
     .map-bg { position: absolute; inset: 60px 0 0; width: 100%; height: calc(100% - 60px); object-fit: contain; object-position: center center; pointer-events: none; user-select: none; z-index: 1; }
@@ -67,15 +62,13 @@
     .map-filters { position: absolute; left: 16px; bottom: 16px; z-index: 10; display: flex; gap: 8px; }
     .map-filters button { height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(91, 141, 184, 0.28); background: rgba(255,255,255,0.88); color: var(--ink); font-size: 12px; cursor: pointer; transition: 0.18s; }
     .map-filters button.active { background: var(--ink); color: white; border-color: var(--ink); }
-    
     .marker-layer { position: absolute; left: 0; top: 41.2949px; width: 992px; height: 595.41px; z-index: 5; }
-    .marker { position: absolute; transform: translate(-50%, -50%); border: 0; background: transparent; padding: 0; transition: opacity 0.22s; z-index: 6; }
-    .marker:hover:not([disabled]) { opacity: 1 !important; }
+    .marker { position: absolute; transform: translate(-50%, -50%); border: 0; background: transparent; padding: 0; transition: opacity 0.22s, transform 0.22s; z-index: 6; }
+    .marker:hover:not([data-disabled="true"]) { transform: translate(-50%, -50%) scale(1.12); }
+    .marker[data-disabled="true"]:hover { opacity: 0.9 !important; }
+    .marker.selected .marker-pin { filter: drop-shadow(rgba(255, 154, 26, 0.6) 0 0 12px); }
     .marker-pin { position: relative; display: inline-flex; flex-direction: column; align-items: center; filter: drop-shadow(rgba(0, 0, 0, 0.35) 0 4px 10px) drop-shadow(rgba(21, 101, 192, 0.35) 0 2px 5px); }
     .marker-badge { position: absolute; right: -7px; top: -7px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 999px; background: linear-gradient(135deg, rgb(255, 154, 26), rgb(232, 93, 0)); border: 2.5px solid rgba(255, 255, 255, 0.98); display: grid; place-items: center; color: rgb(255, 255, 255); font-size: 11px; font-weight: 900; box-shadow: rgba(220, 90, 0, 0.45) 0 2px 8px; line-height: 1; transition: 0.22s; transform: scale(1); letter-spacing: -0.02em; }
-    .marker.selected .marker-pin { filter: drop-shadow(rgba(255, 154, 26, 0.6) 0 0 12px); }
-    
-    /* Sidebar */
     aside { background: var(--cream); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
     .side-header { padding: 23px 23px 16px; border-bottom: 1px solid var(--line); }
     .side-meta { display: flex; align-items: center; justify-content: space-between; }
@@ -96,25 +89,37 @@
     .tag.demand { background: rgb(255, 240, 232); color: rgb(173, 79, 39); }
     .company-card p { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
     .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
-    
-    /* List view */
-    .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+    .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; gap: 20px; flex-wrap: wrap; }
     .page-filters { display: flex; gap: 8px; flex-wrap: wrap; }
     .page-filters button { height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: white; color: var(--ink); font-size: 13px; cursor: pointer; transition: 0.18s; }
     .page-filters button.active { background: var(--ink); color: white; border-color: var(--ink); }
+    .building-chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 16px; }
+    .building-chips button { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line); background: white; color: var(--muted); font-size: 12px; cursor: pointer; transition: 0.18s; }
+    .building-chips button.active { background: var(--ink); color: white; border-color: var(--ink); }
+    .float-filter { position: fixed; right: 24px; bottom: 24px; z-index: 30; display: flex; flex-direction: column; gap: 8px; background: white; border: 1px solid var(--line); border-radius: 999px; padding: 6px; box-shadow: var(--shadow); }
+    .float-filter button { height: 34px; padding: 0 14px; border-radius: 999px; border: 0; background: transparent; color: var(--muted); font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.18s; }
+    .float-filter button.active { background: var(--ink); color: white; }
     .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
-    
-    /* Submit view */
-    .form-container { max-width: 720px; margin: 0 auto; background: var(--cream); border: 1px solid var(--line); border-radius: 24px; padding: 28px 32px 36px; }
-    .form-container h2 { margin: 0 0 8px; font-family: "Arial Black", "PingFang SC", sans-serif; font-size: 24px; }
-    .form-container > p { margin: 0 0 24px; color: var(--muted); font-size: 14px; }
+    .form-page { max-width: 720px; margin: 0 auto; }
+    .form-page h1 { margin-bottom: 6px; }
+    .form-page > p { color: var(--muted); margin: 0 0 24px; font-size: 14px; }
+    .form-container { background: var(--cream); border: 1px solid var(--line); border-radius: 24px; padding: 28px 32px 36px; }
+    .form-section { border: 1px solid var(--line); border-radius: 18px; padding: 20px; margin-bottom: 18px; background: rgba(255,255,255,0.55); }
+    .section-title { font-size: 13px; font-weight: 800; color: var(--ink); margin-bottom: 16px; display: flex; align-items: center; gap: 6px; }
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-row:last-child { margin-bottom: 0; }
     .field { display: flex; flex-direction: column; gap: 6px; }
     .field.full { grid-column: 1 / -1; }
     .field label { font-size: 12px; font-weight: 700; color: var(--ink); }
+    .field label .hint { font-weight: 400; color: var(--muted); }
     .field input, .field textarea, .field select { border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; background: white; font-size: 14px; color: var(--ink); outline: none; }
     .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--lake); }
     .field textarea { min-height: 90px; resize: vertical; }
+    .update-type { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .update-type button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 64px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: white; color: var(--ink); cursor: pointer; transition: 0.18s; }
+    .update-type button.active { border-color: var(--lake-deep); background: rgba(54, 183, 173, 0.08); color: var(--lake-deep); }
+    .update-type button b { font-size: 13px; }
+    .update-type button span { font-size: 11px; color: var(--muted); font-weight: 400; }
     .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
     .btn { padding: 11px 18px; border-radius: 12px; border: 1px solid var(--line); background: white; color: var(--ink); font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.18s; }
     .btn.primary { background: var(--ink); color: white; border-color: var(--ink); }
@@ -122,7 +127,6 @@
     .success { text-align: center; padding: 60px 20px; }
     .success h3 { font-size: 22px; margin: 0 0 10px; }
     .success p { color: var(--muted); margin: 0; }
-    
     @media (max-width: 900px) {
       header { padding: 0 16px; }
       nav { display: none; }
@@ -133,6 +137,8 @@
       .marker-layer { transform: scale(0.75); transform-origin: top left; }
       .form-row { grid-template-columns: 1fr; }
       .card-grid { grid-template-columns: 1fr; }
+      .update-type { grid-template-columns: 1fr; }
+      .float-filter { right: 12px; bottom: 12px; }
     }
   </style>
 </head>
@@ -143,10 +149,7 @@
         <div class="brand-mark">
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8c0 4.5-6 9-6 9s-6-4.5-6-9a6 6 0 0 1 12 0"></path><circle cx="12" cy="8" r="2"></circle><path d="M8.835 14H5a1 1 0 0 0-.9.7l-2 6c-.1.1-.1.2-.1.3 0 .6.4 1 1 1h18c.6 0 1-.4 1-1 0-.1 0-.2-.1-.3l-2-6a1 1 0 0 0-.9-.7h-3.835"></path></svg>
         </div>
-        <div>
-          <strong>南湖技术地图</strong>
-          <span>NANHU TECH ATLAS</span>
-        </div>
+        <div><strong>南湖技术地图</strong><span>NANHU TECH ATLAS</span></div>
       </div>
       <nav>
         <button class="active" onclick="showView('map')" data-view="map">
@@ -167,9 +170,7 @@
         提交企业信息
       </button>
     </header>
-    
     <main>
-      <!-- Map View -->
       <section id="view-map" class="view active">
         <div class="hero">
           <div>
@@ -186,109 +187,106 @@
           <div class="map-area">
             <img class="map-bg" src="./assets/ab44ae18-0e98-4e82-9a3b-54e4b9007eb4.png" alt="南湖未来科学园平面图">
             <div class="map-toolbar">
-              <div class="map-info">
-                <b>南湖未来科学园 · 企业分布总览</b>
-                <span>点击楼栋，打开企业能力档案</span>
-              </div>
+              <div class="map-info"><b>南湖未来科学园 · 企业分布总览</b><span>点击楼栋，打开企业能力档案</span></div>
               <div class="map-search">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
                 <input type="text" id="map-search" placeholder="搜索企业、技术能力或资源需求…" oninput="filterMap()">
               </div>
             </div>
             <div class="marker-layer">
-              <button class="marker"  aria-label="1号楼，暂未开放" style="left:612.064px;top:355.46px;cursor:not-allowed;opacity:0.65;">
+              <button class="marker" onclick="handleMarkerClick('1', false)" data-num="1" data-disabled="true" aria-label="1号楼，暂未开放" style="left:612.064px;top:355.46px;cursor:not-allowed;opacity:0.72;">
       <div class="marker-pin">
-        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">1</text></svg>
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#8ab4c7"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">1</text></svg>
         
       </div>
     </button>
-<button class="marker"  aria-label="2号楼，暂未开放" style="left:533.696px;top:275.08px;cursor:not-allowed;opacity:0.65;">
+<button class="marker" onclick="handleMarkerClick('2', false)" data-num="2" data-disabled="true" aria-label="2号楼，暂未开放" style="left:533.696px;top:275.08px;cursor:not-allowed;opacity:0.72;">
       <div class="marker-pin">
-        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">2</text></svg>
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#8ab4c7"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">2</text></svg>
         
       </div>
     </button>
-<button class="marker" onclick="selectBuilding('3')" aria-label="3号楼，5家企业" style="left:380.928px;top:225.065px;cursor:pointer;opacity:1;">
+<button class="marker" onclick="handleMarkerClick('3', true)" data-num="3" data-disabled="false" aria-label="3号楼，5家企业" style="left:380.928px;top:225.065px;cursor:pointer;opacity:1;">
       <div class="marker-pin">
         <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">3</text></svg>
         <span class="marker-badge">5</span>
       </div>
     </button>
-<button class="marker" onclick="selectBuilding('4')" aria-label="4号楼，5家企业" style="left:464.256px;top:185.173px;cursor:pointer;opacity:1;">
+<button class="marker" onclick="handleMarkerClick('4', true)" data-num="4" data-disabled="false" aria-label="4号楼，5家企业" style="left:464.256px;top:185.173px;cursor:pointer;opacity:1;">
       <div class="marker-pin">
         <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">4</text></svg>
         <span class="marker-badge">5</span>
       </div>
     </button>
-<button class="marker" onclick="selectBuilding('5')" aria-label="5号楼，1家企业" style="left:539.648px;top:129.799px;cursor:pointer;opacity:1;">
+<button class="marker" onclick="handleMarkerClick('5', true)" data-num="5" data-disabled="false" aria-label="5号楼，1家企业" style="left:539.648px;top:129.799px;cursor:pointer;opacity:1;">
       <div class="marker-pin">
         <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">5</text></svg>
         <span class="marker-badge">1</span>
       </div>
     </button>
-<button class="marker" onclick="selectBuilding('6')" aria-label="6号楼，1家企业" style="left:609.088px;top:127.418px;cursor:pointer;opacity:1;">
+<button class="marker" onclick="handleMarkerClick('6', true)" data-num="6" data-disabled="false" aria-label="6号楼，1家企业" style="left:609.088px;top:127.418px;cursor:pointer;opacity:1;">
       <div class="marker-pin">
         <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">6</text></svg>
         <span class="marker-badge">1</span>
       </div>
     </button>
-<button class="marker"  aria-label="7号楼，暂未开放" style="left:754.912px;top:161.952px;cursor:not-allowed;opacity:0.65;">
+<button class="marker" onclick="handleMarkerClick('7', false)" data-num="7" data-disabled="true" aria-label="7号楼，暂未开放" style="left:754.912px;top:161.952px;cursor:not-allowed;opacity:0.72;">
       <div class="marker-pin">
-        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">7</text></svg>
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#8ab4c7"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">7</text></svg>
         
       </div>
     </button>
-<button class="marker" onclick="selectBuilding('8')" aria-label="8号楼，7家企业" style="left:710.272px;top:243.523px;cursor:pointer;opacity:1;">
+<button class="marker" onclick="handleMarkerClick('8', true)" data-num="8" data-disabled="false" aria-label="8号楼，7家企业" style="left:710.272px;top:243.523px;cursor:pointer;opacity:1;">
       <div class="marker-pin">
         <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">8</text></svg>
         <span class="marker-badge">7</span>
       </div>
     </button>
-<button class="marker" onclick="selectBuilding('9')" aria-label="9号楼，9家企业" style="left:656.704px;top:301.278px;cursor:pointer;opacity:1;">
+<button class="marker" onclick="handleMarkerClick('9', true)" data-num="9" data-disabled="false" aria-label="9号楼，9家企业" style="left:656.704px;top:301.278px;cursor:pointer;opacity:1;">
       <div class="marker-pin">
         <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">9</text></svg>
         <span class="marker-badge">9</span>
       </div>
     </button>
-<button class="marker" onclick="selectBuilding('10')" aria-label="10号楼，13家企业" style="left:611.072px;top:442.39px;cursor:pointer;opacity:1;">
+<button class="marker" onclick="handleMarkerClick('10', true)" data-num="10" data-disabled="false" aria-label="10号楼，13家企业" style="left:611.072px;top:442.39px;cursor:pointer;opacity:1;">
       <div class="marker-pin">
         <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">10</text></svg>
         <span class="marker-badge">13</span>
       </div>
     </button>
-<button class="marker" onclick="selectBuilding('11')" aria-label="11号楼，7家企业" style="left:470.208px;top:386.421px;cursor:pointer;opacity:1;">
+<button class="marker" onclick="handleMarkerClick('11', true)" data-num="11" data-disabled="false" aria-label="11号楼，7家企业" style="left:470.208px;top:386.421px;cursor:pointer;opacity:1;">
       <div class="marker-pin">
         <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">11</text></svg>
         <span class="marker-badge">7</span>
       </div>
     </button>
-<button class="marker"  aria-label="12号楼，暂未开放" style="left:348.192px;top:324.499px;cursor:not-allowed;opacity:0.65;">
+<button class="marker" onclick="handleMarkerClick('12', false)" data-num="12" data-disabled="true" aria-label="12号楼，暂未开放" style="left:348.192px;top:324.499px;cursor:not-allowed;opacity:0.72;">
       <div class="marker-pin">
-        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">12</text></svg>
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#8ab4c7"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">12</text></svg>
         
       </div>
     </button>
-<button class="marker"  aria-label="13号楼，暂未开放" style="left:254.944px;top:259.599px;cursor:not-allowed;opacity:0.65;">
+<button class="marker" onclick="handleMarkerClick('13', false)" data-num="13" data-disabled="true" aria-label="13号楼，暂未开放" style="left:254.944px;top:259.599px;cursor:not-allowed;opacity:0.72;">
       <div class="marker-pin">
-        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">13</text></svg>
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#8ab4c7"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">13</text></svg>
         
       </div>
     </button>
-<button class="marker"  aria-label="14号楼，暂未开放" style="left:257.92px;top:351.887px;cursor:not-allowed;opacity:0.65;">
+<button class="marker" onclick="handleMarkerClick('14', false)" data-num="14" data-disabled="true" aria-label="14号楼，暂未开放" style="left:257.92px;top:351.887px;cursor:not-allowed;opacity:0.72;">
       <div class="marker-pin">
-        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">14</text></svg>
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#8ab4c7"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">14</text></svg>
         
       </div>
     </button>
-<button class="marker" onclick="selectBuilding('15')" aria-label="15号楼，2家企业" style="left:383.904px;top:412.619px;cursor:pointer;opacity:1;">
+<button class="marker" onclick="handleMarkerClick('15', true)" data-num="15" data-disabled="false" aria-label="15号楼，2家企业" style="left:383.904px;top:412.619px;cursor:pointer;opacity:1;">
       <div class="marker-pin">
         <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">15</text></svg>
         <span class="marker-badge">2</span>
       </div>
     </button>
-<button class="marker"  aria-label="16号楼，暂未开放" style="left:294.624px;top:436.436px;cursor:not-allowed;opacity:0.65;">
+<button class="marker" onclick="handleMarkerClick('16', false)" data-num="16" data-disabled="true" aria-label="16号楼，暂未开放" style="left:294.624px;top:436.436px;cursor:not-allowed;opacity:0.72;">
       <div class="marker-pin">
-        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">16</text></svg>
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#8ab4c7"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">16</text></svg>
         
       </div>
     </button>
@@ -301,431 +299,89 @@
           </div>
           <aside>
             <div class="side-header">
-              <div class="side-meta">
-                <span>ALL BUILDINGS</span>
-                <span class="side-badge">
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
-                  全部楼栋
-                </span>
-              </div>
-              <div class="side-title">
-                <h2 id="side-title">全园区总览</h2>
-                <span id="side-count">50 家企业</span>
-              </div>
+              <div class="side-meta"><span>ALL BUILDINGS</span><span class="side-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>全部楼栋</span></div>
+              <div class="side-title"><h2 id="side-title">全园区总览</h2><span id="side-count">50 家企业</span></div>
             </div>
             <div class="company-list" id="map-company-list">
-              <article class="company-card" data-building="4" data-name="千机变(杭州)科技有限公司">
-      <div class="company-head">
-        <h3>千机变(杭州)科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>以自主研发算法为核心竞争力，打造承载 300 + 自研算法的一站式 AI 算法超市底座。</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州龙航智远无人机科技有限公司">
-      <div class="company-head">
-        <h3>杭州龙航智远无人机科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>全军指定的单一来源无人机供应商</p>
-    </article>
-<article class="company-card" data-building="9" data-name="浙江兔行科技有限公司">
-      <div class="company-head">
-        <h3>浙江兔行科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>核心业务聚焦于中高等职业院校的无人机专业建设与人才培养解决方案；</p>
-    </article>
-<article class="company-card" data-building="3" data-name="华翌智能装备（杭州）有限公司">
-      <div class="company-head">
-        <h3>华翌智能装备（杭州）有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自研AI AOI工业检测软件全套算法与技术架构</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州翎视科技有限公司">
-      <div class="company-head">
-        <h3>杭州翎视科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>高层住宅、商业综合体、历史建筑的外立面安全检测及测量</p>
-    </article>
-<article class="company-card" data-building="10" data-name="浙江星穹智航科技有限公司">
-      <div class="company-head">
-        <h3>浙江星穹智航科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>高空清洗、CAAC培训</p>
-    </article>
-<article class="company-card" data-building="3" data-name="杭州脸脸会网络技术有限公司">
-      <div class="company-head">
-        <h3>杭州脸脸会网络技术有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>AI智能体、AI数字人、智能互动应用及文商旅场景数字化解决方案的研发、实施与运营服务</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州微鸿科技有限公司">
-      <div class="company-head">
-        <h3>杭州微鸿科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>成熟的飞控平台能力体系，覆盖飞行控制、感知融合、任务调度等核心环节</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州万升航控智能科技有限公司">
-      <div class="company-head">
-        <h3>杭州万升航控智能科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>专注构建无人机 “大脑”，通过地理空间管理、核心业务系统打造</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州团簇科技有限公司">
-      <div class="company-head">
-        <h3>杭州团簇科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>具身智能+ 多模态感知为核心技术底座，自研 “空天地” 一体化智慧巡检管控系统</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州标彰电子科技有限公司">
-      <div class="company-head">
-        <h3>杭州标彰电子科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自主研发和生产的测控系统、数据采集卡、窄脉冲发生器、高速信号发生器等产品</p>
-    </article>
-<article class="company-card" data-building="9" data-name="杭州星智创享科技有限公司">
-      <div class="company-head">
-        <h3>杭州星智创享科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>CC80非接触式清洁无人机系统</p>
-    </article>
-<article class="company-card" data-building="10" data-name="全域通用航空（杭州）有限公司">
-      <div class="company-head">
-        <h3>全域通用航空（杭州）有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>低空经济一体化生态体系建设，自研飞行服务平台、机载电脑、低空之家APP等核心产品，构建全链路低空服务能力。</p>
-    </article>
-<article class="company-card" data-building="6" data-name="浙江瀚为科技有限公司">
-      <div class="company-head">
-        <h3>浙江瀚为科技有限公司</h3>
-        <span class="company-room">6＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>AI算力中心用高安全、高功率电池及直流侧供配电解决方案</p>
-    </article>
-<article class="company-card" data-building="10" data-name="圣翔（杭州）航空科技有限公司">
-      <div class="company-head">
-        <h3>圣翔（杭州）航空科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>全品类低空起降装备高端智造及场景运营解决方案</p>
-    </article>
-<article class="company-card" data-building="8" data-name="重隼智能科技（浙江）有限公司">
-      <div class="company-head">
-        <h3>重隼智能科技（浙江）有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>提供无人机低空安防、冷链运输、室内建模等领域完整行业解决方案</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州鲣翼科技有限公司">
-      <div class="company-head">
-        <h3>杭州鲣翼科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>水陆两栖多用途倾转动力升力体无人飞行器”整机的研发、生产和应用</p>
-    </article>
-<article class="company-card" data-building="8" data-name="浙江十子鹰飞行科技有限公司">
-      <div class="company-head">
-        <h3>浙江十子鹰飞行科技有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>面向各类院校提供校园科技体育兴趣教学一站式校企合作解决方案</p>
-    </article>
-<article class="company-card" data-building="8" data-name="浙江同创空间技术有限公司">
-      <div class="company-head">
-        <h3>浙江同创空间技术有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>民航局浙江03考试点及中国AOPA浙江考试点可提供CAAC无人机考证全流程培训服务</p>
-    </article>
-<article class="company-card" data-building="8" data-name="军创（杭州）空间技术有限公司">
-      <div class="company-head">
-        <h3>军创（杭州）空间技术有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>无人机飞手资源库与行业业务需求对接渠道，具备飞手-业务智能匹配平台的开发与运维能力</p>
-    </article>
-<article class="company-card" data-building="15" data-name="杭州纵迹云科技有限公司">
-      <div class="company-head">
-        <h3>杭州纵迹云科技有限公司</h3>
-        <span class="company-room">15＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>具备工业重载、自动巡检、低空全域管控自研生产能力，可提供软硬件一体化成套设备与行业落地定制方案</p>
-    </article>
-<article class="company-card" data-building="3" data-name="杭州昊舜视讯科技有限公司">
-      <div class="company-head">
-        <h3>杭州昊舜视讯科技有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>无人机全自动机场系列产品、智能管控平台及专业飞手团队</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州飞算科技有限公司">
-      <div class="company-head">
-        <h3>杭州飞算科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>长航时复合翼无人机、低空反制装备供货以及云端智能管控平台部署</p>
-    </article>
-<article class="company-card" data-building="9" data-name="飞手杭州低空经济发展有限公司">
-      <div class="company-head">
-        <h3>飞手杭州低空经济发展有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>协助企业进行巡检、测试、城市内各类空域审批</p>
-    </article>
-<article class="company-card" data-building="10" data-name="浙江鑫核聚能科技有限公司">
-      <div class="company-head">
-        <h3>浙江鑫核聚能科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>射频氮化镓工艺的超宽带功率放大器芯片设计技术</p>
-    </article>
-<article class="company-card" data-building="4" data-name="城飞智能（杭州）科技有限公司">
-      <div class="company-head">
-        <h3>城飞智能（杭州）科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>低空智能起降场运营商，提供从顶层规划、软硬件研发部署、智能化升级到全周期运营的一体化解决方案</p>
-    </article>
-<article class="company-card" data-building="9" data-name="泊航科技有限公司">
-      <div class="company-head">
-        <h3>泊航科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>提供复杂构型可变翼无人机整机设计、嵌入式系统开发到飞控软件平台测试全栈技术解决方案</p>
-    </article>
-<article class="company-card" data-building="9" data-name="杭州九数商务咨询有限公司">
-      <div class="company-head">
-        <h3>杭州九数商务咨询有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>拥有AIGC全栈内容生成能力（AI视频/图像/文案/数字人）</p>
-    </article>
-<article class="company-card" data-building="10" data-name="墨悉科技有限公司">
-      <div class="company-head">
-        <h3>墨悉科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>面向具身智能时代的智能大脑与多智能体协同系统提供商</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州零储科技有限公司">
-      <div class="company-head">
-        <h3>杭州零储科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>构建 “户用-工商-大储” 全系列产品矩阵，拥有从电芯PACK到交直流一体系统的垂直整合制造能力。</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州启航线科技有限公司">
-      <div class="company-head">
-        <h3>杭州启航线科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>全栈式低空操作系统，覆盖低空监管、飞行准入、AI 空域分配、数据治理及资产化服务</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州艾铂特智能科技有限公司">
-      <div class="company-head">
-        <h3>杭州艾铂特智能科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>专注于高危场景具身智能机器人和AI算法平台的开发，具备全栈解决方案的交付能力。</p>
-    </article>
-<article class="company-card" data-building="9" data-name="杭州零到一工业设计有限公司">
-      <div class="company-head">
-        <h3>杭州零到一工业设计有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>专注工业设计与产品创新服务，提供产品策略、外观设计、结构设计、CMF设计、品牌设计及产品落地全流程解决方案</p>
-    </article>
-<article class="company-card" data-building="9" data-name="杭州慢伴文化创意有限公司">
-      <div class="company-head">
-        <h3>杭州慢伴文化创意有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>聚焦生活方式品牌打造与香氛产品创新，集原创设计、产品研发、品牌运营及供应链整合于一体</p>
-    </article>
-<article class="company-card" data-building="9" data-name="浙江蔚然长风智能科技有限公司">
-      <div class="company-head">
-        <h3>浙江蔚然长风智能科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自研AI情感边缘计算技术，构建“筛查-预警-干预-管理”的全链路心理服务体系</p>
-    </article>
-<article class="company-card" data-building="15" data-name="中科祥云低空科技（浙江）有限公司">
-      <div class="company-head">
-        <h3>中科祥云低空科技（浙江）有限公司</h3>
-        <span class="company-room">15＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>智慧巡检 + 低空物流配送一体化解决方案</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州归一智能科技有限公司">
-      <div class="company-head">
-        <h3>杭州归一智能科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>“AI超级产线”营销内容工程化平台与AI影视短漫剧一站式工作平台</p>
-    </article>
-<article class="company-card" data-building="4" data-name="杭州凡章科技有限公司">
-      <div class="company-head">
-        <h3>杭州凡章科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>仓储管理系统WMS+室内无人机仓储盘点</p>
-    </article>
-<article class="company-card" data-building="5" data-name="杭州矩正医疗科技有限公司">
-      <div class="company-head">
-        <h3>杭州矩正医疗科技有限公司</h3>
-        <span class="company-room">5＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>球囊扩张导管、血管封堵止血系统、静脉腔内射频闭合导管及配套有源设备发生器等产品的设计制造能力</p>
-    </article>
-<article class="company-card" data-building="4" data-name="杭州思变笃行管理科技有限公司">
-      <div class="company-head">
-        <h3>杭州思变笃行管理科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>面向中大型企业提供沙盘模拟培训和定制、AI培训咨询应用开发</p>
-    </article>
-<article class="company-card" data-building="8" data-name="杭州云酷智能科技有限公司">
-      <div class="company-head">
-        <h3>杭州云酷智能科技有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自研冷却液、高精流场及多级智能控制等核心技术，可提供数据中心、通信基站、储能等多场景一体化液冷解决方案</p>
-    </article>
-<article class="company-card" data-building="8" data-name="赞塔（杭州）科技有限公司">
-      <div class="company-head">
-        <h3>赞塔（杭州）科技有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自主研发听鉴、智录、点线、智审、智策等十余种公安专用智能体软硬件产品</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州紫深智测技术有限公司">
-      <div class="company-head">
-        <h3>杭州紫深智测技术有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>环境与可靠性、EMC、电气安全等检测认证；自主开发VeriFLY UQ数据分析平台，为风险结果做可量化</p>
-    </article>
-<article class="company-card" data-building="11" data-name="埃法智造（杭州）人工智能科技有限公司">
-      <div class="company-head">
-        <h3>埃法智造（杭州）人工智能科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自研 ANIMA 人造电子生命平台，提供模块化 AI桌面机器人硬件</p>
-    </article>
-<article class="company-card" data-building="9" data-name="集光年（杭州）科技有限公司">
-      <div class="company-head">
-        <h3>集光年（杭州）科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>为企业提供AIGC内容制作与培训，以及AI化品牌战略服务</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州竞速动力科技有限公司">
-      <div class="company-head">
-        <h3>杭州竞速动力科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>专注于动力控制系统研发与产品概念性落地，长期深耕汽车、摩托及航空动力系统</p>
-    </article>
-<article class="company-card" data-building="3" data-name="奕科先进智能科技（杭州）有限公司">
-      <div class="company-head">
-        <h3>奕科先进智能科技（杭州）有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>具备从 2kW 到 280kW 全功率段的无人机电机、内燃机及动力总成测试台架搭建能力，同时支持定制化需求</p>
-    </article>
-<article class="company-card" data-building="3" data-name="浙江有鹿机器人科技有限公司">
-      <div class="company-head">
-        <h3>浙江有鹿机器人科技有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>具身智能通用大脑；室外商业巡扫机器人AI130</p>
-    </article>
-<article class="company-card" data-building="8" data-name="浙江百应科技有限公司">
-      <div class="company-head">
-        <h3>浙江百应科技有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>AI Agent智能平台；商业对话大模型 Gravity LLM； 行业解决方案</p>
-    </article>
-<article class="company-card" data-building="4" data-name="杭州数智医济医疗科技有限公司">
-      <div class="company-head">
-        <h3>杭州数智医济医疗科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>过敏疾病数字疗法、标准化诊疗与无接触健康评估</p>
-    </article>
+              <article class="company-card" data-building="4"><div class="company-head"><h3>千机变(杭州)科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>以自主研发算法为核心竞争力，打造承载 300 + 自研算法的一站式 AI 算法超市底座。</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州龙航智远无人机科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>全军指定的单一来源无人机供应商</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>浙江兔行科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>核心业务聚焦于中高等职业院校的无人机专业建设与人才培养解决方案；</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>华翌智能装备（杭州）有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自研AI AOI工业检测软件全套算法与技术架构</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州翎视科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>高层住宅、商业综合体、历史建筑的外立面安全检测及测量</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>浙江星穹智航科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>高空清洗、CAAC培训</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>杭州脸脸会网络技术有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>AI智能体、AI数字人、智能互动应用及文商旅场景数字化解决方案的研发、实施与运营服务</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州微鸿科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>成熟的飞控平台能力体系，覆盖飞行控制、感知融合、任务调度等核心环节</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州万升航控智能科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>专注构建无人机 “大脑”，通过地理空间管理、核心业务系统打造</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州团簇科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>具身智能+ 多模态感知为核心技术底座，自研 “空天地” 一体化智慧巡检管控系统</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州标彰电子科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自主研发和生产的测控系统、数据采集卡、窄脉冲发生器、高速信号发生器等产品</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>杭州星智创享科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>CC80非接触式清洁无人机系统</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>全域通用航空（杭州）有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>低空经济一体化生态体系建设，自研飞行服务平台、机载电脑、低空之家APP等核心产品，构建全链路低空服务能力。</p></article>
+<article class="company-card" data-building="6"><div class="company-head"><h3>浙江瀚为科技有限公司</h3><span class="company-room">6＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>AI算力中心用高安全、高功率电池及直流侧供配电解决方案</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>圣翔（杭州）航空科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>全品类低空起降装备高端智造及场景运营解决方案</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>重隼智能科技（浙江）有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>提供无人机低空安防、冷链运输、室内建模等领域完整行业解决方案</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州鲣翼科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>水陆两栖多用途倾转动力升力体无人飞行器”整机的研发、生产和应用</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>浙江十子鹰飞行科技有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>面向各类院校提供校园科技体育兴趣教学一站式校企合作解决方案</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>浙江同创空间技术有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>民航局浙江03考试点及中国AOPA浙江考试点可提供CAAC无人机考证全流程培训服务</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>军创（杭州）空间技术有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>无人机飞手资源库与行业业务需求对接渠道，具备飞手-业务智能匹配平台的开发与运维能力</p></article>
+<article class="company-card" data-building="15"><div class="company-head"><h3>杭州纵迹云科技有限公司</h3><span class="company-room">15＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>具备工业重载、自动巡检、低空全域管控自研生产能力，可提供软硬件一体化成套设备与行业落地定制方案</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>杭州昊舜视讯科技有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>无人机全自动机场系列产品、智能管控平台及专业飞手团队</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州飞算科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>长航时复合翼无人机、低空反制装备供货以及云端智能管控平台部署</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>飞手杭州低空经济发展有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>协助企业进行巡检、测试、城市内各类空域审批</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>浙江鑫核聚能科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>射频氮化镓工艺的超宽带功率放大器芯片设计技术</p></article>
+<article class="company-card" data-building="4"><div class="company-head"><h3>城飞智能（杭州）科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>低空智能起降场运营商，提供从顶层规划、软硬件研发部署、智能化升级到全周期运营的一体化解决方案</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>泊航科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>提供复杂构型可变翼无人机整机设计、嵌入式系统开发到飞控软件平台测试全栈技术解决方案</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>杭州九数商务咨询有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>拥有AIGC全栈内容生成能力（AI视频/图像/文案/数字人）</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>墨悉科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>面向具身智能时代的智能大脑与多智能体协同系统提供商</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州零储科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>构建 “户用-工商-大储” 全系列产品矩阵，拥有从电芯PACK到交直流一体系统的垂直整合制造能力。</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州启航线科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>全栈式低空操作系统，覆盖低空监管、飞行准入、AI 空域分配、数据治理及资产化服务</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州艾铂特智能科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>专注于高危场景具身智能机器人和AI算法平台的开发，具备全栈解决方案的交付能力。</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>杭州零到一工业设计有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>专注工业设计与产品创新服务，提供产品策略、外观设计、结构设计、CMF设计、品牌设计及产品落地全流程解决方案</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>杭州慢伴文化创意有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>聚焦生活方式品牌打造与香氛产品创新，集原创设计、产品研发、品牌运营及供应链整合于一体</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>浙江蔚然长风智能科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自研AI情感边缘计算技术，构建“筛查-预警-干预-管理”的全链路心理服务体系</p></article>
+<article class="company-card" data-building="15"><div class="company-head"><h3>中科祥云低空科技（浙江）有限公司</h3><span class="company-room">15＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>智慧巡检 + 低空物流配送一体化解决方案</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州归一智能科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>“AI超级产线”营销内容工程化平台与AI影视短漫剧一站式工作平台</p></article>
+<article class="company-card" data-building="4"><div class="company-head"><h3>杭州凡章科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>仓储管理系统WMS+室内无人机仓储盘点</p></article>
+<article class="company-card" data-building="5"><div class="company-head"><h3>杭州矩正医疗科技有限公司</h3><span class="company-room">5＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>球囊扩张导管、血管封堵止血系统、静脉腔内射频闭合导管及配套有源设备发生器等产品的设计制造能力</p></article>
+<article class="company-card" data-building="4"><div class="company-head"><h3>杭州思变笃行管理科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>面向中大型企业提供沙盘模拟培训和定制、AI培训咨询应用开发</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>杭州云酷智能科技有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自研冷却液、高精流场及多级智能控制等核心技术，可提供数据中心、通信基站、储能等多场景一体化液冷解决方案</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>赞塔（杭州）科技有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自主研发听鉴、智录、点线、智审、智策等十余种公安专用智能体软硬件产品</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州紫深智测技术有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>环境与可靠性、EMC、电气安全等检测认证；自主开发VeriFLY UQ数据分析平台，为风险结果做可量化</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>埃法智造（杭州）人工智能科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自研 ANIMA 人造电子生命平台，提供模块化 AI桌面机器人硬件</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>集光年（杭州）科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>为企业提供AIGC内容制作与培训，以及AI化品牌战略服务</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州竞速动力科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>专注于动力控制系统研发与产品概念性落地，长期深耕汽车、摩托及航空动力系统</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>奕科先进智能科技（杭州）有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>具备从 2kW 到 280kW 全功率段的无人机电机、内燃机及动力总成测试台架搭建能力，同时支持定制化需求</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>浙江有鹿机器人科技有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>具身智能通用大脑；室外商业巡扫机器人AI130</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>浙江百应科技有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>AI Agent智能平台；商业对话大模型 Gravity LLM； 行业解决方案</p></article>
+<article class="company-card" data-building="4"><div class="company-head"><h3>杭州数智医济医疗科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>过敏疾病数字疗法、标准化诊疗与无接触健康评估</p></article>
             </div>
           </aside>
         </div>
       </section>
-      
-      <!-- List View -->
       <section id="view-list" class="view">
-        <div class="page-header">
+        <div class="hero">
           <div>
-            <div class="eyebrow">资源广场</div>
-            <h1 style="margin-top:8px;">企业能力一览</h1>
+            <div class="eyebrow">园区供需撮合 · 2026</div>
+            <h1>把能力放上来，<br>让<em>合作发生</em></h1>
+            <p>发布企业可开放的技术、产品或资源需求，快速找到园区里能接得住的合作伙伴。</p>
           </div>
+          <div class="metrics">
+            <div class="metric"><b>50</b><span>供给能力</span></div>
+            <div class="metric"><b>50</b><span>链接需求</span></div>
+          </div>
+        </div>
+        <div class="building-chips" id="building-chips">
+          <button class="active" onclick="setListBuilding('all', this)">全部楼栋</button>
+          <button onclick="setListBuilding('10', this)">10号楼</button>
+<button onclick="setListBuilding('11', this)">11号楼</button>
+<button onclick="setListBuilding('15', this)">15号楼</button>
+<button onclick="setListBuilding('3', this)">3号楼</button>
+<button onclick="setListBuilding('4', this)">4号楼</button>
+<button onclick="setListBuilding('5', this)">5号楼</button>
+<button onclick="setListBuilding('6', this)">6号楼</button>
+<button onclick="setListBuilding('8', this)">8号楼</button>
+<button onclick="setListBuilding('9', this)">9号楼</button>
+        </div>
+        <div class="page-header">
           <div class="page-filters">
             <button class="active" onclick="setListFilter('all', this)">全部</button>
             <button onclick="setListFilter('supply', this)">可提供</button>
@@ -733,480 +389,137 @@
           </div>
         </div>
         <div class="card-grid" id="list-grid">
-          <article class="company-card" data-building="4" data-name="千机变(杭州)科技有限公司">
-      <div class="company-head">
-        <h3>千机变(杭州)科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>以自主研发算法为核心竞争力，打造承载 300 + 自研算法的一站式 AI 算法超市底座。</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州龙航智远无人机科技有限公司">
-      <div class="company-head">
-        <h3>杭州龙航智远无人机科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>全军指定的单一来源无人机供应商</p>
-    </article>
-<article class="company-card" data-building="9" data-name="浙江兔行科技有限公司">
-      <div class="company-head">
-        <h3>浙江兔行科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>核心业务聚焦于中高等职业院校的无人机专业建设与人才培养解决方案；</p>
-    </article>
-<article class="company-card" data-building="3" data-name="华翌智能装备（杭州）有限公司">
-      <div class="company-head">
-        <h3>华翌智能装备（杭州）有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自研AI AOI工业检测软件全套算法与技术架构</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州翎视科技有限公司">
-      <div class="company-head">
-        <h3>杭州翎视科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>高层住宅、商业综合体、历史建筑的外立面安全检测及测量</p>
-    </article>
-<article class="company-card" data-building="10" data-name="浙江星穹智航科技有限公司">
-      <div class="company-head">
-        <h3>浙江星穹智航科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>高空清洗、CAAC培训</p>
-    </article>
-<article class="company-card" data-building="3" data-name="杭州脸脸会网络技术有限公司">
-      <div class="company-head">
-        <h3>杭州脸脸会网络技术有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>AI智能体、AI数字人、智能互动应用及文商旅场景数字化解决方案的研发、实施与运营服务</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州微鸿科技有限公司">
-      <div class="company-head">
-        <h3>杭州微鸿科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>成熟的飞控平台能力体系，覆盖飞行控制、感知融合、任务调度等核心环节</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州万升航控智能科技有限公司">
-      <div class="company-head">
-        <h3>杭州万升航控智能科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>专注构建无人机 “大脑”，通过地理空间管理、核心业务系统打造</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州团簇科技有限公司">
-      <div class="company-head">
-        <h3>杭州团簇科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>具身智能+ 多模态感知为核心技术底座，自研 “空天地” 一体化智慧巡检管控系统</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州标彰电子科技有限公司">
-      <div class="company-head">
-        <h3>杭州标彰电子科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自主研发和生产的测控系统、数据采集卡、窄脉冲发生器、高速信号发生器等产品</p>
-    </article>
-<article class="company-card" data-building="9" data-name="杭州星智创享科技有限公司">
-      <div class="company-head">
-        <h3>杭州星智创享科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>CC80非接触式清洁无人机系统</p>
-    </article>
-<article class="company-card" data-building="10" data-name="全域通用航空（杭州）有限公司">
-      <div class="company-head">
-        <h3>全域通用航空（杭州）有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>低空经济一体化生态体系建设，自研飞行服务平台、机载电脑、低空之家APP等核心产品，构建全链路低空服务能力。</p>
-    </article>
-<article class="company-card" data-building="6" data-name="浙江瀚为科技有限公司">
-      <div class="company-head">
-        <h3>浙江瀚为科技有限公司</h3>
-        <span class="company-room">6＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>AI算力中心用高安全、高功率电池及直流侧供配电解决方案</p>
-    </article>
-<article class="company-card" data-building="10" data-name="圣翔（杭州）航空科技有限公司">
-      <div class="company-head">
-        <h3>圣翔（杭州）航空科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>全品类低空起降装备高端智造及场景运营解决方案</p>
-    </article>
-<article class="company-card" data-building="8" data-name="重隼智能科技（浙江）有限公司">
-      <div class="company-head">
-        <h3>重隼智能科技（浙江）有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>提供无人机低空安防、冷链运输、室内建模等领域完整行业解决方案</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州鲣翼科技有限公司">
-      <div class="company-head">
-        <h3>杭州鲣翼科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>水陆两栖多用途倾转动力升力体无人飞行器”整机的研发、生产和应用</p>
-    </article>
-<article class="company-card" data-building="8" data-name="浙江十子鹰飞行科技有限公司">
-      <div class="company-head">
-        <h3>浙江十子鹰飞行科技有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>面向各类院校提供校园科技体育兴趣教学一站式校企合作解决方案</p>
-    </article>
-<article class="company-card" data-building="8" data-name="浙江同创空间技术有限公司">
-      <div class="company-head">
-        <h3>浙江同创空间技术有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>民航局浙江03考试点及中国AOPA浙江考试点可提供CAAC无人机考证全流程培训服务</p>
-    </article>
-<article class="company-card" data-building="8" data-name="军创（杭州）空间技术有限公司">
-      <div class="company-head">
-        <h3>军创（杭州）空间技术有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>无人机飞手资源库与行业业务需求对接渠道，具备飞手-业务智能匹配平台的开发与运维能力</p>
-    </article>
-<article class="company-card" data-building="15" data-name="杭州纵迹云科技有限公司">
-      <div class="company-head">
-        <h3>杭州纵迹云科技有限公司</h3>
-        <span class="company-room">15＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>具备工业重载、自动巡检、低空全域管控自研生产能力，可提供软硬件一体化成套设备与行业落地定制方案</p>
-    </article>
-<article class="company-card" data-building="3" data-name="杭州昊舜视讯科技有限公司">
-      <div class="company-head">
-        <h3>杭州昊舜视讯科技有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>无人机全自动机场系列产品、智能管控平台及专业飞手团队</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州飞算科技有限公司">
-      <div class="company-head">
-        <h3>杭州飞算科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>长航时复合翼无人机、低空反制装备供货以及云端智能管控平台部署</p>
-    </article>
-<article class="company-card" data-building="9" data-name="飞手杭州低空经济发展有限公司">
-      <div class="company-head">
-        <h3>飞手杭州低空经济发展有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>协助企业进行巡检、测试、城市内各类空域审批</p>
-    </article>
-<article class="company-card" data-building="10" data-name="浙江鑫核聚能科技有限公司">
-      <div class="company-head">
-        <h3>浙江鑫核聚能科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>射频氮化镓工艺的超宽带功率放大器芯片设计技术</p>
-    </article>
-<article class="company-card" data-building="4" data-name="城飞智能（杭州）科技有限公司">
-      <div class="company-head">
-        <h3>城飞智能（杭州）科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>低空智能起降场运营商，提供从顶层规划、软硬件研发部署、智能化升级到全周期运营的一体化解决方案</p>
-    </article>
-<article class="company-card" data-building="9" data-name="泊航科技有限公司">
-      <div class="company-head">
-        <h3>泊航科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>提供复杂构型可变翼无人机整机设计、嵌入式系统开发到飞控软件平台测试全栈技术解决方案</p>
-    </article>
-<article class="company-card" data-building="9" data-name="杭州九数商务咨询有限公司">
-      <div class="company-head">
-        <h3>杭州九数商务咨询有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>拥有AIGC全栈内容生成能力（AI视频/图像/文案/数字人）</p>
-    </article>
-<article class="company-card" data-building="10" data-name="墨悉科技有限公司">
-      <div class="company-head">
-        <h3>墨悉科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>面向具身智能时代的智能大脑与多智能体协同系统提供商</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州零储科技有限公司">
-      <div class="company-head">
-        <h3>杭州零储科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>构建 “户用-工商-大储” 全系列产品矩阵，拥有从电芯PACK到交直流一体系统的垂直整合制造能力。</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州启航线科技有限公司">
-      <div class="company-head">
-        <h3>杭州启航线科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>全栈式低空操作系统，覆盖低空监管、飞行准入、AI 空域分配、数据治理及资产化服务</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州艾铂特智能科技有限公司">
-      <div class="company-head">
-        <h3>杭州艾铂特智能科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>专注于高危场景具身智能机器人和AI算法平台的开发，具备全栈解决方案的交付能力。</p>
-    </article>
-<article class="company-card" data-building="9" data-name="杭州零到一工业设计有限公司">
-      <div class="company-head">
-        <h3>杭州零到一工业设计有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>专注工业设计与产品创新服务，提供产品策略、外观设计、结构设计、CMF设计、品牌设计及产品落地全流程解决方案</p>
-    </article>
-<article class="company-card" data-building="9" data-name="杭州慢伴文化创意有限公司">
-      <div class="company-head">
-        <h3>杭州慢伴文化创意有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>聚焦生活方式品牌打造与香氛产品创新，集原创设计、产品研发、品牌运营及供应链整合于一体</p>
-    </article>
-<article class="company-card" data-building="9" data-name="浙江蔚然长风智能科技有限公司">
-      <div class="company-head">
-        <h3>浙江蔚然长风智能科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自研AI情感边缘计算技术，构建“筛查-预警-干预-管理”的全链路心理服务体系</p>
-    </article>
-<article class="company-card" data-building="15" data-name="中科祥云低空科技（浙江）有限公司">
-      <div class="company-head">
-        <h3>中科祥云低空科技（浙江）有限公司</h3>
-        <span class="company-room">15＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>智慧巡检 + 低空物流配送一体化解决方案</p>
-    </article>
-<article class="company-card" data-building="10" data-name="杭州归一智能科技有限公司">
-      <div class="company-head">
-        <h3>杭州归一智能科技有限公司</h3>
-        <span class="company-room">10＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>“AI超级产线”营销内容工程化平台与AI影视短漫剧一站式工作平台</p>
-    </article>
-<article class="company-card" data-building="4" data-name="杭州凡章科技有限公司">
-      <div class="company-head">
-        <h3>杭州凡章科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>仓储管理系统WMS+室内无人机仓储盘点</p>
-    </article>
-<article class="company-card" data-building="5" data-name="杭州矩正医疗科技有限公司">
-      <div class="company-head">
-        <h3>杭州矩正医疗科技有限公司</h3>
-        <span class="company-room">5＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>球囊扩张导管、血管封堵止血系统、静脉腔内射频闭合导管及配套有源设备发生器等产品的设计制造能力</p>
-    </article>
-<article class="company-card" data-building="4" data-name="杭州思变笃行管理科技有限公司">
-      <div class="company-head">
-        <h3>杭州思变笃行管理科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>面向中大型企业提供沙盘模拟培训和定制、AI培训咨询应用开发</p>
-    </article>
-<article class="company-card" data-building="8" data-name="杭州云酷智能科技有限公司">
-      <div class="company-head">
-        <h3>杭州云酷智能科技有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自研冷却液、高精流场及多级智能控制等核心技术，可提供数据中心、通信基站、储能等多场景一体化液冷解决方案</p>
-    </article>
-<article class="company-card" data-building="8" data-name="赞塔（杭州）科技有限公司">
-      <div class="company-head">
-        <h3>赞塔（杭州）科技有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自主研发听鉴、智录、点线、智审、智策等十余种公安专用智能体软硬件产品</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州紫深智测技术有限公司">
-      <div class="company-head">
-        <h3>杭州紫深智测技术有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>环境与可靠性、EMC、电气安全等检测认证；自主开发VeriFLY UQ数据分析平台，为风险结果做可量化</p>
-    </article>
-<article class="company-card" data-building="11" data-name="埃法智造（杭州）人工智能科技有限公司">
-      <div class="company-head">
-        <h3>埃法智造（杭州）人工智能科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>自研 ANIMA 人造电子生命平台，提供模块化 AI桌面机器人硬件</p>
-    </article>
-<article class="company-card" data-building="9" data-name="集光年（杭州）科技有限公司">
-      <div class="company-head">
-        <h3>集光年（杭州）科技有限公司</h3>
-        <span class="company-room">9＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>为企业提供AIGC内容制作与培训，以及AI化品牌战略服务</p>
-    </article>
-<article class="company-card" data-building="11" data-name="杭州竞速动力科技有限公司">
-      <div class="company-head">
-        <h3>杭州竞速动力科技有限公司</h3>
-        <span class="company-room">11＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>专注于动力控制系统研发与产品概念性落地，长期深耕汽车、摩托及航空动力系统</p>
-    </article>
-<article class="company-card" data-building="3" data-name="奕科先进智能科技（杭州）有限公司">
-      <div class="company-head">
-        <h3>奕科先进智能科技（杭州）有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>具备从 2kW 到 280kW 全功率段的无人机电机、内燃机及动力总成测试台架搭建能力，同时支持定制化需求</p>
-    </article>
-<article class="company-card" data-building="3" data-name="浙江有鹿机器人科技有限公司">
-      <div class="company-head">
-        <h3>浙江有鹿机器人科技有限公司</h3>
-        <span class="company-room">3＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>具身智能通用大脑；室外商业巡扫机器人AI130</p>
-    </article>
-<article class="company-card" data-building="8" data-name="浙江百应科技有限公司">
-      <div class="company-head">
-        <h3>浙江百应科技有限公司</h3>
-        <span class="company-room">8＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>AI Agent智能平台；商业对话大模型 Gravity LLM； 行业解决方案</p>
-    </article>
-<article class="company-card" data-building="4" data-name="杭州数智医济医疗科技有限公司">
-      <div class="company-head">
-        <h3>杭州数智医济医疗科技有限公司</h3>
-        <span class="company-room">4＃</span>
-      </div>
-      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
-      <p>过敏疾病数字疗法、标准化诊疗与无接触健康评估</p>
-    </article>
+          <article class="company-card" data-building="4"><div class="company-head"><h3>千机变(杭州)科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>以自主研发算法为核心竞争力，打造承载 300 + 自研算法的一站式 AI 算法超市底座。</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州龙航智远无人机科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>全军指定的单一来源无人机供应商</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>浙江兔行科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>核心业务聚焦于中高等职业院校的无人机专业建设与人才培养解决方案；</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>华翌智能装备（杭州）有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自研AI AOI工业检测软件全套算法与技术架构</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州翎视科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>高层住宅、商业综合体、历史建筑的外立面安全检测及测量</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>浙江星穹智航科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>高空清洗、CAAC培训</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>杭州脸脸会网络技术有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>AI智能体、AI数字人、智能互动应用及文商旅场景数字化解决方案的研发、实施与运营服务</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州微鸿科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>成熟的飞控平台能力体系，覆盖飞行控制、感知融合、任务调度等核心环节</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州万升航控智能科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>专注构建无人机 “大脑”，通过地理空间管理、核心业务系统打造</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州团簇科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>具身智能+ 多模态感知为核心技术底座，自研 “空天地” 一体化智慧巡检管控系统</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州标彰电子科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自主研发和生产的测控系统、数据采集卡、窄脉冲发生器、高速信号发生器等产品</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>杭州星智创享科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>CC80非接触式清洁无人机系统</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>全域通用航空（杭州）有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>低空经济一体化生态体系建设，自研飞行服务平台、机载电脑、低空之家APP等核心产品，构建全链路低空服务能力。</p></article>
+<article class="company-card" data-building="6"><div class="company-head"><h3>浙江瀚为科技有限公司</h3><span class="company-room">6＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>AI算力中心用高安全、高功率电池及直流侧供配电解决方案</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>圣翔（杭州）航空科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>全品类低空起降装备高端智造及场景运营解决方案</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>重隼智能科技（浙江）有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>提供无人机低空安防、冷链运输、室内建模等领域完整行业解决方案</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州鲣翼科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>水陆两栖多用途倾转动力升力体无人飞行器”整机的研发、生产和应用</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>浙江十子鹰飞行科技有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>面向各类院校提供校园科技体育兴趣教学一站式校企合作解决方案</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>浙江同创空间技术有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>民航局浙江03考试点及中国AOPA浙江考试点可提供CAAC无人机考证全流程培训服务</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>军创（杭州）空间技术有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>无人机飞手资源库与行业业务需求对接渠道，具备飞手-业务智能匹配平台的开发与运维能力</p></article>
+<article class="company-card" data-building="15"><div class="company-head"><h3>杭州纵迹云科技有限公司</h3><span class="company-room">15＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>具备工业重载、自动巡检、低空全域管控自研生产能力，可提供软硬件一体化成套设备与行业落地定制方案</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>杭州昊舜视讯科技有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>无人机全自动机场系列产品、智能管控平台及专业飞手团队</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州飞算科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>长航时复合翼无人机、低空反制装备供货以及云端智能管控平台部署</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>飞手杭州低空经济发展有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>协助企业进行巡检、测试、城市内各类空域审批</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>浙江鑫核聚能科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>射频氮化镓工艺的超宽带功率放大器芯片设计技术</p></article>
+<article class="company-card" data-building="4"><div class="company-head"><h3>城飞智能（杭州）科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>低空智能起降场运营商，提供从顶层规划、软硬件研发部署、智能化升级到全周期运营的一体化解决方案</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>泊航科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>提供复杂构型可变翼无人机整机设计、嵌入式系统开发到飞控软件平台测试全栈技术解决方案</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>杭州九数商务咨询有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>拥有AIGC全栈内容生成能力（AI视频/图像/文案/数字人）</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>墨悉科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>面向具身智能时代的智能大脑与多智能体协同系统提供商</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州零储科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>构建 “户用-工商-大储” 全系列产品矩阵，拥有从电芯PACK到交直流一体系统的垂直整合制造能力。</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州启航线科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>全栈式低空操作系统，覆盖低空监管、飞行准入、AI 空域分配、数据治理及资产化服务</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州艾铂特智能科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>专注于高危场景具身智能机器人和AI算法平台的开发，具备全栈解决方案的交付能力。</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>杭州零到一工业设计有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>专注工业设计与产品创新服务，提供产品策略、外观设计、结构设计、CMF设计、品牌设计及产品落地全流程解决方案</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>杭州慢伴文化创意有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>聚焦生活方式品牌打造与香氛产品创新，集原创设计、产品研发、品牌运营及供应链整合于一体</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>浙江蔚然长风智能科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自研AI情感边缘计算技术，构建“筛查-预警-干预-管理”的全链路心理服务体系</p></article>
+<article class="company-card" data-building="15"><div class="company-head"><h3>中科祥云低空科技（浙江）有限公司</h3><span class="company-room">15＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>智慧巡检 + 低空物流配送一体化解决方案</p></article>
+<article class="company-card" data-building="10"><div class="company-head"><h3>杭州归一智能科技有限公司</h3><span class="company-room">10＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>“AI超级产线”营销内容工程化平台与AI影视短漫剧一站式工作平台</p></article>
+<article class="company-card" data-building="4"><div class="company-head"><h3>杭州凡章科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>仓储管理系统WMS+室内无人机仓储盘点</p></article>
+<article class="company-card" data-building="5"><div class="company-head"><h3>杭州矩正医疗科技有限公司</h3><span class="company-room">5＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>球囊扩张导管、血管封堵止血系统、静脉腔内射频闭合导管及配套有源设备发生器等产品的设计制造能力</p></article>
+<article class="company-card" data-building="4"><div class="company-head"><h3>杭州思变笃行管理科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>面向中大型企业提供沙盘模拟培训和定制、AI培训咨询应用开发</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>杭州云酷智能科技有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自研冷却液、高精流场及多级智能控制等核心技术，可提供数据中心、通信基站、储能等多场景一体化液冷解决方案</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>赞塔（杭州）科技有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自主研发听鉴、智录、点线、智审、智策等十余种公安专用智能体软硬件产品</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州紫深智测技术有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>环境与可靠性、EMC、电气安全等检测认证；自主开发VeriFLY UQ数据分析平台，为风险结果做可量化</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>埃法智造（杭州）人工智能科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>自研 ANIMA 人造电子生命平台，提供模块化 AI桌面机器人硬件</p></article>
+<article class="company-card" data-building="9"><div class="company-head"><h3>集光年（杭州）科技有限公司</h3><span class="company-room">9＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>为企业提供AIGC内容制作与培训，以及AI化品牌战略服务</p></article>
+<article class="company-card" data-building="11"><div class="company-head"><h3>杭州竞速动力科技有限公司</h3><span class="company-room">11＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>专注于动力控制系统研发与产品概念性落地，长期深耕汽车、摩托及航空动力系统</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>奕科先进智能科技（杭州）有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>具备从 2kW 到 280kW 全功率段的无人机电机、内燃机及动力总成测试台架搭建能力，同时支持定制化需求</p></article>
+<article class="company-card" data-building="3"><div class="company-head"><h3>浙江有鹿机器人科技有限公司</h3><span class="company-room">3＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>具身智能通用大脑；室外商业巡扫机器人AI130</p></article>
+<article class="company-card" data-building="8"><div class="company-head"><h3>浙江百应科技有限公司</h3><span class="company-room">8＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>AI Agent智能平台；商业对话大模型 Gravity LLM； 行业解决方案</p></article>
+<article class="company-card" data-building="4"><div class="company-head"><h3>杭州数智医济医疗科技有限公司</h3><span class="company-room">4＃</span></div><div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div><p>过敏疾病数字疗法、标准化诊疗与无接触健康评估</p></article>
+        </div>
+        <div class="float-filter">
+          <button class="active" onclick="setListFilterFloat('all', this)">全部</button>
+          <button onclick="setListFilterFloat('supply', this)">可提供</button>
+          <button onclick="setListFilterFloat('demand', this)">想链接</button>
         </div>
       </section>
-      
-      <!-- Submit View -->
       <section id="view-submit" class="view">
-        <div class="form-container">
-          <h2>更新企业信息</h2>
-          <p>提交入驻企业或更新现有企业的技术与资源信息，审核通过后将同步至地图。</p>
-          <form id="submit-form" onsubmit="handleSubmit(event)">
-            <div class="form-row">
-              <div class="field">
-                <label>企业名称 *</label>
-                <input type="text" name="company" required>
+        <div class="form-page">
+          <div class="eyebrow">JOIN THE ATLAS</div>
+          <h1>企业信息更新</h1>
+          <p>填写最新的企业供应能力与链接需求，帮助园区内企业更好地发现合作机会。</p>
+          <div class="form-container">
+            <form id="submit-form" onsubmit="handleSubmit(event)">
+              <div class="form-section">
+                <div class="section-title">基本信息</div>
+                <div class="form-row">
+                  <div class="field full"><label>企业名称 *</label><input type="text" name="companyName" required placeholder="请输入完整企业名称"></div>
+                </div>
+                <div class="form-row">
+                  <div class="field">
+                    <label>楼栋</label>
+                    <select name="building"><option value="">请选择楼栋</option><option value="3">3号楼</option><option value="4">4号楼</option><option value="5">5号楼</option><option value="6">6号楼</option><option value="8">8号楼</option><option value="9">9号楼</option><option value="10">10号楼</option><option value="11">11号楼</option><option value="15">15号楼</option><option value="其他">其他</option></select>
+                  </div>
+                  <div class="field"><label>房间号</label><input type="text" name="room" placeholder="如：301"></div>
+                </div>
+                <div class="form-row">
+                  <div class="field">
+                    <label>是否已获取场地</label>
+                    <select name="hasSpace"><option value="">请选择</option><option value="已入驻">已入驻</option><option value="意向洽谈中">意向洽谈中</option><option value="其他">其他</option></select>
+                  </div>
+                  <div class="field"></div>
+                </div>
+                <div class="form-row">
+                  <div class="field"><label>联系人 *</label><input type="text" name="contact" required placeholder="姓名"></div>
+                  <div class="field"><label>联系电话</label><input type="tel" name="phone" placeholder="手机号码"></div>
+                </div>
               </div>
-              <div class="field">
-                <label>所在楼栋</label>
-                <select name="building">
-                  <option value="">请选择</option>
-                  <option value="3">3号楼</option>
-                  <option value="4">4号楼</option>
-                  <option value="5">5号楼</option>
-                  <option value="6">6号楼</option>
-                  <option value="8">8号楼</option>
-                  <option value="9">9号楼</option>
-                  <option value="10">10号楼</option>
-                  <option value="11">11号楼</option>
-                  <option value="15">15号楼</option>
-                </select>
+              <div class="form-section">
+                <div class="section-title">供应能力与链接需求</div>
+                <div class="form-row">
+                  <div class="field full"><label>一句话描述企业核心能力 <span class="hint">（供应能力）</span> *</label><textarea name="capability" required placeholder="例如：提供无人机飞控系统研发与集成服务…"></textarea></div>
+                </div>
+                <div class="form-row">
+                  <div class="field full"><label>场景需求描述 <span class="hint">（链接需求）</span> *</label><textarea name="demand" required placeholder="例如：寻求政企客户资源、行业渠道合作伙伴…"></textarea></div>
+                </div>
               </div>
+              <div class="form-section">
+                <div class="section-title">更新类型</div>
+                <div class="update-type">
+                  <button type="button" class="active" onclick="setUpdateType('update', this)"><b>信息更新</b><span>更新现有信息</span></button>
+                  <button type="button" onclick="setUpdateType('new', this)"><b>新增企业</b><span>首次录入</span></button>
+                  <button type="button" onclick="setUpdateType('correct', this)"><b>信息纠错</b><span>修正错误信息</span></button>
+                </div>
+                <div class="form-row" style="margin-top:14px;">
+                  <div class="field full"><label>补充说明（选填）</label><textarea name="remarks" rows="2" placeholder="其他需要说明的内容…"></textarea></div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn" onclick="resetForm()">重置</button>
+                <button type="submit" class="btn primary">提交更新申请</button>
+              </div>
+            </form>
+            <div id="submit-success" class="success" style="display:none;">
+              <h3>提交成功！</h3>
+              <p>感谢提交信息更新申请。运营人员将在 1–3 个工作日内通过电话与您确认。</p>
             </div>
-            <div class="form-row">
-              <div class="field">
-                <label>联系人 *</label>
-                <input type="text" name="contact" required>
-              </div>
-              <div class="field">
-                <label>联系电话 *</label>
-                <input type="tel" name="phone" required>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="field full">
-                <label>可提供的技术 / 资源 / 能力</label>
-                <textarea name="supply" placeholder="例如：AI算法、飞控平台、检测设备等"></textarea>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="field full">
-                <label>想链接的技术 / 资源 / 场景</label>
-                <textarea name="demand" placeholder="例如：测试场地、产业客户、融资渠道等"></textarea>
-              </div>
-            </div>
-            <div class="form-actions">
-              <button type="button" class="btn" onclick="showView('map')">取消</button>
-              <button type="submit" class="btn primary">提交信息</button>
-            </div>
-          </form>
-          <div id="submit-success" class="success" style="display:none;">
-            <h3>提交成功</h3>
-            <p>我们已收到信息，运营团队将在 1–2 个工作日内完成审核。</p>
           </div>
         </div>
       </section>
     </main>
   </div>
-  
   <script>
     const companies = [{"name": "千机变(杭州)科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "以自主研发算法为核心竞争力，打造承载 300 + 自研算法的一站式 AI 算法超市底座。"}, {"name": "杭州龙航智远无人机科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "全军指定的单一来源无人机供应商"}, {"name": "浙江兔行科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "核心业务聚焦于中高等职业院校的无人机专业建设与人才培养解决方案；"}, {"name": "华翌智能装备（杭州）有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "自研AI AOI工业检测软件全套算法与技术架构"}, {"name": "杭州翎视科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "高层住宅、商业综合体、历史建筑的外立面安全检测及测量"}, {"name": "浙江星穹智航科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "高空清洗、CAAC培训"}, {"name": "杭州脸脸会网络技术有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "AI智能体、AI数字人、智能互动应用及文商旅场景数字化解决方案的研发、实施与运营服务"}, {"name": "杭州微鸿科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "成熟的飞控平台能力体系，覆盖飞行控制、感知融合、任务调度等核心环节"}, {"name": "杭州万升航控智能科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "专注构建无人机 “大脑”，通过地理空间管理、核心业务系统打造"}, {"name": "杭州团簇科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "具身智能+ 多模态感知为核心技术底座，自研 “空天地” 一体化智慧巡检管控系统"}, {"name": "杭州标彰电子科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "自主研发和生产的测控系统、数据采集卡、窄脉冲发生器、高速信号发生器等产品"}, {"name": "杭州星智创享科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "CC80非接触式清洁无人机系统"}, {"name": "全域通用航空（杭州）有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "低空经济一体化生态体系建设，自研飞行服务平台、机载电脑、低空之家APP等核心产品，构建全链路低空服务能力。"}, {"name": "浙江瀚为科技有限公司", "building": "6", "tags": ["可提供", "想链接"], "description": "AI算力中心用高安全、高功率电池及直流侧供配电解决方案"}, {"name": "圣翔（杭州）航空科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "全品类低空起降装备高端智造及场景运营解决方案"}, {"name": "重隼智能科技（浙江）有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "提供无人机低空安防、冷链运输、室内建模等领域完整行业解决方案"}, {"name": "杭州鲣翼科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "水陆两栖多用途倾转动力升力体无人飞行器”整机的研发、生产和应用"}, {"name": "浙江十子鹰飞行科技有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "面向各类院校提供校园科技体育兴趣教学一站式校企合作解决方案"}, {"name": "浙江同创空间技术有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "民航局浙江03考试点及中国AOPA浙江考试点可提供CAAC无人机考证全流程培训服务"}, {"name": "军创（杭州）空间技术有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "无人机飞手资源库与行业业务需求对接渠道，具备飞手-业务智能匹配平台的开发与运维能力"}, {"name": "杭州纵迹云科技有限公司", "building": "15", "tags": ["可提供", "想链接"], "description": "具备工业重载、自动巡检、低空全域管控自研生产能力，可提供软硬件一体化成套设备与行业落地定制方案"}, {"name": "杭州昊舜视讯科技有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "无人机全自动机场系列产品、智能管控平台及专业飞手团队"}, {"name": "杭州飞算科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "长航时复合翼无人机、低空反制装备供货以及云端智能管控平台部署"}, {"name": "飞手杭州低空经济发展有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "协助企业进行巡检、测试、城市内各类空域审批"}, {"name": "浙江鑫核聚能科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "射频氮化镓工艺的超宽带功率放大器芯片设计技术"}, {"name": "城飞智能（杭州）科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "低空智能起降场运营商，提供从顶层规划、软硬件研发部署、智能化升级到全周期运营的一体化解决方案"}, {"name": "泊航科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "提供复杂构型可变翼无人机整机设计、嵌入式系统开发到飞控软件平台测试全栈技术解决方案"}, {"name": "杭州九数商务咨询有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "拥有AIGC全栈内容生成能力（AI视频/图像/文案/数字人）"}, {"name": "墨悉科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "面向具身智能时代的智能大脑与多智能体协同系统提供商"}, {"name": "杭州零储科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "构建 “户用-工商-大储” 全系列产品矩阵，拥有从电芯PACK到交直流一体系统的垂直整合制造能力。"}, {"name": "杭州启航线科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "全栈式低空操作系统，覆盖低空监管、飞行准入、AI 空域分配、数据治理及资产化服务"}, {"name": "杭州艾铂特智能科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "专注于高危场景具身智能机器人和AI算法平台的开发，具备全栈解决方案的交付能力。"}, {"name": "杭州零到一工业设计有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "专注工业设计与产品创新服务，提供产品策略、外观设计、结构设计、CMF设计、品牌设计及产品落地全流程解决方案"}, {"name": "杭州慢伴文化创意有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "聚焦生活方式品牌打造与香氛产品创新，集原创设计、产品研发、品牌运营及供应链整合于一体"}, {"name": "浙江蔚然长风智能科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "自研AI情感边缘计算技术，构建“筛查-预警-干预-管理”的全链路心理服务体系"}, {"name": "中科祥云低空科技（浙江）有限公司", "building": "15", "tags": ["可提供", "想链接"], "description": "智慧巡检 + 低空物流配送一体化解决方案"}, {"name": "杭州归一智能科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "“AI超级产线”营销内容工程化平台与AI影视短漫剧一站式工作平台"}, {"name": "杭州凡章科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "仓储管理系统WMS+室内无人机仓储盘点"}, {"name": "杭州矩正医疗科技有限公司", "building": "5", "tags": ["可提供", "想链接"], "description": "球囊扩张导管、血管封堵止血系统、静脉腔内射频闭合导管及配套有源设备发生器等产品的设计制造能力"}, {"name": "杭州思变笃行管理科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "面向中大型企业提供沙盘模拟培训和定制、AI培训咨询应用开发"}, {"name": "杭州云酷智能科技有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "自研冷却液、高精流场及多级智能控制等核心技术，可提供数据中心、通信基站、储能等多场景一体化液冷解决方案"}, {"name": "赞塔（杭州）科技有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "自主研发听鉴、智录、点线、智审、智策等十余种公安专用智能体软硬件产品"}, {"name": "杭州紫深智测技术有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "环境与可靠性、EMC、电气安全等检测认证；自主开发VeriFLY UQ数据分析平台，为风险结果做可量化"}, {"name": "埃法智造（杭州）人工智能科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "自研 ANIMA 人造电子生命平台，提供模块化 AI桌面机器人硬件"}, {"name": "集光年（杭州）科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "为企业提供AIGC内容制作与培训，以及AI化品牌战略服务"}, {"name": "杭州竞速动力科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "专注于动力控制系统研发与产品概念性落地，长期深耕汽车、摩托及航空动力系统"}, {"name": "奕科先进智能科技（杭州）有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "具备从 2kW 到 280kW 全功率段的无人机电机、内燃机及动力总成测试台架搭建能力，同时支持定制化需求"}, {"name": "浙江有鹿机器人科技有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "具身智能通用大脑；室外商业巡扫机器人AI130"}, {"name": "浙江百应科技有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "AI Agent智能平台；商业对话大模型 Gravity LLM； 行业解决方案"}, {"name": "杭州数智医济医疗科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "过敏疾病数字疗法、标准化诊疗与无接触健康评估"}];
     const buildings = [{"num": "1", "status": "暂未开放", "left": 612.064, "top": 355.46, "disabled": true}, {"num": "2", "status": "暂未开放", "left": 533.696, "top": 275.08, "disabled": true}, {"num": "3", "status": "5家企业", "left": 380.928, "top": 225.065, "disabled": false}, {"num": "4", "status": "5家企业", "left": 464.256, "top": 185.173, "disabled": false}, {"num": "5", "status": "1家企业", "left": 539.648, "top": 129.799, "disabled": false}, {"num": "6", "status": "1家企业", "left": 609.088, "top": 127.418, "disabled": false}, {"num": "7", "status": "暂未开放", "left": 754.912, "top": 161.952, "disabled": true}, {"num": "8", "status": "7家企业", "left": 710.272, "top": 243.523, "disabled": false}, {"num": "9", "status": "9家企业", "left": 656.704, "top": 301.278, "disabled": false}, {"num": "10", "status": "13家企业", "left": 611.072, "top": 442.39, "disabled": false}, {"num": "11", "status": "7家企业", "left": 470.208, "top": 386.421, "disabled": false}, {"num": "12", "status": "暂未开放", "left": 348.192, "top": 324.499, "disabled": true}, {"num": "13", "status": "暂未开放", "left": 254.944, "top": 259.599, "disabled": true}, {"num": "14", "status": "暂未开放", "left": 257.92, "top": 351.887, "disabled": true}, {"num": "15", "status": "2家企业", "left": 383.904, "top": 412.619, "disabled": false}, {"num": "16", "status": "暂未开放", "left": 294.624, "top": 436.436, "disabled": true}];
     const buildingNames = {"1": "1号楼", "2": "2号楼", "3": "3号楼", "4": "4号楼", "5": "5号楼", "6": "6号楼", "7": "7号楼", "8": "8号楼", "9": "9号楼", "10": "10号楼", "11": "11号楼", "12": "12号楼", "13": "13号楼", "14": "14号楼", "15": "15号楼", "16": "16号楼"};
-    
     let currentMapFilter = 'all';
     let selectedBuilding = null;
-    
+    let listFilter = 'all';
+    let listBuilding = 'all';
+    let updateType = 'update';
     function showView(view) {
       document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
       document.getElementById('view-' + view).classList.add('active');
@@ -1215,64 +528,57 @@
       if (navBtn) navBtn.classList.add('active');
       window.scrollTo(0, 0);
     }
-    
+    function handleMarkerClick(num, isOpen) {
+      document.querySelectorAll('.marker').forEach(m => m.classList.remove('selected'));
+      const active = document.querySelector('.marker[data-num="' + num + '"]');
+      if (active) active.classList.add('selected');
+      if (!isOpen) {
+        document.getElementById('side-title').textContent = buildingNames[num];
+        document.getElementById('side-count').textContent = '暂未开放';
+        document.getElementById('map-company-list').innerHTML = '<div class="empty-state">该楼栋尚未开放，敬请期待。<br>如有入驻意向，可点击右上角「提交企业信息」。</div>';
+        selectedBuilding = null;
+        return;
+      }
+      selectBuilding(num);
+    }
     function selectBuilding(num) {
       selectedBuilding = num;
-      document.querySelectorAll('.marker').forEach(m => m.classList.remove('selected'));
-      const active = document.querySelector('.marker[onclick*="selectBuilding(\'' + num + '\')"]');
-      if (active) active.classList.add('selected');
-      
       const list = document.getElementById('map-company-list');
       const filtered = companies.filter(c => c.building === num);
       document.getElementById('side-title').textContent = buildingNames[num];
       document.getElementById('side-count').textContent = filtered.length + ' 家企业';
-      
       if (filtered.length === 0) {
         list.innerHTML = '<div class="empty-state">该楼栋暂无公开企业信息</div>';
         return;
       }
       list.innerHTML = filtered.map(c => renderCard(c)).join('');
     }
-    
     function renderCard(c) {
       const tags = c.tags.map(t => '<span class="tag ' + (t === '可提供' ? 'supply' : 'demand') + '">' + t + '</span>').join('');
       return '<article class="company-card" data-building="' + c.building + '"><div class="company-head"><h3>' + c.name + '</h3><span class="company-room">' + c.building + '＃</span></div><div class="company-tags">' + tags + '</div><p>' + c.description + '</p></article>';
     }
-    
     function setMapFilter(type, btn) {
       currentMapFilter = type;
       document.querySelectorAll('.map-filters button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      applyFilters();
+      applyMapFilters();
     }
-    
-    function filterMap() {
-      applyFilters();
-    }
-    
-    function applyFilters() {
+    function filterMap() { applyMapFilters(); }
+    function applyMapFilters() {
       const keyword = document.getElementById('map-search').value.toLowerCase();
       const list = document.getElementById('map-company-list');
-      
       let filtered = companies;
-      if (selectedBuilding) {
-        filtered = filtered.filter(c => c.building === selectedBuilding);
-      }
+      if (selectedBuilding) filtered = filtered.filter(c => c.building === selectedBuilding);
       if (currentMapFilter !== 'all') {
         const tagName = currentMapFilter === 'supply' ? '可提供' : '想链接';
         filtered = filtered.filter(c => c.tags.includes(tagName));
       }
-      if (keyword) {
-        filtered = filtered.filter(c => c.name.toLowerCase().includes(keyword) || c.description.toLowerCase().includes(keyword));
-      }
-      
+      if (keyword) filtered = filtered.filter(c => c.name.toLowerCase().includes(keyword) || c.description.toLowerCase().includes(keyword));
       if (filtered.length === 0) {
         list.innerHTML = '<div class="empty-state">没有匹配的企业信息</div>';
       } else {
         list.innerHTML = filtered.map(c => renderCard(c)).join('');
       }
-      
-      // Update side title if needed
       if (!selectedBuilding) {
         document.getElementById('side-title').textContent = '全园区总览';
         document.getElementById('side-count').textContent = filtered.length + ' 家企业';
@@ -1280,44 +586,88 @@
         document.getElementById('side-count').textContent = filtered.length + ' 家企业';
       }
     }
-    
-    function setListFilter(type, btn) {
-      document.querySelectorAll('.page-filters button').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+    function applyListFilters() {
       const grid = document.getElementById('list-grid');
       let filtered = companies;
-      if (type !== 'all') {
-        const tagName = type === 'supply' ? '可提供' : '想链接';
+      if (listBuilding !== 'all') filtered = filtered.filter(c => c.building === listBuilding);
+      if (listFilter !== 'all') {
+        const tagName = listFilter === 'supply' ? '可提供' : '想链接';
         filtered = filtered.filter(c => c.tags.includes(tagName));
       }
       grid.innerHTML = filtered.map(c => renderCard(c)).join('');
     }
-    
+    function setListFilter(type, btn) {
+      listFilter = type;
+      document.querySelectorAll('.page-filters button').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      syncFloatFilter(type);
+      applyListFilters();
+    }
+    function setListFilterFloat(type, btn) {
+      listFilter = type;
+      document.querySelectorAll('.float-filter button').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      syncPageFilter(type);
+      applyListFilters();
+    }
+    function syncPageFilter(type) {
+      document.querySelectorAll('.page-filters button').forEach(b => b.classList.remove('active'));
+      const pageBtn = Array.from(document.querySelectorAll('.page-filters button')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes("setListFilter('" + type + "'"));
+      if (pageBtn) pageBtn.classList.add('active');
+    }
+    function syncFloatFilter(type) {
+      document.querySelectorAll('.float-filter button').forEach(b => b.classList.remove('active'));
+      const floatBtn = Array.from(document.querySelectorAll('.float-filter button')).find(b => b.getAttribute('onclick') && b.getAttribute('onclick').includes("setListFilterFloat('" + type + "'"));
+      if (floatBtn) floatBtn.classList.add('active');
+    }
+    function setListBuilding(num, btn) {
+      listBuilding = num;
+      document.querySelectorAll('.building-chips button').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      applyListFilters();
+    }
+    function setUpdateType(type, btn) {
+      updateType = type;
+      document.querySelectorAll('.update-type button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    function resetForm() {
+      document.getElementById('submit-form').reset();
+      setUpdateType('update', document.querySelector('.update-type button:first-child'));
+      document.getElementById('submit-form').style.display = 'block';
+      document.getElementById('submit-success').style.display = 'none';
+    }
     function handleSubmit(e) {
       e.preventDefault();
-      document.getElementById('submit-form').style.display = 'none';
-      document.getElementById('submit-success').style.display = 'block';
-      // Optional: download as CSV for operations
       const form = e.target;
+      const labels = {update:'信息更新', new:'新增企业', correct:'信息纠错'};
       const data = {
-        company: form.company.value,
+        time: new Date().toLocaleString('zh-CN'),
+        companyName: form.companyName.value,
         building: form.building.value,
+        room: form.room.value,
+        hasSpace: form.hasSpace.value,
         contact: form.contact.value,
         phone: form.phone.value,
-        supply: form.supply.value,
+        capability: form.capability.value,
         demand: form.demand.value,
-        time: new Date().toISOString()
+        updateType: labels[updateType],
+        remarks: form.remarks.value
       };
-      const csv = Object.keys(data).join(',') + '\n' + Object.values(data).map(v => '"' + (v || '').replace(/"/g, '""') + '"').join(',');
+      const headers = ['提交时间','企业名称','楼栋','房间号','是否已获取场地','联系人','联系电话','供应能力','链接需求','更新类型','补充说明'];
+      const row = [data.time, data.companyName, data.building, data.room, data.hasSpace, data.contact, data.phone, data.capability, data.demand, data.updateType, data.remarks];
+      const csv = '\uFEFF' + headers.join(',') + '\n' + row.map(v => '"' + String(v || '').replace(/"/g, '""') + '"').join(',');
       const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = '企业信息更新_' + data.company + '.csv';
+      a.download = '南湖技术地图-企业信息更新-' + (data.companyName || '未命名') + '-' + Date.now() + '.csv';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      form.style.display = 'none';
+      document.getElementById('submit-success').style.display = 'block';
     }
   </script>
 </body>
