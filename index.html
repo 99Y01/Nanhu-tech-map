@@ -1,715 +1,1324 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="nanhu">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <title>南湖技术地图</title>
-  <link href="https://g.alicdn.com/code/lib/daisyui/5.1.25/daisyui.css" rel="stylesheet" type="text/css">
-  <link href="https://g.alicdn.com/code/lib/daisyui/5.1.25/themes.css" rel="stylesheet" type="text/css">
-  <script src="https://g.alicdn.com/code/lib/react/17.0.2/umd/react.development.js"></script>
-  <script src="https://g.alicdn.com/code/lib/react-dom/17.0.2/umd/react-dom.development.js"></script>
-  <script src="https://g.alicdn.com/code/lib/babel-standalone/7.25.0/babel.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
+  <link rel="icon" type="image/svg+xml" href="./assets/1d-favicon-light.svg">
   <style>
     :root {
       --ink: #163b3b;
-      --muted: #6f8580;
-      --paper: #f4f1e8;
+      --muted: #5a6d78;
+      --paper: #f0f3f7;
       --cream: #fffdf7;
       --lake: #36b7ad;
       --lake-deep: #087d76;
-      --moss: #8ba55b;
-      --orange: #ff8a54;
-      --yellow: #f4c95d;
-      --line: rgba(22, 59, 59, .14);
-      --shadow: 0 24px 70px rgba(25, 70, 64, .18);
+      --line: rgba(91, 141, 184, 0.18);
+      --shadow: 0 24px 70px rgba(25, 70, 64, 0.12);
+      --map-bg: rgb(221, 228, 238);
+      --panel-bg: rgb(232, 237, 244);
+      --marker-active: #1565c0;
+      --marker-disabled: #6fa8d6;
     }
     * { box-sizing: border-box; }
-    html, body, #root { margin: 0; min-height: 100%; }
-    body { background: var(--paper); color: var(--ink); font-family: "Aptos", "PingFang SC", "Microsoft YaHei", sans-serif; }
-    button, input, textarea, select { font: inherit; }
-    button { color: inherit; }
-    ::selection { background: #b8e8df; }
-    .app { min-height: 100vh; background:
-      radial-gradient(circle at 13% 12%, rgba(255,255,255,.9) 0 5%, transparent 22%),
-      linear-gradient(rgba(22,59,59,.028) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(22,59,59,.028) 1px, transparent 1px), var(--paper);
-      background-size: auto, 26px 26px, 26px 26px, auto; }
-    .topbar { height: 76px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: rgba(244,241,232,.86); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 40; }
+    html, body { margin: 0; min-height: 100%; }
+    body { background: var(--paper); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+    button { font: inherit; color: inherit; }
+    
+    .app { min-height: 100vh; }
+    header { height: 76px; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); background: rgba(240, 243, 247, 0.88); backdrop-filter: blur(15px); position: sticky; top: 0; z-index: 40; }
     .brand { display: flex; align-items: center; gap: 13px; }
-    .brand-mark { width: 43px; height: 43px; border-radius: 14px 14px 14px 4px; background: var(--ink); color: #fff; display: grid; place-items: center; transform: rotate(-3deg); box-shadow: 6px 6px 0 #aedbd0; }
-    .brand-copy strong { display: block; font-family: "Arial Black", "PingFang SC", sans-serif; letter-spacing: -.04em; font-size: 19px; }
-    .brand-copy span { display: block; color: var(--muted); font-size: 11px; letter-spacing: .16em; margin-top: 2px; }
-    .nav { display: flex; gap: 7px; padding: 5px; background: rgba(255,255,255,.55); border: 1px solid var(--line); border-radius: 999px; }
-    .nav button { border: 0; background: transparent; padding: 9px 15px; border-radius: 999px; cursor: pointer; font-size: 13px; }
-    .nav button.active { background: var(--ink); color: white; }
-    .admin-btn { border: 1px solid var(--ink); background: transparent; padding: 10px 15px; border-radius: 12px; cursor: pointer; display: flex; gap: 8px; align-items: center; font-weight: 700; }
+    .brand-mark { width: 43px; height: 43px; border-radius: 14px 14px 14px 4px; background: var(--ink); color: #fff; display: grid; place-items: center; transform: rotate(-3deg); box-shadow: rgb(176, 200, 224) 6px 6px 0; flex-shrink: 0; }
+    .brand strong { display: block; font-family: "Arial Black", "PingFang SC", sans-serif; letter-spacing: -0.04em; font-size: 19px; }
+    .brand span { display: block; color: var(--muted); font-size: 11px; letter-spacing: 0.16em; margin-top: 2px; }
+    nav { display: flex; gap: 7px; padding: 5px; background: rgba(255, 255, 255, 0.55); border: 1px solid var(--line); border-radius: 999px; }
+    nav button { display: flex; align-items: center; gap: 6px; border: 0; background: transparent; color: var(--ink); padding: 9px 15px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 500; text-decoration: none; transition: 0.18s; }
+    nav button.active { background: var(--ink); color: white; font-weight: 700; }
+    nav button:hover:not(.active) { background: rgba(255,255,255,0.7); }
+    .admin-btn { display: flex; align-items: center; gap: 8px; border: 1px solid var(--ink); background: transparent; color: var(--ink); padding: 10px 15px; border-radius: 12px; cursor: pointer; font-weight: 700; font-size: 13px; transition: 0.18s; }
     .admin-btn:hover { background: var(--ink); color: white; }
-    .main { padding: 24px 28px 34px; }
+    
+    main { padding: 24px 28px 34px; }
+    .view { display: none; }
+    .view.active { display: block; }
+    
+    /* Hero */
     .hero { display: flex; flex-direction: column; gap: 24px; margin: 4px 0 18px; }
-    .eyebrow { display: inline-flex; gap: 8px; align-items: center; color: var(--lake-deep); font-size: 12px; font-weight: 800; letter-spacing: .12em; }
-    .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--lake); box-shadow: 0 0 0 6px rgba(54,183,173,.13); }
-    h1 { font-family: "Arial Black", "PingFang SC", sans-serif; margin: 11px 0 7px; font-size: clamp(35px, 4.3vw, 66px); line-height: .95; letter-spacing: -.07em; }
+    .eyebrow { display: inline-flex; gap: 8px; align-items: center; color: var(--lake-deep); font-size: 12px; font-weight: 800; letter-spacing: 0.12em; }
+    .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--lake); box-shadow: rgba(54, 183, 173, 0.13) 0 0 0 6px; }
+    h1 { font-family: "Arial Black", "PingFang SC", sans-serif; margin: 11px 0 7px; font-size: clamp(35px, 4.3vw, 66px); line-height: 1.1; letter-spacing: -0.07em; }
     h1 em { color: var(--lake-deep); font-style: normal; }
-    .hero p { max-width: 610px; margin: 0; color: var(--muted); line-height: 1.65; font-size: 14px; }
-    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 480px; }
-    .metric { padding: 17px; border-top: 1px solid var(--ink); background: rgba(255,255,255,.36); }
+    .hero > div > p { max-width: 610px; color: var(--muted); line-height: 1.9; font-size: 14px; margin: 10px 0 0; }
+    .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-width: 320px; }
+    .metric { padding: 17px; border-top: 1px solid var(--ink); background: rgba(255, 255, 255, 0.36); }
     .metric b { display: block; font-family: Georgia, serif; font-size: 30px; font-weight: normal; }
     .metric span { color: var(--muted); font-size: 11px; }
-    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 385px; min-height: 665px; border: 1px solid var(--line); border-radius: 28px; background: rgba(255,253,247,.75); overflow: hidden; box-shadow: var(--shadow); }
-    .map-panel { position: relative; min-height: 665px; overflow: hidden; background:
-      linear-gradient(135deg, rgba(244,241,232,.86) 0%, rgba(244,241,232,.9) 45%, rgba(244,241,232,.86) 100%),
-      url('./assets/nanhu-plan.jpg') center center / contain no-repeat; }
-    .map-panel:before { content:""; position:absolute; inset:0; opacity:.32; background-image: radial-gradient(rgba(22,59,59,.28) .7px, transparent .8px); background-size: 12px 12px; }
-    .toolbar { position: absolute; z-index: 6; top: 18px; left: 18px; right: 18px; display: flex; gap: 9px; align-items: center; }
-    .search { flex: 1; max-width: 370px; height: 45px; border: 1px solid rgba(22,59,59,.18); border-radius: 14px; background: rgba(255,255,255,.91); display: flex; align-items: center; padding: 0 14px; gap: 10px; box-shadow: 0 10px 25px rgba(22,59,59,.08); }
-    .search input { border: 0; outline: 0; background: transparent; width: 100%; color: var(--ink); }
-    .filter { border: 1px solid rgba(22,59,59,.18); height: 45px; padding: 0 13px; background: rgba(255,255,255,.91); border-radius: 14px; display: flex; align-items: center; gap: 7px; cursor: pointer; }
-    .filter.active { background: var(--orange); color: #2b201b; border-color: var(--orange); }
-    .map-title { position: absolute; left: 25px; top: 82px; z-index: 10; background: rgba(255,253,247,.94); border: 1px solid var(--line); border-radius: 15px; padding: 11px 15px; box-shadow: 0 8px 24px rgba(22,59,59,.12); }
-    .map-title b { display: block; font-size: 13px; }
-    .map-title span { color: var(--muted); font-size: 11px; }
-    .campus { position: absolute; inset: 75px 32px 48px; transform: rotate(-3deg); }
-    .road { position: absolute; background: rgba(255,255,255,.38); border: 1px dashed rgba(22,59,59,.08); border-radius: 999px; }
-    .road.one { left: 7%; right: 4%; top: 44%; height: 76px; transform: rotate(7deg); }
-    .road.two { left: 41%; top: 4%; width: 75px; height: 90%; transform: rotate(-8deg); }
-    .lake { position:absolute; width: 30%; height: 25%; left: 34%; top: 37%; background: rgba(72,184,183,.12); border: 2px solid rgba(8,125,118,.1); border-radius: 49% 51% 60% 40% / 54% 41% 59% 46%; transform: rotate(8deg); }
-    .lake:after { content:"南湖"; position:absolute; inset:0; display:grid; place-items:center; color:rgba(8,125,118,.28); font-family:Georgia,serif; font-size:30px; letter-spacing:.2em; }
-    .building { position: absolute; border: 0; cursor: pointer; background: transparent; padding: 0; z-index: 4; transform: translate(-50%,-50%); }
-    .building-shape { width: var(--w); height: var(--h); position: relative; display: flex; align-items: center; justify-content: center; background: rgba(22,59,59,.78); border: 2px solid rgba(255,255,255,.92); border-radius: 10px 18px 10px 16px; box-shadow: 0 0 0 3px rgba(22,59,59,.22), 8px 12px 0 rgba(22,59,59,.16), 0 20px 35px rgba(22,59,59,.25); transition: .24s ease; transform: rotate(var(--r)); backdrop-filter: blur(2px); }
-    .building-shape:before { content:""; position:absolute; inset:7px; border:1px dashed rgba(255,255,255,.55); border-radius:6px 12px 6px 10px; }
-    .building-shape.L { clip-path: polygon(0 0, 36% 0, 36% 62%, 100% 62%, 100% 100%, 0 100%); }
-    .building-shape.U { clip-path: polygon(0 0, 34% 0, 34% 34%, 66% 34%, 66% 0, 100% 0, 100% 100%, 0 100%); }
-    .building-shape.custom1 { clip-path: polygon(0 0, 45% 0, 100% 35%, 100% 100%, 55% 100%, 55% 55%, 0 55%); }
-    .building:hover .building-shape, .building.selected .building-shape { transform: rotate(var(--r)) translateY(-8px) scale(1.06); box-shadow: 0 0 0 5px rgba(255,138,84,.35), 9px 16px 0 rgba(22,59,59,.2), 0 26px 40px rgba(22,59,59,.22); background: rgba(22,59,59,.9); }
-    .building.selected .building-shape { outline: 5px solid rgba(255,138,84,.32); }
-    .building.disabled { cursor: not-allowed; }
-    .building.disabled .building-shape { background: rgba(111,133,128,.42); border-color: rgba(255,255,255,.55); box-shadow: 0 0 0 2px rgba(22,59,59,.1); }
-    .building.disabled:hover .building-shape { transform: rotate(var(--r)) scale(1); box-shadow: 0 0 0 2px rgba(22,59,59,.1); }
-    .building.disabled .building-num { opacity: .75; }
-    .building-num { position: relative; font-family: Georgia,serif; font-size: 24px; color: white; text-shadow: 0 1px 0 rgba(0,0,0,.15); }
-    .building-count { position:absolute; right:-8px; top:-12px; min-width:26px; height:26px; padding:0 6px; border-radius:50%; background:var(--orange); border:2px solid #fff; display:grid; place-items:center; color:#fff; font-size:10px; font-weight:900; }
-    .tree { position:absolute; width:19px; height:19px; border-radius:50% 45% 50% 42%; background:#6f9b53; box-shadow: 8px 5px 0 #91b668, -6px 6px 0 #7faa57; z-index:2; }
-    .side { background: var(--cream); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; }
-    .side-head { padding: 23px 23px 16px; border-bottom: 1px solid var(--line); }
-    .side-kicker { color:var(--lake-deep); font-size:11px; font-weight:900; letter-spacing:.12em; }
-    .side-title { display:flex; align-items:flex-end; justify-content:space-between; gap:15px; margin-top:8px; }
-    .side-title h2 { margin:0; font-family:Georgia,serif; font-size:30px; font-weight:normal; }
-    .side-title span { color:var(--muted); font-size:12px; }
-    .tabs { display:flex; gap:6px; padding:12px 22px 0; }
-    .tabs button { flex:1; border:1px solid var(--line); background:transparent; border-radius:10px; padding:9px 8px; cursor:pointer; font-size:12px; }
-    .tabs button.active { background:var(--ink); color:white; border-color:var(--ink); }
-    .company-list { overflow:auto; padding:13px 18px 22px; flex:1; }
-    .company { border:1px solid var(--line); border-radius:16px; padding:15px; margin-bottom:10px; background:white; cursor:pointer; transition:.18s ease; }
-    .company:hover { border-color:rgba(8,125,118,.55); transform:translateX(-3px); box-shadow:7px 8px 0 rgba(54,183,173,.12); }
-    .company-top { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
-    .company h3 { margin:0; font-size:14px; line-height:1.35; }
-    .room { flex:none; font:10px monospace; color:var(--lake-deep); background:#e5f5f0; padding:5px 7px; border-radius:6px; }
-    .company p { margin:10px 0 0; color:#536966; font-size:13px; line-height:1.6; }
-    .tagrow { margin-top:11px; display:flex; flex-wrap:wrap; gap:5px; }
-    .tag { font-size:9px; padding:4px 7px; border-radius:999px; background:#edf3e7; color:#54702c; }
-    .tag.need { background:#fff0e8; color:#ad4f27; }
-    .empty { height:100%; display:grid; place-items:center; text-align:center; color:var(--muted); padding:35px; }
-    .empty b { display:block; color:var(--ink); font-size:16px; margin:10px 0 5px; }
-    .modal-backdrop { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:min(680px,calc(100vw - 40px)); max-height:90vh; background:var(--cream); border-radius:25px; box-shadow:0 0 0 9999px rgba(9,36,35,.58), 0 35px 100px rgba(0,0,0,.3); z-index:70; display:block; overflow:auto; }
-    .modal-head { position:sticky; top:0; z-index:5; padding:24px 26px 18px; display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--line); background:var(--cream); }
-    .modal-head h2 { margin:0; font-family:Georgia,serif; font-size:27px; }
-    .icon-btn { border:0; background:var(--ink); color:#fff; width:36px; height:36px; border-radius:50%; cursor:pointer; display:grid; place-items:center; flex:none; }
-    .field { display:flex; flex-direction:column; gap:7px; }
-    .field label { font-size:13px; font-weight:700; color:var(--ink); }
-    .field input,.field select,.field textarea { width:100%; border:1px solid var(--line); border-radius:11px; background:white; padding:11px 12px; outline:0; color:var(--ink); font-size:14px; line-height:1.5; }
-    .field textarea { min-height:90px; resize:vertical; }
-    .field input:focus,.field select:focus,.field textarea:focus { border-color:var(--lake); box-shadow:0 0 0 3px rgba(54,183,173,.12); }
-    .form-actions { grid-column:1/-1; display:flex; justify-content:flex-end; gap:9px; margin-top:5px; }
-    .btn { border:1px solid var(--line); background:white; padding:11px 17px; border-radius:11px; cursor:pointer; font-weight:700; color:var(--ink); display:inline-flex; align-items:center; justify-content:center; gap:6px; }
-    .btn.primary { background:var(--orange); border-color:var(--orange); color:#342219; }
-    .detail { width:min(690px,100%); }
-    .detail-body { padding:24px 27px 28px; }
-    .detail-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
-    .meta-pill { padding:7px 10px; border-radius:9px; background:#edf4ee; font-size:11px; }
-    .info-block { padding:17px; border-radius:15px; margin-top:12px; border:1px solid var(--line); }
-    .info-block.ability { background:#e9f7f1; }
-    .info-block.need { background:#fff1e8; }
-    .info-block label { display:flex; gap:7px; align-items:center; font-size:11px; font-weight:900; letter-spacing:.08em; margin-bottom:8px; }
-    .info-block p { margin:0; line-height:1.7; font-size:14px; }
-    .toast { position:fixed; right:25px; bottom:25px; z-index:90; background:var(--ink); color:white; padding:14px 18px; border-radius:13px; box-shadow:var(--shadow); display:flex; align-items:center; gap:9px; }
-    .page-toolbar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:22px; }
-    .page-search { flex:1; min-width:260px; height:45px; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.75); display:flex; align-items:center; padding:0 14px; gap:10px; }
-    .page-search input { border:0; outline:0; background:transparent; width:100%; color:var(--ink); }
-    .page-filters { display:flex; gap:7px; padding:5px; background:rgba(255,255,255,.55); border:1px solid var(--line); border-radius:999px; }
-    .page-filters button { border:0; background:transparent; padding:9px 15px; border-radius:999px; cursor:pointer; font-size:13px; display:flex; align-items:center; gap:6px; }
-    .page-filters button.active { background:var(--ink); color:white; }
-    .page-toolbar select { height:45px; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.75); padding:0 12px; color:var(--ink); outline:0; }
-    .card-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:16px; }
-    .resource-card { border:1px solid var(--line); border-radius:18px; padding:18px; background:white; transition:.18s ease; }
-    .resource-card:hover { border-color:rgba(8,125,118,.55); transform:translateY(-3px); box-shadow:0 14px 30px rgba(22,59,59,.1); }
-    .resource-card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-    .resource-kind { font-size:10px; font-weight:900; padding:5px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:.05em; }
-    .resource-kind.supply { background:#e5f5f0; color:#087d76; }
-    .resource-kind.demand { background:#fff0e8; color:#ad4f27; }
-    .resource-room { font:10px monospace; color:var(--muted); background:#f4f1e8; padding:5px 7px; border-radius:6px; }
-    .resource-card h3 { margin:0; font-size:15px; cursor:pointer; }
-    .resource-card h3:hover { color:var(--lake-deep); }
-    .resource-card p { margin:10px 0 0; color:#536966; font-size:12px; line-height:1.6; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
-    .resource-actions { display:flex; gap:8px; margin-top:14px; }
-    .resource-actions .btn { padding:9px 13px; font-size:12px; }
-    .tag-cloud { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-bottom:26px; }
-    .cloud-section { border:1px solid var(--line); border-radius:20px; padding:20px; background:rgba(255,253,247,.75); }
-    .cloud-section h3 { margin:0 0 14px; font-size:13px; display:flex; align-items:center; gap:7px; color:var(--ink); }
-    .cloud { display:flex; flex-wrap:wrap; gap:8px; }
-    .cloud button { border:1px solid var(--line); background:white; padding:8px 12px; border-radius:999px; cursor:pointer; font-size:12px; display:flex; align-items:center; gap:5px; transition:.15s ease; }
-    .cloud button:hover { border-color:var(--lake); }
-    .cloud button.active { background:var(--ink); color:white; border-color:var(--ink); }
-    .cloud button span { color:var(--muted); font-size:10px; }
-    .cloud button.active span { color:rgba(255,255,255,.75); }
-    .active-tag { background:var(--ink); color:white; border-color:var(--ink); display:flex; align-items:center; gap:6px; }
-    .empty.wide { grid-column:1/-1; min-height:220px; }
-    .form-modal { width:min(680px,100%); min-height:560px; max-height:90vh; overflow:auto; }
-    .modal-sub { margin:0; padding:6px 26px 0; color:var(--muted); font-size:13px; }
-    .new-form { display:flex; flex-direction:column; padding:18px 26px 27px; gap:18px; }
-    .form-section { border:1px solid var(--line); border-radius:20px; padding:18px 20px 20px; background:rgba(255,255,255,.55); flex-shrink:0; }
-    .section-title { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:900; margin-bottom:14px; color:var(--ink); }
-    .section-title .hint { color:var(--muted); font-weight:500; margin-left:4px; }
-    .form-row { display:grid; grid-template-columns:1fr; gap:14px; margin-bottom:14px; }
-    .form-row.two { grid-template-columns:1fr 1fr; }
-    .required { color:#d14d3a; }
-    .field input.error,.field textarea.error,.field select.error { border-color:#d14d3a; }
-    .error-msg { font-size:11px; color:#d14d3a; margin-top:-3px; }
-    .supply-label { color:#087d76; }
-    .demand-label { color:#ad4f27; }
-    .update-type { display:flex; flex-wrap:wrap; gap:10px; }
-    .update-type button { flex:1; min-width:120px; border:1px solid var(--line); background:white; border-radius:14px; padding:12px; text-align:left; cursor:pointer; transition:.15s ease; display:flex; flex-direction:column; justify-content:center; min-height:64px; }
-    .update-type button.active { border-color:var(--lake); background:#e9f7f1; }
-    .update-type button b { display:block; font-size:12px; margin-bottom:3px; }
-    .update-type button span { display:block; font-size:10px; color:var(--muted); }
-    .success { text-align:center; padding:42px 34px 38px; }
-    .success-icon { width:72px; height:72px; border-radius:50%; background:#e5f5f0; color:#087d76; display:grid; place-items:center; margin:0 auto 18px; }
-    .success h2 { margin:0 0 10px; font-family:Georgia,serif; font-size:26px; }
-    .success p { margin:0; color:var(--muted); font-size:14px; }
-    .success p.sub { font-size:12px; margin-top:6px; margin-bottom:22px; }
-    .summary { border:1px solid var(--line); border-radius:16px; padding:16px; text-align:left; background:rgba(255,255,255,.6); margin-bottom:24px; }
-    .summary-title { font-size:10px; color:var(--muted); font-weight:900; letter-spacing:.08em; margin-bottom:10px; }
-    .summary-row { display:flex; gap:9px; font-size:12px; color:var(--ink); margin-top:7px; line-height:1.5; }
-    .summary-row span { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-    .spinner { display:inline-block; width:14px; height:14px; border:2px solid rgba(255,255,255,.35); border-top-color:white; border-radius:50%; animation:spin 1s linear infinite; }
-    @keyframes spin { to { transform:rotate(360deg); } }
-    @media (max-width: 1050px) { .workspace{grid-template-columns:1fr 330px}.hero{grid-template-columns:1fr}.metrics{max-width:480px}.campus{inset:80px 20px 50px}.main{padding:20px}.tag-cloud{grid-template-columns:1fr} }
-    @media (max-width: 780px) { .topbar{padding:0 16px}.nav{display:none}.main{padding:15px}.hero{margin-top:14px}.metrics{grid-template-columns:repeat(3,1fr)}.workspace{display:block}.map-panel{min-height:570px}.side{min-height:520px;border-left:0;border-top:1px solid var(--line)}.toolbar{flex-wrap:wrap}.search{max-width:none;min-width:75%}.building-shape{width:calc(var(--w)*.8);height:calc(var(--h)*.8)}.form{grid-template-columns:1fr}.field.full,.form-actions{grid-column:auto}.page-toolbar{flex-direction:column;align-items:stretch}.page-filters{overflow:auto}.card-grid{grid-template-columns:1fr}.form-row.two{grid-template-columns:1fr}.update-type button{min-width:100%;min-height:52px}.success{padding:34px 22px} }
+    
+    /* Map section */
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 385px; height: 680px; border: 1px solid var(--line); border-radius: 28px; background: var(--panel-bg); overflow: hidden; box-shadow: var(--shadow); }
+    .map-area { position: relative; overflow: hidden; background: var(--map-bg); cursor: default; }
+    .map-bg { position: absolute; inset: 60px 0 0; width: 100%; height: calc(100% - 60px); object-fit: contain; object-position: center center; pointer-events: none; user-select: none; z-index: 1; }
+    .map-toolbar { position: absolute; left: 16px; right: 16px; top: 14px; z-index: 10; display: flex; align-items: center; gap: 10px; }
+    .map-info { background: rgba(255, 255, 255, 0.88); border: 1px solid rgba(91, 141, 184, 0.2); border-radius: 13px; padding: 9px 14px; box-shadow: rgba(91, 141, 184, 0.14) 0 4px 18px; backdrop-filter: blur(10px); flex-shrink: 0; }
+    .map-info b { display: block; font-size: 12px; color: var(--ink); }
+    .map-info span { color: var(--muted); font-size: 10px; }
+    .map-search { flex: 1; height: 42px; border: 1px solid rgba(91, 141, 184, 0.28); border-radius: 13px; background: rgba(255, 255, 255, 0.88); display: flex; align-items: center; padding: 0 13px; gap: 9px; box-shadow: rgba(91, 141, 184, 0.12) 0 4px 16px; backdrop-filter: blur(8px); }
+    .map-search input { border: 0; outline: 0; background: transparent; width: 100%; color: var(--ink); font-size: 13px; }
+    .map-filters { position: absolute; left: 16px; bottom: 16px; z-index: 10; display: flex; gap: 8px; }
+    .map-filters button { height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(91, 141, 184, 0.28); background: rgba(255,255,255,0.88); color: var(--ink); font-size: 12px; cursor: pointer; transition: 0.18s; }
+    .map-filters button.active { background: var(--ink); color: white; border-color: var(--ink); }
+    
+    .marker-layer { position: absolute; left: 0; top: 41.2949px; width: 992px; height: 595.41px; z-index: 5; }
+    .marker { position: absolute; transform: translate(-50%, -50%); border: 0; background: transparent; padding: 0; transition: opacity 0.22s; z-index: 6; }
+    .marker:hover:not([disabled]) { opacity: 1 !important; }
+    .marker-pin { position: relative; display: inline-flex; flex-direction: column; align-items: center; filter: drop-shadow(rgba(0, 0, 0, 0.35) 0 4px 10px) drop-shadow(rgba(21, 101, 192, 0.35) 0 2px 5px); }
+    .marker-badge { position: absolute; right: -7px; top: -7px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 999px; background: linear-gradient(135deg, rgb(255, 154, 26), rgb(232, 93, 0)); border: 2.5px solid rgba(255, 255, 255, 0.98); display: grid; place-items: center; color: rgb(255, 255, 255); font-size: 11px; font-weight: 900; box-shadow: rgba(220, 90, 0, 0.45) 0 2px 8px; line-height: 1; transition: 0.22s; transform: scale(1); letter-spacing: -0.02em; }
+    .marker.selected .marker-pin { filter: drop-shadow(rgba(255, 154, 26, 0.6) 0 0 12px); }
+    
+    /* Sidebar */
+    aside { background: var(--cream); border-left: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+    .side-header { padding: 23px 23px 16px; border-bottom: 1px solid var(--line); }
+    .side-meta { display: flex; align-items: center; justify-content: space-between; }
+    .side-meta span { color: var(--lake-deep); font-size: 11px; font-weight: 900; letter-spacing: 0.12em; }
+    .side-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 800; color: var(--lake-deep); background: rgb(229, 245, 240); padding: 4px 9px; border-radius: 999px; }
+    .side-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 15px; margin-top: 8px; }
+    .side-title h2 { margin: 0; font-family: "Arial Black", "PingFang SC", sans-serif; font-size: 26px; font-weight: 900; letter-spacing: -0.04em; }
+    .side-title span { color: var(--muted); font-size: 12px; }
+    .company-list { overflow: auto; padding: 13px 18px 22px; flex: 1; }
+    .company-card { border: 1px solid var(--line); border-radius: 16px; padding: 15px; margin-bottom: 10px; background: white; cursor: pointer; transition: 0.18s; }
+    .company-card:hover { border-color: rgba(8, 125, 118, 0.55); transform: translateX(-3px); box-shadow: 7px 8px 0 rgba(54, 183, 173, 0.12); }
+    .company-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .company-head h3 { margin: 0; font-size: 15px; line-height: 1.35; font-weight: 700; }
+    .company-room { font: 10px monospace; color: var(--muted); background: rgb(244, 241, 232); padding: 5px 7px; border-radius: 6px; flex-shrink: 0; }
+    .company-tags { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+    .tag { font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 999px; }
+    .tag.supply { background: rgb(229, 245, 240); color: rgb(8, 125, 118); }
+    .tag.demand { background: rgb(255, 240, 232); color: rgb(173, 79, 39); }
+    .company-card p { margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
+    
+    /* List view */
+    .page-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+    .page-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .page-filters button { height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: white; color: var(--ink); font-size: 13px; cursor: pointer; transition: 0.18s; }
+    .page-filters button.active { background: var(--ink); color: white; border-color: var(--ink); }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px; }
+    
+    /* Submit view */
+    .form-container { max-width: 720px; margin: 0 auto; background: var(--cream); border: 1px solid var(--line); border-radius: 24px; padding: 28px 32px 36px; }
+    .form-container h2 { margin: 0 0 8px; font-family: "Arial Black", "PingFang SC", sans-serif; font-size: 24px; }
+    .form-container > p { margin: 0 0 24px; color: var(--muted); font-size: 14px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { font-size: 12px; font-weight: 700; color: var(--ink); }
+    .field input, .field textarea, .field select { border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; background: white; font-size: 14px; color: var(--ink); outline: none; }
+    .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--lake); }
+    .field textarea { min-height: 90px; resize: vertical; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+    .btn { padding: 11px 18px; border-radius: 12px; border: 1px solid var(--line); background: white; color: var(--ink); font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.18s; }
+    .btn.primary { background: var(--ink); color: white; border-color: var(--ink); }
+    .btn.primary:hover { opacity: 0.9; }
+    .success { text-align: center; padding: 60px 20px; }
+    .success h3 { font-size: 22px; margin: 0 0 10px; }
+    .success p { color: var(--muted); margin: 0; }
+    
+    @media (max-width: 900px) {
+      header { padding: 0 16px; }
+      nav { display: none; }
+      main { padding: 16px; }
+      .workspace { grid-template-columns: 1fr; height: auto; }
+      .map-area { height: 520px; }
+      aside { border-left: 0; border-top: 1px solid var(--line); max-height: 45vh; }
+      .marker-layer { transform: scale(0.75); transform-origin: top left; }
+      .form-row { grid-template-columns: 1fr; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <div id="root"></div>
-
-  <script type="text/babel">
-    const { useEffect, useMemo, useState } = React;
-
-    const enterpriseData = [
-      [1,"千机变(杭州)科技有限公司","4-202","王玉松","以自主研发算法为核心竞争力，打造承载 300+ 自研算法的一站式 AI 算法超市底座。","市场拓展需求、资源扶持需求、产业合作需求"],
-      [2,"杭州龙航智远无人机科技有限公司","11-202-4","吴琼","全军指定的单一来源无人机供应商","对接资本，资金用于扩建标准化量产基地"],
-      [3,"浙江兔行科技有限公司","9-215-1","卜鸿鸣","核心业务聚焦于无人机赛事的组织与运营","对接高校资源，加深与杭州周边高校的合作"],
-      [4,"华翌智能装备（杭州）有限公司","3-401-2&5","姚易","自研 AI AOI 工业检测软件全套算法与技术架构","需行业渠道、政企合作入口、行业展会资源"],
-      [5,"杭州翎视科技有限公司","10-308","汪磊磊","高层住宅、商业综合体、历史建筑的外立面安全检测及测量","客户资源：高层住宅小区；技术资源：自动航线规划算法"],
-      [6,"浙江星穹智航科技有限公司","10-410","庄庆玉","高空清洗、CAAC 培训","B 端无人机清洗客户资源、C 端培训学员资源"],
-      [7,"杭州脸脸会网络技术有限公司","3-301","赵海斌","AI 智能导览、AI 客服、数字人、智慧场馆与智慧景区解决方案","对接景区、科技馆、博物馆、商业综合体等应用场景"],
-      [8,"杭州微鸿科技有限公司","10-404、405","张丹","成熟的飞控平台能力体系，覆盖飞行控制、感知融合、任务调度等核心环节","低空物流、巡检、低空交通、应急保障等实际应用场景"],
-      [9,"杭州万升航控智能科技有限公司","10-503","曹志强","专注构建无人机“大脑”，通过地理空间管理与核心业务系统提供能力","低空经济行业合作伙伴"],
-      [10,"杭州团簇科技有限公司","10-411","王露芸 · 13989329103","具身智能与多模态感知为底座，自研空天地一体化智慧巡检管控系统","面向公安、城管、水利、城建等政府部门寻求合作"],
-      [11,"杭州标彰电子科技有限公司","10-302","李攀峰","测控系统、数据采集卡、窄脉冲发生器、高速信号发生器等产品","高校、研究所与量子计算商业公司客户资源"],
-      [12,"杭州星智创享科技有限公司","9-222","温博桐","CC80 非接触式清洁无人机系统","行业探索客户与关注早期项目的投资人"],
-      [13,"全域通用航空（杭州）有限公司","10-101","李宏志","机载电脑、云服务平台、大数据产品与数字展厅","政务、国企对接渠道"],
-      [14,"浙江瀚为科技有限公司","6#","陈志远","AI 算力中心用高安全、高功率电池及直流侧供配电解决方案","电源设备厂、数据中心 EPC、设计院、海外渠道代理商"],
-      [15,"圣翔（杭州）航空科技有限公司","10-301","葛龄雅","全品类低空起降装备研发设计、生产制造、安装运维能力","低空应用场景开放、政策试点与政府基建采购项目"],
-      [16,"重隼智能科技（浙江）有限公司","8-401","马丽娜","自主网捕、超低温冷链运输、自主迅时建模无人机产品","客户资源、行业渠道"],
-      [17,"杭州鲣翼科技有限公司","11-305","姚小明","水陆两栖多用途倾转动力升力体无人飞行器整机研发、生产和应用","无人机应用技术合作、市场与产品销售合作"],
-      [18,"浙江十子鹰飞行科技有限公司","8-301","周吉玲","校园科技体育兴趣教学一站式校企合作解决方案","院校、渠道、生源、赛事活动与产业生态合作资源"],
-      [19,"浙江同创空间技术有限公司","8-402","党乐晨","CAAC 无人机考证全流程培训服务","院校与行业企业渠道、学员招募合作"],
-      [20,"军创（杭州）空间技术有限公司","8-403","党乐晨","无人机飞手资源库与业务需求对接渠道，具备智能匹配平台开发运维能力","品牌曝光宣传"],
-      [21,"杭州纵迹云科技有限公司","15-302","孟意博","工业级大载重无人机、全自动巡检无人机与机巢系统","市场拓展、生态合作、技术与研发资源"],
-      [22,"杭州昊舜视讯科技有限公司","3-201","蔡赟","无人机全自动机场系列产品、智能管控平台及专业飞手团队","产业链技术协同伙伴、市场渠道与集成伙伴"],
-      [23,"杭州飞算科技有限公司","10-209","付钰","长航时复合翼无人机、低空反制装备与云端智能管控平台","政企单位、环保测绘客户与产业链配套企业"],
-      [24,"飞手杭州低空经济发展有限公司","9-304","王泽玺","协助企业进行巡检、测试与城市内各类空域审批","更多供应链支撑外贸体系"],
-      [25,"浙江鑫核聚能科技有限公司","10-504~507","盛秋红","射频氮化镓工艺的超宽带功率放大器芯片设计技术","企业形象赋能与融资资源"],
-      [26,"城飞智能（杭州）科技有限公司","4-406","王婷","低空智能起降场全周期一体化规划、建设和运营解决方案","产业基金、科创投融资机构"],
-      [27,"泊航科技有限公司","9-411","王阳","无人机整机设计、飞控软件平台与嵌入式系统全栈解决方案","低空物流、电网巡检、应急救援真实应用场景"],
-      [28,"杭州九数商务咨询有限公司","9-303","道九","AIGC 全栈内容生成能力，覆盖视频、图像、文案与数字人","中小品牌企业、文旅及地方项目客户资源"],
-      [29,"墨悉科技有限公司","10-510","黄峰明","具身智能大脑与多智能体协同系统","园区、安防警务、应急救援、能源巡检等示范场景"],
-      [30,"杭州零储科技有限公司","11-309-2","庞亚洲","户用、工商、大储全系列产品矩阵与垂直整合制造能力","优质电芯、PCS 及温控系统供应商"],
-      [31,"杭州启航线科技有限公司","10-201","姜丽媛","全栈式低空操作系统，覆盖监管、飞行准入、AI 空域分配与数据治理","各地政府低空管理部门与区域试点场景"],
-      [32,"杭州艾铂特智能科技有限公司","11-207","孙宇鹏","具身智能工业机器人及智能装备交付能力","制造业客户、销售网络及渠道代理商"],
-      [33,"杭州零到一工业设计有限公司","9-322","李文凯","产品策略、外观、结构、CMF、品牌及落地全流程设计服务","智能制造、消费电子、医疗器械、机器人等设计需求"],
-      [34,"杭州慢伴文化创意有限公司","9-321","于丹","生活方式品牌打造、香氛产品创新与供应链整合","政府采购、企业福利、商务礼赠、文旅文创客户"],
-      [35,"浙江蔚然长风智能科技有限公司","9-313","倪晓春","AI 情感边缘计算与筛查、预警、干预、管理全链路心理服务","中小学、职业院校、监狱与头部康养机构试点"],
-      [36,"中科祥云低空科技（浙江）有限公司","15-303","章真祥","智慧巡检与低空物流配送一体化解决方案","文旅景区与有智慧巡检需求的政企资源"],
-      [37,"杭州归一智能科技有限公司","10-509","冯素琴","AI 超级产线营销内容工程化平台与 AI 影视短漫剧平台","漫剧厂牌、发行投流团队、MCN 与出海内容团队"],
-      [38,"杭州凡章科技有限公司","2-204","章晓龙","数字化仓储管理系统 WMS 与自动化仓储控制系统 WCS","仓储数字化和智能化软件需求客户"],
-      [39,"杭州矩正医疗科技有限公司","5-301","郑楚楚","球囊扩张导管、血管封堵止血系统等介入医疗产品设计制造能力","渠道拓展、战略合作与学术推广资源"],
-      [40,"杭州思变笃行管理科技有限公司","4-205","李秀红","企业沙盘模拟培训、AI 培训咨询应用与定制化培训解决方案","有企业内训需求的大中型企业客户"],
-      [41,"杭州云酷智能科技有限公司","10-待确认","胡岩秀","数据中心、通信基站、储能等多场景一体化液冷解决方案","全国及国际市场资源、液冷产业链战略合作"],
-      [42,"赞塔（杭州）科技有限公司","8-201","李敏婕","公安专用智能体软硬件产品矩阵","公安客户及公安行业渠道商、集成商"],
-      [43,"杭州紫深智测技术有限公司","11-505、103","汤卓群","环境可靠性、EMC、电气安全检测认证及 VeriFLY 数据分析平台","低空主机厂研发验证、认证与适航服务需求"],
-      [44,"埃法智造（杭州）人工智能科技有限公司","11-307","魏清松","ANIMA 人造电子生命平台与模块化 AI 桌面机器人硬件","客户、渠道、产业资源、市场推广和行业展会"],
-      [45,"集光年（杭州）科技有限公司","9-206","王磊","企业品牌内容战略与 AIGC 内容制作服务","有内容制作需求的品牌企业"],
-      [46,"杭州竞速动力科技有限公司","11-303","李翔","动力控制系统研发与产品概念落地，深耕汽车、摩托与航空动力系统","有动力、载重与续航需求的无人机或机器人公司"]
-    ].map(([id,name,address,contact,ability,need]) => ({
-      id,name,address,contact,ability,need,
-      building: (address.match(/^\d+/)||['其他'])[0]
-    }));
-
-    const layout = {
-      "1":  {x:58,y:44,w:62,h:58,r:"-10deg",c:"#6b8a9c",open:false},
-      "2":  {x:46,y:54,w:50,h:42,r:"-6deg",c:"#79aa9c",open:true},
-      "3":  {x:28,y:60,w:92,h:48,r:"-4deg",c:"#36a9a1",open:true},
-      "4":  {x:28,y:46,w:92,h:46,r:"-3deg",c:"#7fa963",open:true},
-      "5":  {x:28,y:34,w:82,h:40,r:"-2deg",c:"#d09e6c",open:true},
-      "6":  {x:28,y:24,w:82,h:36,r:"-1deg",c:"#4b9eb0",open:true},
-      "7":  {x:42,y:14,w:68,h:38,r:"8deg",c:"#8a9b8a",open:false},
-      "8":  {x:58,y:28,w:88,h:52,r:"-10deg",c:"#a58c7d",open:true},
-      "9":  {x:54,y:32,w:82,h:46,r:"-5deg",c:"#65a96b",open:true},
-      "10": {x:74,y:60,w:72,h:42,r:"-16deg",c:"#2e8fa4",open:true},
-      "11": {x:60,y:72,w:88,h:40,r:"-8deg",c:"#a68e80",open:true},
-      "12": {x:44,y:70,w:52,h:32,r:"-12deg",c:"#9a9a8a",open:false},
-      "13": {x:24,y:78,w:88,h:42,r:"-6deg",c:"#8a9a8a",open:false},
-      "14": {x:40,y:88,w:72,h:32,r:"-4deg",c:"#8a9a8a",open:false},
-      "15": {x:56,y:86,w:78,h:36,r:"-8deg",c:"#4f9d72",open:true},
-      "16": {x:58,y:94,w:68,h:32,r:"-12deg",c:"#8a9a8a",open:false}
-    };
-
-    const keywords = {
-      ability: ["无人机","AI","巡检","培训","设计","平台","智能制造","低空","检测","AIGC"],
-      need: ["客户资源","应用场景","融资","渠道","政企合作","院校","产业合作","供应链","市场拓展"]
-    };
-
-    function Icon({name,size=16}) {
-      useEffect(() => { if(window.lucide) window.lucide.createIcons(); });
-      return <i data-lucide={name} style={{width:size,height:size}} />;
-    }
-
-    function tagsFor(text, type) {
-      return keywords[type].filter(k => text.includes(k)).slice(0,3);
-    }
-
-    function MapPage({onOpenForm,setToast,onOpenEnterprise}){
-      const [selectedBuilding,setSelectedBuilding] = useState("6");
-      const [search,setSearch] = useState("");
-      const [typeFilter,setTypeFilter] = useState("all");
-      const [notOpenBuilding,setNotOpenBuilding] = useState(null);
-
-      const buildings = useMemo(() => Object.keys(layout).map(no => ({
-        no,
-        count: enterpriseData.filter(e=>e.building===no).length,
-        open: layout[no].open
-      })),[]);
-
-      const companies = useMemo(() => enterpriseData.filter(e => {
-        const inBuilding = e.building === selectedBuilding;
-        const hit = !search || `${e.name}${e.ability}${e.need}`.toLowerCase().includes(search.toLowerCase());
-        const typeHit = typeFilter === "all" || (typeFilter === "supply" ? e.ability : e.need).length > 8;
-        return inBuilding && hit && typeHit;
-      }),[selectedBuilding,search,typeFilter]);
-
-      return <>
-        <main className="main">
-          <section className="hero">
-            <div><div className="eyebrow"><span className="pulse"/> 园区能力实时索引 · 2026</div><h1>让每一栋楼，<br/>成为一张<em>连接入口</em></h1><p>从楼栋进入企业档案，快速发现园区内正在寻找的资源与可开放的技术能力，让合作不再止于“住在隔壁”。</p></div>
-            <div className="metrics"><div className="metric"><b>46</b><span>已收录企业</span></div><div className="metric"><b>16</b><span>楼栋节点</span></div></div>
-          </section>
-
-          <section className="workspace">
-            <div className="map-panel">
-              <div className="toolbar">
-                <div className="search"><Icon name="search"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="搜索企业、技术能力或资源需求…" /></div>
-                <div className="page-filters" style={{background:'rgba(255,255,255,.91)',border:'1px solid rgba(22,59,59,.18)',borderRadius:14,padding:4}}>
-                  <button className={typeFilter==='all'?'active':''} onClick={()=>setTypeFilter('all')}>全部</button>
-                  <button className={typeFilter==='supply'?'active':''} onClick={()=>setTypeFilter('supply')}><Icon name="sparkles" size={14}/> 可提供</button>
-                  <button className={typeFilter==='demand'?'active':''} onClick={()=>setTypeFilter('demand')}><Icon name="link" size={14}/> 想链接</button>
-                </div>
-              </div>
-              <div className="campus">
-                {buildings.map(({no,count,open}) => {
-                  const p=layout[no];
-                  return (
-                    <button
-                      key={no}
-                      className={`building ${selectedBuilding===no?'selected':''} ${open?'':'disabled'}`}
-                      style={{left:`${p.x}%`,top:`${p.y}%`,'--w':`${p.w}px`,'--h':`${p.h}px`,'--r':p.r,'--c':p.c}}
-                      onClick={()=>open?setSelectedBuilding(no):setNotOpenBuilding(no)}
-                      aria-label={`${no}号楼，${open?count+'家企业':'暂未开放'}`}
-                    >
-                      <span className={`building-shape ${p.shape || ''}`}>
-                        <span className="building-num">{no}<small style={{fontSize:12}}>＃</small></span>
-                        {open && count > 0 && <span className="building-count">{count}</span>}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="map-title"><b>南湖未来科学园 · 企业分布总览</b><span>点击楼栋，打开企业能力档案</span></div>
-            </div>
-
-            <aside className="side">
-              <div className="side-head"><div className="side-kicker">BUILDING DOSSIER</div><div className="side-title"><h2>{`${selectedBuilding} 号楼`}</h2><span>{layout[selectedBuilding].open ? '' : '暂未开放'}</span></div></div>
-              <div className="company-list">
-                {layout[selectedBuilding].open ? (companies.length ? companies.map(e=><article className="company" key={e.id} onClick={()=>onOpenEnterprise(e)}>
-                  <div className="company-top"><h3>{e.name}</h3><span className="room">{e.address}</span></div>
-                  <p style={{marginBottom:6}}><strong style={{color:'var(--lake-deep)'}}>可提供：</strong>{e.ability}</p>
-                  <p><strong style={{color:'var(--orange)'}}>想链接：</strong>{e.need}</p>
-                  <div className="tagrow">{tagsFor(e.ability,'ability').slice(0,2).map(t=><span className="tag" key={t}>{t}</span>)}{tagsFor(e.need,'need').slice(0,2).map(t=><span className="tag need" key={t}>{t}</span>)}</div>
-                </article>) : <div className="empty"><div><Icon name="telescope" size={30}/><b>暂未找到匹配企业</b><span>试试清空搜索或切换筛选条件</span></div></div>) : <div className="empty"><div><Icon name="lock" size={30}/><b>该楼栋暂未开放</b><span>企业入驻后将同步展示能力档案</span></div></div>}
-              </div>
-            </aside>
-          </section>
-        </main>
-        {notOpenBuilding && <NotOpenModal no={notOpenBuilding} onClose={()=>setNotOpenBuilding(null)} onOpenForm={()=>{setNotOpenBuilding(null); onOpenForm();}} />}
-      </>;
-    }
-
-    function NotOpenModal({no,onClose,onOpenForm}){
-      return <div className="modal-backdrop" style={{width:'min(420px,calc(100vw - 40px))',padding:'34px 30px 28px',textAlign:'center'}} onMouseDown={e=>e.target===e.currentTarget&&onClose()}>
-        <div style={{width:64,height:64,borderRadius:'50%',background:'#e5f5f0',color:'#087d76',display:'grid',placeItems:'center',margin:'0 auto 16px'}}>
-          <Icon name="building-2" size={28}/>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="brand-mark">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8c0 4.5-6 9-6 9s-6-4.5-6-9a6 6 0 0 1 12 0"></path><circle cx="12" cy="8" r="2"></circle><path d="M8.835 14H5a1 1 0 0 0-.9.7l-2 6c-.1.1-.1.2-.1.3 0 .6.4 1 1 1h18c.6 0 1-.4 1-1 0-.1 0-.2-.1-.3l-2-6a1 1 0 0 0-.9-.7h-3.835"></path></svg>
         </div>
-        <h3 style={{margin:'0 0 8px',fontFamily:'Georgia,serif',fontSize:22,color:'var(--ink)'}}>{no} 号楼暂未开放</h3>
-        <p style={{margin:'0 0 22px',color:'var(--muted)',fontSize:14,lineHeight:1.6}}>企业入驻后将同步展示能力档案。如您有入驻意向，可留下企业信息，运营人员将第一时间与您对接。</p>
-        <div style={{display:'flex',justifyContent:'center',gap:10}}>
-          <button className="btn" onClick={onClose}>知道了</button>
-          <button className="btn primary" onClick={()=>{window.open('https://www.qinspace.com/space-lease-full/requirement-form-page/815bd5212746a9307cf163d91150c2aa','_blank');onClose();}}>留下入驻意向</button>
+        <div>
+          <strong>南湖技术地图</strong>
+          <span>NANHU TECH ATLAS</span>
         </div>
-      </div>;
-    }
-
-    function ResourceSquare({setToast,onOpenEnterprise}){
-      const [type,setType] = useState("all");
-      const [category,setCategory] = useState("all");
-      const [search,setSearch] = useState("");
-
-      const categories = ["低空经济 / 无人机", "人工智能", "智能制造", "数字内容", "生命健康", "企业服务"];
-      const items = useMemo(() => {
-        const supply = enterpriseData.map(e => ({...e, kind:'supply', title:'可提供', content:e.ability, tags:tagsFor(e.ability,'ability')}));
-        const demand = enterpriseData.map(e => ({...e, kind:'demand', title:'想链接', content:e.need, tags:tagsFor(e.need,'need')}));
-        return type === 'supply' ? supply : type === 'demand' ? demand : [...supply, ...demand];
-      },[type]);
-
-      const filtered = useMemo(() => items.filter(item => {
-        const hit = !search || `${item.name}${item.content}${item.title}`.toLowerCase().includes(search.toLowerCase());
-        const catHit = category === 'all' || item.tags.includes(category.split(' / ')[0]) || item.tags.some(t => category.includes(t));
-        return hit && catHit;
-      }),[items,search,category]);
-
-      return <main className="main">
-        <section className="hero">
-          <div><div className="eyebrow"><span className="pulse"/> 园区供需撮合 · 2026</div><h1>把能力放上来，<br/>让<em>合作发生</em></h1><p>发布企业可开放的技术、产品或资源需求，快速找到园区里能接得住的合作伙伴。</p></div>
-          <div className="metrics"><div className="metric"><b>46</b><span>供应能力</span></div><div className="metric"><b>46</b><span>链接需求</span></div></div>
-        </section>
-        <section className="page-toolbar">
-          <div className="page-search"><Icon name="search"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="搜索能力、需求或企业名称…"/></div>
-          <div className="page-filters">
-            <button className={type==='all'?'active':''} onClick={()=>setType('all')}>全部</button>
-            <button className={type==='supply'?'active':''} onClick={()=>setType('supply')}><Icon name="sparkles" size={14}/> 可提供</button>
-            <button className={type==='demand'?'active':''} onClick={()=>setType('demand')}><Icon name="link" size={14}/> 想链接</button>
+      </div>
+      <nav>
+        <button class="active" onclick="showView('map')" data-view="map">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"></polygon><line x1="9" x2="9" y1="3" y2="18"></line><line x1="15" x2="15" y1="6" y2="21"></line></svg>
+          园区全览
+        </button>
+        <button onclick="showView('list')" data-view="list">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
+          资源广场
+        </button>
+        <button onclick="showView('submit')" data-view="submit">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path><path d="M7 7h.01"></path></svg>
+          信息更新
+        </button>
+      </nav>
+      <button class="admin-btn" onclick="showView('submit')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+        提交企业信息
+      </button>
+    </header>
+    
+    <main>
+      <!-- Map View -->
+      <section id="view-map" class="view active">
+        <div class="hero">
+          <div>
+            <div class="eyebrow">园区能力实时索引 · 2026</div>
+            <h1>让每一栋楼<br>成为一张<em>产业入口</em></h1>
+            <p>从楼栋进入企业档案，快速发现园区内正在寻找的资源与可开放的技术能力。</p>
           </div>
-          <select value={category} onChange={e=>setCategory(e.target.value)}>
-            <option value="all">全部方向</option>
-            {categories.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
-        </section>
-        <section className="card-grid">
-          {filtered.length ? filtered.map(item => <article className="resource-card" key={`${item.id}-${item.kind}`}>
-            <div className="resource-card-head">
-              <span className={`resource-kind ${item.kind}`}>{item.kind==='supply'?'可提供':'想链接'}</span>
-              <span className="resource-room">{item.address}</span>
-            </div>
-            <h3 onClick={()=>onOpenEnterprise(item)}>{item.name}</h3>
-            <p>{item.content}</p>
-            <div className="tagrow">
-              {item.tags.slice(0,3).map(t => <span className={item.kind==='supply'?'tag':'tag need'} key={t}>{t}</span>)}
-            </div>
-            <div className="resource-actions">
-              <button className="btn primary" onClick={()=>{setToast('对接意向已记录，运营人员将协助撮合');}}>发起对接 <Icon name="send" size={14}/></button>
-              <button className="btn" onClick={()=>onOpenEnterprise(item)}>查看档案</button>
-            </div>
-          </article>) : <div className="empty wide"><div><Icon name="telescope" size={30}/><b>暂未找到匹配内容</b><span>试试调整筛选条件或搜索关键词</span></div></div>}
-        </section>
-      </main>;
-    }
-
-    function AbilityIndex({onOpenEnterprise}){
-      const [selectedTag,setSelectedTag] = useState(null);
-      const [search,setSearch] = useState("");
-
-      const abilityTags = useMemo(() => {
-        const map = {};
-        enterpriseData.forEach(e => {
-          tagsFor(e.ability,'ability').forEach(t => {
-            if(!map[t]) map[t] = [];
-            map[t].push(e);
-          });
-        });
-        return map;
-      },[]);
-
-      const needTags = useMemo(() => {
-        const map = {};
-        enterpriseData.forEach(e => {
-          tagsFor(e.need,'need').forEach(t => {
-            if(!map[t]) map[t] = [];
-            map[t].push(e);
-          });
-        });
-        return map;
-      },[]);
-
-      const allTags = Array.from(new Set([...Object.keys(abilityTags), ...Object.keys(needTags)]));
-      const matched = useMemo(() => {
-        if(!selectedTag && !search) return [];
-        return enterpriseData.filter(e => {
-          const tagHit = !selectedTag || tagsFor(e.ability,'ability').includes(selectedTag) || tagsFor(e.need,'need').includes(selectedTag);
-          const searchHit = !search || `${e.name}${e.ability}${e.need}`.toLowerCase().includes(search.toLowerCase());
-          return tagHit && searchHit;
-        });
-      },[selectedTag,search]);
-
-      return <main className="main">
-        <section className="hero">
-          <div><div className="eyebrow"><span className="pulse"/> 企业能力索引 · 2026</div><h1>按能力找人，<br/>按<em>标签连接</em></h1><p>把散落在各栋楼里的技术能力按标签重新组织，快速定位园区里谁能解决你的问题。</p></div>
-          <div className="metrics"><div className="metric"><b>{allTags.length}</b><span>能力标签</span></div><div className="metric"><b>46</b><span>收录企业</span></div><div className="metric"><b>16</b><span>技术方向</span></div></div>
-        </section>
-        <section className="page-toolbar">
-          <div className="page-search"><Icon name="search"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="搜索技术能力、企业或需求…"/></div>
-          {selectedTag && <button className="btn active-tag" onClick={()=>setSelectedTag(null)}>{selectedTag} <Icon name="x" size={12}/></button>}
-        </section>
-        <section className="tag-cloud">
-          <div className="cloud-section">
-            <h3><Icon name="sparkles" size={15}/> 开放能力</h3>
-            <div className="cloud">
-              {Object.entries(abilityTags).sort((a,b)=>b[1].length-a[1].length).map(([tag,list]) => <button key={tag} className={selectedTag===tag?'active':''} onClick={()=>setSelectedTag(tag)}>{tag} <span>{list.length}</span></button>)}
-            </div>
+          <div class="metrics">
+            <div class="metric"><b>50</b><span>已收录企业</span></div>
+            <div class="metric"><b>9</b><span>开放楼栋</span></div>
           </div>
-          <div className="cloud-section">
-            <h3><Icon name="link" size={15}/> 链接需求</h3>
-            <div className="cloud">
-              {Object.entries(needTags).sort((a,b)=>b[1].length-a[1].length).map(([tag,list]) => <button key={tag} className={selectedTag===tag?'active':''} onClick={()=>setSelectedTag(tag)}>{tag} <span>{list.length}</span></button>)}
-            </div>
-          </div>
-        </section>
-        {(selectedTag || search) && <section className="card-grid">
-          {matched.length ? matched.map(e => <article className="resource-card" key={e.id}>
-            <div className="resource-card-head"><span className="resource-kind supply">企业档案</span><span className="resource-room">{e.address}</span></div>
-            <h3 onClick={()=>onOpenEnterprise(e)}>{e.name}</h3>
-            <p>{e.ability}</p>
-            <div className="tagrow">
-              {tagsFor(e.ability,'ability').slice(0,2).map(t => <span className="tag" key={t}>{t}</span>)}
-              {tagsFor(e.need,'need').slice(0,1).map(t => <span className="tag need" key={t}>{t}</span>)}
-            </div>
-          </article>) : <div className="empty wide"><div><Icon name="telescope" size={30}/><b>暂未找到匹配企业</b><span>换个标签或清空搜索再试</span></div></div>}
-        </section>}
-      </main>;
-    }
-
-    function EnterpriseModal({enterprise,onClose,setToast}){
-      if(!enterprise) return null;
-      return <div className="modal-backdrop" style={{width:'min(690px,calc(100vw - 40px))',padding:0}} onMouseDown={e=>e.target===e.currentTarget&&onClose()}>
-        <div className="modal-head"><div><div className="side-kicker">ENTERPRISE PROFILE · NO.{String(enterprise.id).padStart(2,'0')}</div><h2>{enterprise.name}</h2></div><button className="icon-btn" onClick={onClose}><Icon name="x"/></button></div>
-        <div className="detail-body"><div className="detail-meta"><span className="meta-pill"><Icon name="building-2" size={12}/> {enterprise.address}</span><span className="meta-pill"><Icon name="user-round" size={12}/> {enterprise.contact}</span></div><div className="info-block ability"><label><Icon name="sparkles"/> 可提供的能力</label><p>{enterprise.ability}</p></div><div className="info-block need"><label><Icon name="link"/> 想链接的资源</label><p>{enterprise.need || '期待与园区伙伴探索合作机会'}</p></div><div style={{display:'flex',justifyContent:'flex-end',marginTop:18}}><button className="btn primary" onClick={()=>{setToast('合作意向已记录，运营人员将协助对接');onClose();}}>发起资源连接 <Icon name="send" size={14}/></button></div></div>
-      </div>;
-    }
-
-    function FormModal({onClose,setToast}){
-      const initial = {companyName:'',building:'',room:'',contact:'',phone:'',capability:'',demand:'',updateType:'update',remarks:''};
-      const [form,setForm] = useState(initial);
-      const [submitted,setSubmitted] = useState(false);
-      const [submitting,setSubmitting] = useState(false);
-      const [errors,setErrors] = useState({});
-
-      const buildingOptions = ["2","3","4","5","6","8","9","10","11","15","其他"];
-      const updateOptions = [
-        {value:'update',label:'信息更新',desc:'更新现有信息'},
-        {value:'new',label:'新增企业',desc:'首次录入'},
-        {value:'correct',label:'信息纠错',desc:'修正错误信息'}
-      ];
-
-      function change(field,value){
-        setForm(prev=>({...prev,[field]:value}));
-        if(errors[field]) setErrors(prev=>({...prev,[field]:undefined}));
-      }
-
-      function validate(){
-        const next = {};
-        if(!form.companyName.trim()) next.companyName = '请填写企业名称';
-        if(!form.contact.trim()) next.contact = '请填写联系人姓名';
-        if(!form.capability.trim()) next.capability = '请填写供应能力描述';
-        if(!form.demand.trim()) next.demand = '请填写链接需求描述';
-        setErrors(next);
-        return Object.keys(next).length === 0;
-      }
-
-      function downloadCSV(){
-        const headers = ['提交时间','企业名称','楼栋','房间号','联系人','联系电话','供应能力','链接需求','更新类型','补充说明'];
-        const row = [
-          new Date().toLocaleString('zh-CN'),
-          form.companyName,
-          form.building,
-          form.room,
-          form.contact,
-          form.phone,
-          form.capability,
-          form.demand,
-          updateOptions.find(o=>o.value===form.updateType).label,
-          form.remarks
-        ];
-        const csv = [headers, row].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-        const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `南湖技术地图-企业信息更新-${form.companyName || '未命名'}-${Date.now()}.csv`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }
-
-      function handleSubmit(e){
-        e.preventDefault();
-        if(!validate()) return;
-        setSubmitting(true);
-        setTimeout(()=>{
-          setSubmitting(false);
-          downloadCSV();
-          setSubmitted(true);
-        },1200);
-      }
-
-      function reset(){
-        setForm(initial);
-        setSubmitted(false);
-        setErrors({});
-      }
-
-      if(submitted){
-        return <div className="modal-backdrop" style={{width:'min(480px,calc(100vw - 40px))',padding:'42px 34px 38px',textAlign:'center'}} onMouseDown={e=>e.target===e.currentTarget&&onClose()}>
-          <div className="success-icon"><Icon name="check-circle" size={40}/></div>
-          <h2>提交成功！</h2>
-          <p>感谢 <b>{form.companyName || '贵企业'}</b> 提交信息更新申请。</p>
-          <p className="sub">运营人员将在 1-3 个工作日内通过您预留的电话与您确认，审核完成后地图数据将同步更新。</p>
-          <div className="summary">
-            <div className="summary-title">提交内容摘要</div>
-            {form.capability && <div className="summary-row"><Icon name="zap" size={13}/><span>{form.capability}</span></div>}
-            {form.demand && <div className="summary-row"><Icon name="target" size={13}/><span>{form.demand}</span></div>}
-          </div>
-          <p style={{fontSize:12,color:'var(--muted)',marginTop:-12,marginBottom:18}}>运营人员入口：提交记录已自动导出为 CSV 文件，请在浏览器下载目录查看汇总。</p>
-          <div className="form-actions">
-            <button className="btn" onClick={onClose}>返回地图</button>
-            <button className="btn primary" onClick={reset}>继续提交</button>
-          </div>
-        </div>;
-      }
-
-      return <div className="modal-backdrop" style={{width:'min(680px,calc(100vw - 40px))',padding:0}} onMouseDown={e=>e.target===e.currentTarget&&onClose()}>
-        <div className="modal-head"><div><div className="side-kicker">JOIN THE ATLAS</div><h2>企业信息更新</h2></div><button className="icon-btn" onClick={onClose}><Icon name="x"/></button></div>
-        <p className="modal-sub">填写最新的企业供应能力与链接需求，帮助园区内企业更好地发现合作机会</p>
-        <form className="new-form" onSubmit={handleSubmit}>
-
-          <div className="form-section">
-            <div className="section-title"><Icon name="building-2" size={15}/> 基本信息</div>
-            <div className="form-row">
-              <div className="field full">
-                <label>企业名称 <span className="required">*</span></label>
-                <input value={form.companyName} onChange={e=>change('companyName',e.target.value)} placeholder="请输入完整企业名称" className={errors.companyName?'error':''}/>
-                {errors.companyName && <span className="error-msg">{errors.companyName}</span>}
+        </div>
+        <div class="workspace">
+          <div class="map-area">
+            <img class="map-bg" src="./assets/ab44ae18-0e98-4e82-9a3b-54e4b9007eb4.png" alt="南湖未来科学园平面图">
+            <div class="map-toolbar">
+              <div class="map-info">
+                <b>南湖未来科学园 · 企业分布总览</b>
+                <span>点击楼栋，打开企业能力档案</span>
+              </div>
+              <div class="map-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                <input type="text" id="map-search" placeholder="搜索企业、技术能力或资源需求…" oninput="filterMap()">
               </div>
             </div>
-            <div className="form-row two">
-              <div className="field">
-                <label><Icon name="map-pin" size={11}/> 楼栋</label>
-                <select value={form.building} onChange={e=>change('building',e.target.value)}>
-                  <option value="">请选择楼栋</option>
-                  {buildingOptions.map(b=><option key={b} value={b}>{b==='其他'?'其他':`${b}号楼`}</option>)}
+            <div class="marker-layer">
+              <button class="marker"  aria-label="1号楼，暂未开放" style="left:612.064px;top:355.46px;cursor:not-allowed;opacity:0.65;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">1</text></svg>
+        
+      </div>
+    </button>
+<button class="marker"  aria-label="2号楼，暂未开放" style="left:533.696px;top:275.08px;cursor:not-allowed;opacity:0.65;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">2</text></svg>
+        
+      </div>
+    </button>
+<button class="marker" onclick="selectBuilding('3')" aria-label="3号楼，5家企业" style="left:380.928px;top:225.065px;cursor:pointer;opacity:1;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">3</text></svg>
+        <span class="marker-badge">5</span>
+      </div>
+    </button>
+<button class="marker" onclick="selectBuilding('4')" aria-label="4号楼，5家企业" style="left:464.256px;top:185.173px;cursor:pointer;opacity:1;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">4</text></svg>
+        <span class="marker-badge">5</span>
+      </div>
+    </button>
+<button class="marker" onclick="selectBuilding('5')" aria-label="5号楼，1家企业" style="left:539.648px;top:129.799px;cursor:pointer;opacity:1;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">5</text></svg>
+        <span class="marker-badge">1</span>
+      </div>
+    </button>
+<button class="marker" onclick="selectBuilding('6')" aria-label="6号楼，1家企业" style="left:609.088px;top:127.418px;cursor:pointer;opacity:1;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">6</text></svg>
+        <span class="marker-badge">1</span>
+      </div>
+    </button>
+<button class="marker"  aria-label="7号楼，暂未开放" style="left:754.912px;top:161.952px;cursor:not-allowed;opacity:0.65;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">7</text></svg>
+        
+      </div>
+    </button>
+<button class="marker" onclick="selectBuilding('8')" aria-label="8号楼，7家企业" style="left:710.272px;top:243.523px;cursor:pointer;opacity:1;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">8</text></svg>
+        <span class="marker-badge">7</span>
+      </div>
+    </button>
+<button class="marker" onclick="selectBuilding('9')" aria-label="9号楼，9家企业" style="left:656.704px;top:301.278px;cursor:pointer;opacity:1;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">9</text></svg>
+        <span class="marker-badge">9</span>
+      </div>
+    </button>
+<button class="marker" onclick="selectBuilding('10')" aria-label="10号楼，13家企业" style="left:611.072px;top:442.39px;cursor:pointer;opacity:1;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">10</text></svg>
+        <span class="marker-badge">13</span>
+      </div>
+    </button>
+<button class="marker" onclick="selectBuilding('11')" aria-label="11号楼，7家企业" style="left:470.208px;top:386.421px;cursor:pointer;opacity:1;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">11</text></svg>
+        <span class="marker-badge">7</span>
+      </div>
+    </button>
+<button class="marker"  aria-label="12号楼，暂未开放" style="left:348.192px;top:324.499px;cursor:not-allowed;opacity:0.65;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">12</text></svg>
+        
+      </div>
+    </button>
+<button class="marker"  aria-label="13号楼，暂未开放" style="left:254.944px;top:259.599px;cursor:not-allowed;opacity:0.65;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">13</text></svg>
+        
+      </div>
+    </button>
+<button class="marker"  aria-label="14号楼，暂未开放" style="left:257.92px;top:351.887px;cursor:not-allowed;opacity:0.65;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">14</text></svg>
+        
+      </div>
+    </button>
+<button class="marker" onclick="selectBuilding('15')" aria-label="15号楼，2家企业" style="left:383.904px;top:412.619px;cursor:pointer;opacity:1;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#1565c0"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">15</text></svg>
+        <span class="marker-badge">2</span>
+      </div>
+    </button>
+<button class="marker"  aria-label="16号楼，暂未开放" style="left:294.624px;top:436.436px;cursor:not-allowed;opacity:0.65;">
+      <div class="marker-pin">
+        <svg width="38" height="46" viewBox="0 0 38 46"><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="3"/><path d="M19 43.72C10.45 34.2 1.52 29.45 1.52 19A17.48 17.48 0 1 1 36.48 19C36.48 29.45 27.55 34.2 19 43.72Z" fill="#6fa8d6"/><text x="19" y="20.52" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="20" font-weight="900">16</text></svg>
+        
+      </div>
+    </button>
+            </div>
+            <div class="map-filters">
+              <button class="active" onclick="setMapFilter('all', this)">全部</button>
+              <button onclick="setMapFilter('supply', this)">可提供</button>
+              <button onclick="setMapFilter('demand', this)">想链接</button>
+            </div>
+          </div>
+          <aside>
+            <div class="side-header">
+              <div class="side-meta">
+                <span>ALL BUILDINGS</span>
+                <span class="side-badge">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
+                  全部楼栋
+                </span>
+              </div>
+              <div class="side-title">
+                <h2 id="side-title">全园区总览</h2>
+                <span id="side-count">50 家企业</span>
+              </div>
+            </div>
+            <div class="company-list" id="map-company-list">
+              <article class="company-card" data-building="4" data-name="千机变(杭州)科技有限公司">
+      <div class="company-head">
+        <h3>千机变(杭州)科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>以自主研发算法为核心竞争力，打造承载 300 + 自研算法的一站式 AI 算法超市底座。</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州龙航智远无人机科技有限公司">
+      <div class="company-head">
+        <h3>杭州龙航智远无人机科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>全军指定的单一来源无人机供应商</p>
+    </article>
+<article class="company-card" data-building="9" data-name="浙江兔行科技有限公司">
+      <div class="company-head">
+        <h3>浙江兔行科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>核心业务聚焦于中高等职业院校的无人机专业建设与人才培养解决方案；</p>
+    </article>
+<article class="company-card" data-building="3" data-name="华翌智能装备（杭州）有限公司">
+      <div class="company-head">
+        <h3>华翌智能装备（杭州）有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自研AI AOI工业检测软件全套算法与技术架构</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州翎视科技有限公司">
+      <div class="company-head">
+        <h3>杭州翎视科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>高层住宅、商业综合体、历史建筑的外立面安全检测及测量</p>
+    </article>
+<article class="company-card" data-building="10" data-name="浙江星穹智航科技有限公司">
+      <div class="company-head">
+        <h3>浙江星穹智航科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>高空清洗、CAAC培训</p>
+    </article>
+<article class="company-card" data-building="3" data-name="杭州脸脸会网络技术有限公司">
+      <div class="company-head">
+        <h3>杭州脸脸会网络技术有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>AI智能体、AI数字人、智能互动应用及文商旅场景数字化解决方案的研发、实施与运营服务</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州微鸿科技有限公司">
+      <div class="company-head">
+        <h3>杭州微鸿科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>成熟的飞控平台能力体系，覆盖飞行控制、感知融合、任务调度等核心环节</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州万升航控智能科技有限公司">
+      <div class="company-head">
+        <h3>杭州万升航控智能科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>专注构建无人机 “大脑”，通过地理空间管理、核心业务系统打造</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州团簇科技有限公司">
+      <div class="company-head">
+        <h3>杭州团簇科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>具身智能+ 多模态感知为核心技术底座，自研 “空天地” 一体化智慧巡检管控系统</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州标彰电子科技有限公司">
+      <div class="company-head">
+        <h3>杭州标彰电子科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自主研发和生产的测控系统、数据采集卡、窄脉冲发生器、高速信号发生器等产品</p>
+    </article>
+<article class="company-card" data-building="9" data-name="杭州星智创享科技有限公司">
+      <div class="company-head">
+        <h3>杭州星智创享科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>CC80非接触式清洁无人机系统</p>
+    </article>
+<article class="company-card" data-building="10" data-name="全域通用航空（杭州）有限公司">
+      <div class="company-head">
+        <h3>全域通用航空（杭州）有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>低空经济一体化生态体系建设，自研飞行服务平台、机载电脑、低空之家APP等核心产品，构建全链路低空服务能力。</p>
+    </article>
+<article class="company-card" data-building="6" data-name="浙江瀚为科技有限公司">
+      <div class="company-head">
+        <h3>浙江瀚为科技有限公司</h3>
+        <span class="company-room">6＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>AI算力中心用高安全、高功率电池及直流侧供配电解决方案</p>
+    </article>
+<article class="company-card" data-building="10" data-name="圣翔（杭州）航空科技有限公司">
+      <div class="company-head">
+        <h3>圣翔（杭州）航空科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>全品类低空起降装备高端智造及场景运营解决方案</p>
+    </article>
+<article class="company-card" data-building="8" data-name="重隼智能科技（浙江）有限公司">
+      <div class="company-head">
+        <h3>重隼智能科技（浙江）有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>提供无人机低空安防、冷链运输、室内建模等领域完整行业解决方案</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州鲣翼科技有限公司">
+      <div class="company-head">
+        <h3>杭州鲣翼科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>水陆两栖多用途倾转动力升力体无人飞行器”整机的研发、生产和应用</p>
+    </article>
+<article class="company-card" data-building="8" data-name="浙江十子鹰飞行科技有限公司">
+      <div class="company-head">
+        <h3>浙江十子鹰飞行科技有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>面向各类院校提供校园科技体育兴趣教学一站式校企合作解决方案</p>
+    </article>
+<article class="company-card" data-building="8" data-name="浙江同创空间技术有限公司">
+      <div class="company-head">
+        <h3>浙江同创空间技术有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>民航局浙江03考试点及中国AOPA浙江考试点可提供CAAC无人机考证全流程培训服务</p>
+    </article>
+<article class="company-card" data-building="8" data-name="军创（杭州）空间技术有限公司">
+      <div class="company-head">
+        <h3>军创（杭州）空间技术有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>无人机飞手资源库与行业业务需求对接渠道，具备飞手-业务智能匹配平台的开发与运维能力</p>
+    </article>
+<article class="company-card" data-building="15" data-name="杭州纵迹云科技有限公司">
+      <div class="company-head">
+        <h3>杭州纵迹云科技有限公司</h3>
+        <span class="company-room">15＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>具备工业重载、自动巡检、低空全域管控自研生产能力，可提供软硬件一体化成套设备与行业落地定制方案</p>
+    </article>
+<article class="company-card" data-building="3" data-name="杭州昊舜视讯科技有限公司">
+      <div class="company-head">
+        <h3>杭州昊舜视讯科技有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>无人机全自动机场系列产品、智能管控平台及专业飞手团队</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州飞算科技有限公司">
+      <div class="company-head">
+        <h3>杭州飞算科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>长航时复合翼无人机、低空反制装备供货以及云端智能管控平台部署</p>
+    </article>
+<article class="company-card" data-building="9" data-name="飞手杭州低空经济发展有限公司">
+      <div class="company-head">
+        <h3>飞手杭州低空经济发展有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>协助企业进行巡检、测试、城市内各类空域审批</p>
+    </article>
+<article class="company-card" data-building="10" data-name="浙江鑫核聚能科技有限公司">
+      <div class="company-head">
+        <h3>浙江鑫核聚能科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>射频氮化镓工艺的超宽带功率放大器芯片设计技术</p>
+    </article>
+<article class="company-card" data-building="4" data-name="城飞智能（杭州）科技有限公司">
+      <div class="company-head">
+        <h3>城飞智能（杭州）科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>低空智能起降场运营商，提供从顶层规划、软硬件研发部署、智能化升级到全周期运营的一体化解决方案</p>
+    </article>
+<article class="company-card" data-building="9" data-name="泊航科技有限公司">
+      <div class="company-head">
+        <h3>泊航科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>提供复杂构型可变翼无人机整机设计、嵌入式系统开发到飞控软件平台测试全栈技术解决方案</p>
+    </article>
+<article class="company-card" data-building="9" data-name="杭州九数商务咨询有限公司">
+      <div class="company-head">
+        <h3>杭州九数商务咨询有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>拥有AIGC全栈内容生成能力（AI视频/图像/文案/数字人）</p>
+    </article>
+<article class="company-card" data-building="10" data-name="墨悉科技有限公司">
+      <div class="company-head">
+        <h3>墨悉科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>面向具身智能时代的智能大脑与多智能体协同系统提供商</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州零储科技有限公司">
+      <div class="company-head">
+        <h3>杭州零储科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>构建 “户用-工商-大储” 全系列产品矩阵，拥有从电芯PACK到交直流一体系统的垂直整合制造能力。</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州启航线科技有限公司">
+      <div class="company-head">
+        <h3>杭州启航线科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>全栈式低空操作系统，覆盖低空监管、飞行准入、AI 空域分配、数据治理及资产化服务</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州艾铂特智能科技有限公司">
+      <div class="company-head">
+        <h3>杭州艾铂特智能科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>专注于高危场景具身智能机器人和AI算法平台的开发，具备全栈解决方案的交付能力。</p>
+    </article>
+<article class="company-card" data-building="9" data-name="杭州零到一工业设计有限公司">
+      <div class="company-head">
+        <h3>杭州零到一工业设计有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>专注工业设计与产品创新服务，提供产品策略、外观设计、结构设计、CMF设计、品牌设计及产品落地全流程解决方案</p>
+    </article>
+<article class="company-card" data-building="9" data-name="杭州慢伴文化创意有限公司">
+      <div class="company-head">
+        <h3>杭州慢伴文化创意有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>聚焦生活方式品牌打造与香氛产品创新，集原创设计、产品研发、品牌运营及供应链整合于一体</p>
+    </article>
+<article class="company-card" data-building="9" data-name="浙江蔚然长风智能科技有限公司">
+      <div class="company-head">
+        <h3>浙江蔚然长风智能科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自研AI情感边缘计算技术，构建“筛查-预警-干预-管理”的全链路心理服务体系</p>
+    </article>
+<article class="company-card" data-building="15" data-name="中科祥云低空科技（浙江）有限公司">
+      <div class="company-head">
+        <h3>中科祥云低空科技（浙江）有限公司</h3>
+        <span class="company-room">15＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>智慧巡检 + 低空物流配送一体化解决方案</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州归一智能科技有限公司">
+      <div class="company-head">
+        <h3>杭州归一智能科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>“AI超级产线”营销内容工程化平台与AI影视短漫剧一站式工作平台</p>
+    </article>
+<article class="company-card" data-building="4" data-name="杭州凡章科技有限公司">
+      <div class="company-head">
+        <h3>杭州凡章科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>仓储管理系统WMS+室内无人机仓储盘点</p>
+    </article>
+<article class="company-card" data-building="5" data-name="杭州矩正医疗科技有限公司">
+      <div class="company-head">
+        <h3>杭州矩正医疗科技有限公司</h3>
+        <span class="company-room">5＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>球囊扩张导管、血管封堵止血系统、静脉腔内射频闭合导管及配套有源设备发生器等产品的设计制造能力</p>
+    </article>
+<article class="company-card" data-building="4" data-name="杭州思变笃行管理科技有限公司">
+      <div class="company-head">
+        <h3>杭州思变笃行管理科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>面向中大型企业提供沙盘模拟培训和定制、AI培训咨询应用开发</p>
+    </article>
+<article class="company-card" data-building="8" data-name="杭州云酷智能科技有限公司">
+      <div class="company-head">
+        <h3>杭州云酷智能科技有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自研冷却液、高精流场及多级智能控制等核心技术，可提供数据中心、通信基站、储能等多场景一体化液冷解决方案</p>
+    </article>
+<article class="company-card" data-building="8" data-name="赞塔（杭州）科技有限公司">
+      <div class="company-head">
+        <h3>赞塔（杭州）科技有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自主研发听鉴、智录、点线、智审、智策等十余种公安专用智能体软硬件产品</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州紫深智测技术有限公司">
+      <div class="company-head">
+        <h3>杭州紫深智测技术有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>环境与可靠性、EMC、电气安全等检测认证；自主开发VeriFLY UQ数据分析平台，为风险结果做可量化</p>
+    </article>
+<article class="company-card" data-building="11" data-name="埃法智造（杭州）人工智能科技有限公司">
+      <div class="company-head">
+        <h3>埃法智造（杭州）人工智能科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自研 ANIMA 人造电子生命平台，提供模块化 AI桌面机器人硬件</p>
+    </article>
+<article class="company-card" data-building="9" data-name="集光年（杭州）科技有限公司">
+      <div class="company-head">
+        <h3>集光年（杭州）科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>为企业提供AIGC内容制作与培训，以及AI化品牌战略服务</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州竞速动力科技有限公司">
+      <div class="company-head">
+        <h3>杭州竞速动力科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>专注于动力控制系统研发与产品概念性落地，长期深耕汽车、摩托及航空动力系统</p>
+    </article>
+<article class="company-card" data-building="3" data-name="奕科先进智能科技（杭州）有限公司">
+      <div class="company-head">
+        <h3>奕科先进智能科技（杭州）有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>具备从 2kW 到 280kW 全功率段的无人机电机、内燃机及动力总成测试台架搭建能力，同时支持定制化需求</p>
+    </article>
+<article class="company-card" data-building="3" data-name="浙江有鹿机器人科技有限公司">
+      <div class="company-head">
+        <h3>浙江有鹿机器人科技有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>具身智能通用大脑；室外商业巡扫机器人AI130</p>
+    </article>
+<article class="company-card" data-building="8" data-name="浙江百应科技有限公司">
+      <div class="company-head">
+        <h3>浙江百应科技有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>AI Agent智能平台；商业对话大模型 Gravity LLM； 行业解决方案</p>
+    </article>
+<article class="company-card" data-building="4" data-name="杭州数智医济医疗科技有限公司">
+      <div class="company-head">
+        <h3>杭州数智医济医疗科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>过敏疾病数字疗法、标准化诊疗与无接触健康评估</p>
+    </article>
+            </div>
+          </aside>
+        </div>
+      </section>
+      
+      <!-- List View -->
+      <section id="view-list" class="view">
+        <div class="page-header">
+          <div>
+            <div class="eyebrow">资源广场</div>
+            <h1 style="margin-top:8px;">企业能力一览</h1>
+          </div>
+          <div class="page-filters">
+            <button class="active" onclick="setListFilter('all', this)">全部</button>
+            <button onclick="setListFilter('supply', this)">可提供</button>
+            <button onclick="setListFilter('demand', this)">想链接</button>
+          </div>
+        </div>
+        <div class="card-grid" id="list-grid">
+          <article class="company-card" data-building="4" data-name="千机变(杭州)科技有限公司">
+      <div class="company-head">
+        <h3>千机变(杭州)科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>以自主研发算法为核心竞争力，打造承载 300 + 自研算法的一站式 AI 算法超市底座。</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州龙航智远无人机科技有限公司">
+      <div class="company-head">
+        <h3>杭州龙航智远无人机科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>全军指定的单一来源无人机供应商</p>
+    </article>
+<article class="company-card" data-building="9" data-name="浙江兔行科技有限公司">
+      <div class="company-head">
+        <h3>浙江兔行科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>核心业务聚焦于中高等职业院校的无人机专业建设与人才培养解决方案；</p>
+    </article>
+<article class="company-card" data-building="3" data-name="华翌智能装备（杭州）有限公司">
+      <div class="company-head">
+        <h3>华翌智能装备（杭州）有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自研AI AOI工业检测软件全套算法与技术架构</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州翎视科技有限公司">
+      <div class="company-head">
+        <h3>杭州翎视科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>高层住宅、商业综合体、历史建筑的外立面安全检测及测量</p>
+    </article>
+<article class="company-card" data-building="10" data-name="浙江星穹智航科技有限公司">
+      <div class="company-head">
+        <h3>浙江星穹智航科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>高空清洗、CAAC培训</p>
+    </article>
+<article class="company-card" data-building="3" data-name="杭州脸脸会网络技术有限公司">
+      <div class="company-head">
+        <h3>杭州脸脸会网络技术有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>AI智能体、AI数字人、智能互动应用及文商旅场景数字化解决方案的研发、实施与运营服务</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州微鸿科技有限公司">
+      <div class="company-head">
+        <h3>杭州微鸿科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>成熟的飞控平台能力体系，覆盖飞行控制、感知融合、任务调度等核心环节</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州万升航控智能科技有限公司">
+      <div class="company-head">
+        <h3>杭州万升航控智能科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>专注构建无人机 “大脑”，通过地理空间管理、核心业务系统打造</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州团簇科技有限公司">
+      <div class="company-head">
+        <h3>杭州团簇科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>具身智能+ 多模态感知为核心技术底座，自研 “空天地” 一体化智慧巡检管控系统</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州标彰电子科技有限公司">
+      <div class="company-head">
+        <h3>杭州标彰电子科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自主研发和生产的测控系统、数据采集卡、窄脉冲发生器、高速信号发生器等产品</p>
+    </article>
+<article class="company-card" data-building="9" data-name="杭州星智创享科技有限公司">
+      <div class="company-head">
+        <h3>杭州星智创享科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>CC80非接触式清洁无人机系统</p>
+    </article>
+<article class="company-card" data-building="10" data-name="全域通用航空（杭州）有限公司">
+      <div class="company-head">
+        <h3>全域通用航空（杭州）有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>低空经济一体化生态体系建设，自研飞行服务平台、机载电脑、低空之家APP等核心产品，构建全链路低空服务能力。</p>
+    </article>
+<article class="company-card" data-building="6" data-name="浙江瀚为科技有限公司">
+      <div class="company-head">
+        <h3>浙江瀚为科技有限公司</h3>
+        <span class="company-room">6＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>AI算力中心用高安全、高功率电池及直流侧供配电解决方案</p>
+    </article>
+<article class="company-card" data-building="10" data-name="圣翔（杭州）航空科技有限公司">
+      <div class="company-head">
+        <h3>圣翔（杭州）航空科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>全品类低空起降装备高端智造及场景运营解决方案</p>
+    </article>
+<article class="company-card" data-building="8" data-name="重隼智能科技（浙江）有限公司">
+      <div class="company-head">
+        <h3>重隼智能科技（浙江）有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>提供无人机低空安防、冷链运输、室内建模等领域完整行业解决方案</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州鲣翼科技有限公司">
+      <div class="company-head">
+        <h3>杭州鲣翼科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>水陆两栖多用途倾转动力升力体无人飞行器”整机的研发、生产和应用</p>
+    </article>
+<article class="company-card" data-building="8" data-name="浙江十子鹰飞行科技有限公司">
+      <div class="company-head">
+        <h3>浙江十子鹰飞行科技有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>面向各类院校提供校园科技体育兴趣教学一站式校企合作解决方案</p>
+    </article>
+<article class="company-card" data-building="8" data-name="浙江同创空间技术有限公司">
+      <div class="company-head">
+        <h3>浙江同创空间技术有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>民航局浙江03考试点及中国AOPA浙江考试点可提供CAAC无人机考证全流程培训服务</p>
+    </article>
+<article class="company-card" data-building="8" data-name="军创（杭州）空间技术有限公司">
+      <div class="company-head">
+        <h3>军创（杭州）空间技术有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>无人机飞手资源库与行业业务需求对接渠道，具备飞手-业务智能匹配平台的开发与运维能力</p>
+    </article>
+<article class="company-card" data-building="15" data-name="杭州纵迹云科技有限公司">
+      <div class="company-head">
+        <h3>杭州纵迹云科技有限公司</h3>
+        <span class="company-room">15＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>具备工业重载、自动巡检、低空全域管控自研生产能力，可提供软硬件一体化成套设备与行业落地定制方案</p>
+    </article>
+<article class="company-card" data-building="3" data-name="杭州昊舜视讯科技有限公司">
+      <div class="company-head">
+        <h3>杭州昊舜视讯科技有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>无人机全自动机场系列产品、智能管控平台及专业飞手团队</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州飞算科技有限公司">
+      <div class="company-head">
+        <h3>杭州飞算科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>长航时复合翼无人机、低空反制装备供货以及云端智能管控平台部署</p>
+    </article>
+<article class="company-card" data-building="9" data-name="飞手杭州低空经济发展有限公司">
+      <div class="company-head">
+        <h3>飞手杭州低空经济发展有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>协助企业进行巡检、测试、城市内各类空域审批</p>
+    </article>
+<article class="company-card" data-building="10" data-name="浙江鑫核聚能科技有限公司">
+      <div class="company-head">
+        <h3>浙江鑫核聚能科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>射频氮化镓工艺的超宽带功率放大器芯片设计技术</p>
+    </article>
+<article class="company-card" data-building="4" data-name="城飞智能（杭州）科技有限公司">
+      <div class="company-head">
+        <h3>城飞智能（杭州）科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>低空智能起降场运营商，提供从顶层规划、软硬件研发部署、智能化升级到全周期运营的一体化解决方案</p>
+    </article>
+<article class="company-card" data-building="9" data-name="泊航科技有限公司">
+      <div class="company-head">
+        <h3>泊航科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>提供复杂构型可变翼无人机整机设计、嵌入式系统开发到飞控软件平台测试全栈技术解决方案</p>
+    </article>
+<article class="company-card" data-building="9" data-name="杭州九数商务咨询有限公司">
+      <div class="company-head">
+        <h3>杭州九数商务咨询有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>拥有AIGC全栈内容生成能力（AI视频/图像/文案/数字人）</p>
+    </article>
+<article class="company-card" data-building="10" data-name="墨悉科技有限公司">
+      <div class="company-head">
+        <h3>墨悉科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>面向具身智能时代的智能大脑与多智能体协同系统提供商</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州零储科技有限公司">
+      <div class="company-head">
+        <h3>杭州零储科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>构建 “户用-工商-大储” 全系列产品矩阵，拥有从电芯PACK到交直流一体系统的垂直整合制造能力。</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州启航线科技有限公司">
+      <div class="company-head">
+        <h3>杭州启航线科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>全栈式低空操作系统，覆盖低空监管、飞行准入、AI 空域分配、数据治理及资产化服务</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州艾铂特智能科技有限公司">
+      <div class="company-head">
+        <h3>杭州艾铂特智能科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>专注于高危场景具身智能机器人和AI算法平台的开发，具备全栈解决方案的交付能力。</p>
+    </article>
+<article class="company-card" data-building="9" data-name="杭州零到一工业设计有限公司">
+      <div class="company-head">
+        <h3>杭州零到一工业设计有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>专注工业设计与产品创新服务，提供产品策略、外观设计、结构设计、CMF设计、品牌设计及产品落地全流程解决方案</p>
+    </article>
+<article class="company-card" data-building="9" data-name="杭州慢伴文化创意有限公司">
+      <div class="company-head">
+        <h3>杭州慢伴文化创意有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>聚焦生活方式品牌打造与香氛产品创新，集原创设计、产品研发、品牌运营及供应链整合于一体</p>
+    </article>
+<article class="company-card" data-building="9" data-name="浙江蔚然长风智能科技有限公司">
+      <div class="company-head">
+        <h3>浙江蔚然长风智能科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自研AI情感边缘计算技术，构建“筛查-预警-干预-管理”的全链路心理服务体系</p>
+    </article>
+<article class="company-card" data-building="15" data-name="中科祥云低空科技（浙江）有限公司">
+      <div class="company-head">
+        <h3>中科祥云低空科技（浙江）有限公司</h3>
+        <span class="company-room">15＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>智慧巡检 + 低空物流配送一体化解决方案</p>
+    </article>
+<article class="company-card" data-building="10" data-name="杭州归一智能科技有限公司">
+      <div class="company-head">
+        <h3>杭州归一智能科技有限公司</h3>
+        <span class="company-room">10＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>“AI超级产线”营销内容工程化平台与AI影视短漫剧一站式工作平台</p>
+    </article>
+<article class="company-card" data-building="4" data-name="杭州凡章科技有限公司">
+      <div class="company-head">
+        <h3>杭州凡章科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>仓储管理系统WMS+室内无人机仓储盘点</p>
+    </article>
+<article class="company-card" data-building="5" data-name="杭州矩正医疗科技有限公司">
+      <div class="company-head">
+        <h3>杭州矩正医疗科技有限公司</h3>
+        <span class="company-room">5＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>球囊扩张导管、血管封堵止血系统、静脉腔内射频闭合导管及配套有源设备发生器等产品的设计制造能力</p>
+    </article>
+<article class="company-card" data-building="4" data-name="杭州思变笃行管理科技有限公司">
+      <div class="company-head">
+        <h3>杭州思变笃行管理科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>面向中大型企业提供沙盘模拟培训和定制、AI培训咨询应用开发</p>
+    </article>
+<article class="company-card" data-building="8" data-name="杭州云酷智能科技有限公司">
+      <div class="company-head">
+        <h3>杭州云酷智能科技有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自研冷却液、高精流场及多级智能控制等核心技术，可提供数据中心、通信基站、储能等多场景一体化液冷解决方案</p>
+    </article>
+<article class="company-card" data-building="8" data-name="赞塔（杭州）科技有限公司">
+      <div class="company-head">
+        <h3>赞塔（杭州）科技有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自主研发听鉴、智录、点线、智审、智策等十余种公安专用智能体软硬件产品</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州紫深智测技术有限公司">
+      <div class="company-head">
+        <h3>杭州紫深智测技术有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>环境与可靠性、EMC、电气安全等检测认证；自主开发VeriFLY UQ数据分析平台，为风险结果做可量化</p>
+    </article>
+<article class="company-card" data-building="11" data-name="埃法智造（杭州）人工智能科技有限公司">
+      <div class="company-head">
+        <h3>埃法智造（杭州）人工智能科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>自研 ANIMA 人造电子生命平台，提供模块化 AI桌面机器人硬件</p>
+    </article>
+<article class="company-card" data-building="9" data-name="集光年（杭州）科技有限公司">
+      <div class="company-head">
+        <h3>集光年（杭州）科技有限公司</h3>
+        <span class="company-room">9＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>为企业提供AIGC内容制作与培训，以及AI化品牌战略服务</p>
+    </article>
+<article class="company-card" data-building="11" data-name="杭州竞速动力科技有限公司">
+      <div class="company-head">
+        <h3>杭州竞速动力科技有限公司</h3>
+        <span class="company-room">11＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>专注于动力控制系统研发与产品概念性落地，长期深耕汽车、摩托及航空动力系统</p>
+    </article>
+<article class="company-card" data-building="3" data-name="奕科先进智能科技（杭州）有限公司">
+      <div class="company-head">
+        <h3>奕科先进智能科技（杭州）有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>具备从 2kW 到 280kW 全功率段的无人机电机、内燃机及动力总成测试台架搭建能力，同时支持定制化需求</p>
+    </article>
+<article class="company-card" data-building="3" data-name="浙江有鹿机器人科技有限公司">
+      <div class="company-head">
+        <h3>浙江有鹿机器人科技有限公司</h3>
+        <span class="company-room">3＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>具身智能通用大脑；室外商业巡扫机器人AI130</p>
+    </article>
+<article class="company-card" data-building="8" data-name="浙江百应科技有限公司">
+      <div class="company-head">
+        <h3>浙江百应科技有限公司</h3>
+        <span class="company-room">8＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>AI Agent智能平台；商业对话大模型 Gravity LLM； 行业解决方案</p>
+    </article>
+<article class="company-card" data-building="4" data-name="杭州数智医济医疗科技有限公司">
+      <div class="company-head">
+        <h3>杭州数智医济医疗科技有限公司</h3>
+        <span class="company-room">4＃</span>
+      </div>
+      <div class="company-tags"><span class="tag supply">可提供</span><span class="tag demand">想链接</span></div>
+      <p>过敏疾病数字疗法、标准化诊疗与无接触健康评估</p>
+    </article>
+        </div>
+      </section>
+      
+      <!-- Submit View -->
+      <section id="view-submit" class="view">
+        <div class="form-container">
+          <h2>更新企业信息</h2>
+          <p>提交入驻企业或更新现有企业的技术与资源信息，审核通过后将同步至地图。</p>
+          <form id="submit-form" onsubmit="handleSubmit(event)">
+            <div class="form-row">
+              <div class="field">
+                <label>企业名称 *</label>
+                <input type="text" name="company" required>
+              </div>
+              <div class="field">
+                <label>所在楼栋</label>
+                <select name="building">
+                  <option value="">请选择</option>
+                  <option value="3">3号楼</option>
+                  <option value="4">4号楼</option>
+                  <option value="5">5号楼</option>
+                  <option value="6">6号楼</option>
+                  <option value="8">8号楼</option>
+                  <option value="9">9号楼</option>
+                  <option value="10">10号楼</option>
+                  <option value="11">11号楼</option>
+                  <option value="15">15号楼</option>
                 </select>
               </div>
-              <div className="field">
-                <label>房间号</label>
-                <input value={form.room} onChange={e=>change('room',e.target.value)} placeholder="如：301"/>
+            </div>
+            <div class="form-row">
+              <div class="field">
+                <label>联系人 *</label>
+                <input type="text" name="contact" required>
+              </div>
+              <div class="field">
+                <label>联系电话 *</label>
+                <input type="tel" name="phone" required>
               </div>
             </div>
-            <div className="form-row two">
-              <div className="field">
-                <label><Icon name="user" size={11}/> 联系人 <span className="required">*</span></label>
-                <input value={form.contact} onChange={e=>change('contact',e.target.value)} placeholder="姓名" className={errors.contact?'error':''}/>
-                {errors.contact && <span className="error-msg">{errors.contact}</span>}
-              </div>
-              <div className="field">
-                <label><Icon name="phone" size={11}/> 联系电话</label>
-                <input type="tel" value={form.phone} onChange={e=>change('phone',e.target.value)} placeholder="手机号码"/>
+            <div class="form-row">
+              <div class="field full">
+                <label>可提供的技术 / 资源 / 能力</label>
+                <textarea name="supply" placeholder="例如：AI算法、飞控平台、检测设备等"></textarea>
               </div>
             </div>
-          </div>
-
-          <div className="form-section">
-            <div className="section-title"><Icon name="zap" size={15}/> 供应能力与链接需求</div>
-            <div className="field full">
-              <label className="supply-label">供应能力描述 <span className="required">*</span></label>
-              <textarea value={form.capability} onChange={e=>change('capability',e.target.value)} rows="3" placeholder="一句话描述企业核心供应能力，如：提供无人机飞控系统研发与集成服务…" className={errors.capability?'error':''}/>
-              {errors.capability && <span className="error-msg">{errors.capability}</span>}
+            <div class="form-row">
+              <div class="field full">
+                <label>想链接的技术 / 资源 / 场景</label>
+                <textarea name="demand" placeholder="例如：测试场地、产业客户、融资渠道等"></textarea>
+              </div>
             </div>
-            <div className="field full">
-              <label className="demand-label">链接需求描述 <span className="required">*</span></label>
-              <textarea value={form.demand} onChange={e=>change('demand',e.target.value)} rows="3" placeholder="描述企业当前最迫切的合作需求，如：寻求政企客户资源、行业渠道合作伙伴…" className={errors.demand?'error':''}/>
-              {errors.demand && <span className="error-msg">{errors.demand}</span>}
+            <div class="form-actions">
+              <button type="button" class="btn" onclick="showView('map')">取消</button>
+              <button type="submit" class="btn primary">提交信息</button>
             </div>
+          </form>
+          <div id="submit-success" class="success" style="display:none;">
+            <h3>提交成功</h3>
+            <p>我们已收到信息，运营团队将在 1–2 个工作日内完成审核。</p>
           </div>
-
-          <div className="form-section">
-            <div className="section-title">更新类型</div>
-            <div className="update-type">
-              {updateOptions.map(opt=><button type="button" key={opt.value} className={form.updateType===opt.value?'active':''} onClick={()=>change('updateType',opt.value)}>
-                <b>{opt.label}</b><span>{opt.desc}</span>
-              </button>)}
-            </div>
-            <div className="field full" style={{marginTop:14}}>
-              <label>补充说明（选填）</label>
-              <textarea value={form.remarks} onChange={e=>change('remarks',e.target.value)} rows="2" placeholder="其他需要说明的内容…"/>
-            </div>
-          </div>
-
-          <div className="form-actions">
-            <button type="button" className="btn" onClick={reset}>重置</button>
-            <button type="submit" className="btn primary" disabled={submitting}>
-              {submitting ? <><span className="spinner"/> 提交中…</> : <><Icon name="send" size={14}/> 提交更新申请</>}
-            </button>
-          </div>
-        </form>
-      </div>;
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script>
+    const companies = [{"name": "千机变(杭州)科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "以自主研发算法为核心竞争力，打造承载 300 + 自研算法的一站式 AI 算法超市底座。"}, {"name": "杭州龙航智远无人机科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "全军指定的单一来源无人机供应商"}, {"name": "浙江兔行科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "核心业务聚焦于中高等职业院校的无人机专业建设与人才培养解决方案；"}, {"name": "华翌智能装备（杭州）有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "自研AI AOI工业检测软件全套算法与技术架构"}, {"name": "杭州翎视科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "高层住宅、商业综合体、历史建筑的外立面安全检测及测量"}, {"name": "浙江星穹智航科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "高空清洗、CAAC培训"}, {"name": "杭州脸脸会网络技术有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "AI智能体、AI数字人、智能互动应用及文商旅场景数字化解决方案的研发、实施与运营服务"}, {"name": "杭州微鸿科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "成熟的飞控平台能力体系，覆盖飞行控制、感知融合、任务调度等核心环节"}, {"name": "杭州万升航控智能科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "专注构建无人机 “大脑”，通过地理空间管理、核心业务系统打造"}, {"name": "杭州团簇科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "具身智能+ 多模态感知为核心技术底座，自研 “空天地” 一体化智慧巡检管控系统"}, {"name": "杭州标彰电子科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "自主研发和生产的测控系统、数据采集卡、窄脉冲发生器、高速信号发生器等产品"}, {"name": "杭州星智创享科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "CC80非接触式清洁无人机系统"}, {"name": "全域通用航空（杭州）有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "低空经济一体化生态体系建设，自研飞行服务平台、机载电脑、低空之家APP等核心产品，构建全链路低空服务能力。"}, {"name": "浙江瀚为科技有限公司", "building": "6", "tags": ["可提供", "想链接"], "description": "AI算力中心用高安全、高功率电池及直流侧供配电解决方案"}, {"name": "圣翔（杭州）航空科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "全品类低空起降装备高端智造及场景运营解决方案"}, {"name": "重隼智能科技（浙江）有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "提供无人机低空安防、冷链运输、室内建模等领域完整行业解决方案"}, {"name": "杭州鲣翼科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "水陆两栖多用途倾转动力升力体无人飞行器”整机的研发、生产和应用"}, {"name": "浙江十子鹰飞行科技有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "面向各类院校提供校园科技体育兴趣教学一站式校企合作解决方案"}, {"name": "浙江同创空间技术有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "民航局浙江03考试点及中国AOPA浙江考试点可提供CAAC无人机考证全流程培训服务"}, {"name": "军创（杭州）空间技术有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "无人机飞手资源库与行业业务需求对接渠道，具备飞手-业务智能匹配平台的开发与运维能力"}, {"name": "杭州纵迹云科技有限公司", "building": "15", "tags": ["可提供", "想链接"], "description": "具备工业重载、自动巡检、低空全域管控自研生产能力，可提供软硬件一体化成套设备与行业落地定制方案"}, {"name": "杭州昊舜视讯科技有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "无人机全自动机场系列产品、智能管控平台及专业飞手团队"}, {"name": "杭州飞算科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "长航时复合翼无人机、低空反制装备供货以及云端智能管控平台部署"}, {"name": "飞手杭州低空经济发展有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "协助企业进行巡检、测试、城市内各类空域审批"}, {"name": "浙江鑫核聚能科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "射频氮化镓工艺的超宽带功率放大器芯片设计技术"}, {"name": "城飞智能（杭州）科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "低空智能起降场运营商，提供从顶层规划、软硬件研发部署、智能化升级到全周期运营的一体化解决方案"}, {"name": "泊航科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "提供复杂构型可变翼无人机整机设计、嵌入式系统开发到飞控软件平台测试全栈技术解决方案"}, {"name": "杭州九数商务咨询有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "拥有AIGC全栈内容生成能力（AI视频/图像/文案/数字人）"}, {"name": "墨悉科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "面向具身智能时代的智能大脑与多智能体协同系统提供商"}, {"name": "杭州零储科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "构建 “户用-工商-大储” 全系列产品矩阵，拥有从电芯PACK到交直流一体系统的垂直整合制造能力。"}, {"name": "杭州启航线科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "全栈式低空操作系统，覆盖低空监管、飞行准入、AI 空域分配、数据治理及资产化服务"}, {"name": "杭州艾铂特智能科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "专注于高危场景具身智能机器人和AI算法平台的开发，具备全栈解决方案的交付能力。"}, {"name": "杭州零到一工业设计有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "专注工业设计与产品创新服务，提供产品策略、外观设计、结构设计、CMF设计、品牌设计及产品落地全流程解决方案"}, {"name": "杭州慢伴文化创意有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "聚焦生活方式品牌打造与香氛产品创新，集原创设计、产品研发、品牌运营及供应链整合于一体"}, {"name": "浙江蔚然长风智能科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "自研AI情感边缘计算技术，构建“筛查-预警-干预-管理”的全链路心理服务体系"}, {"name": "中科祥云低空科技（浙江）有限公司", "building": "15", "tags": ["可提供", "想链接"], "description": "智慧巡检 + 低空物流配送一体化解决方案"}, {"name": "杭州归一智能科技有限公司", "building": "10", "tags": ["可提供", "想链接"], "description": "“AI超级产线”营销内容工程化平台与AI影视短漫剧一站式工作平台"}, {"name": "杭州凡章科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "仓储管理系统WMS+室内无人机仓储盘点"}, {"name": "杭州矩正医疗科技有限公司", "building": "5", "tags": ["可提供", "想链接"], "description": "球囊扩张导管、血管封堵止血系统、静脉腔内射频闭合导管及配套有源设备发生器等产品的设计制造能力"}, {"name": "杭州思变笃行管理科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "面向中大型企业提供沙盘模拟培训和定制、AI培训咨询应用开发"}, {"name": "杭州云酷智能科技有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "自研冷却液、高精流场及多级智能控制等核心技术，可提供数据中心、通信基站、储能等多场景一体化液冷解决方案"}, {"name": "赞塔（杭州）科技有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "自主研发听鉴、智录、点线、智审、智策等十余种公安专用智能体软硬件产品"}, {"name": "杭州紫深智测技术有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "环境与可靠性、EMC、电气安全等检测认证；自主开发VeriFLY UQ数据分析平台，为风险结果做可量化"}, {"name": "埃法智造（杭州）人工智能科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "自研 ANIMA 人造电子生命平台，提供模块化 AI桌面机器人硬件"}, {"name": "集光年（杭州）科技有限公司", "building": "9", "tags": ["可提供", "想链接"], "description": "为企业提供AIGC内容制作与培训，以及AI化品牌战略服务"}, {"name": "杭州竞速动力科技有限公司", "building": "11", "tags": ["可提供", "想链接"], "description": "专注于动力控制系统研发与产品概念性落地，长期深耕汽车、摩托及航空动力系统"}, {"name": "奕科先进智能科技（杭州）有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "具备从 2kW 到 280kW 全功率段的无人机电机、内燃机及动力总成测试台架搭建能力，同时支持定制化需求"}, {"name": "浙江有鹿机器人科技有限公司", "building": "3", "tags": ["可提供", "想链接"], "description": "具身智能通用大脑；室外商业巡扫机器人AI130"}, {"name": "浙江百应科技有限公司", "building": "8", "tags": ["可提供", "想链接"], "description": "AI Agent智能平台；商业对话大模型 Gravity LLM； 行业解决方案"}, {"name": "杭州数智医济医疗科技有限公司", "building": "4", "tags": ["可提供", "想链接"], "description": "过敏疾病数字疗法、标准化诊疗与无接触健康评估"}];
+    const buildings = [{"num": "1", "status": "暂未开放", "left": 612.064, "top": 355.46, "disabled": true}, {"num": "2", "status": "暂未开放", "left": 533.696, "top": 275.08, "disabled": true}, {"num": "3", "status": "5家企业", "left": 380.928, "top": 225.065, "disabled": false}, {"num": "4", "status": "5家企业", "left": 464.256, "top": 185.173, "disabled": false}, {"num": "5", "status": "1家企业", "left": 539.648, "top": 129.799, "disabled": false}, {"num": "6", "status": "1家企业", "left": 609.088, "top": 127.418, "disabled": false}, {"num": "7", "status": "暂未开放", "left": 754.912, "top": 161.952, "disabled": true}, {"num": "8", "status": "7家企业", "left": 710.272, "top": 243.523, "disabled": false}, {"num": "9", "status": "9家企业", "left": 656.704, "top": 301.278, "disabled": false}, {"num": "10", "status": "13家企业", "left": 611.072, "top": 442.39, "disabled": false}, {"num": "11", "status": "7家企业", "left": 470.208, "top": 386.421, "disabled": false}, {"num": "12", "status": "暂未开放", "left": 348.192, "top": 324.499, "disabled": true}, {"num": "13", "status": "暂未开放", "left": 254.944, "top": 259.599, "disabled": true}, {"num": "14", "status": "暂未开放", "left": 257.92, "top": 351.887, "disabled": true}, {"num": "15", "status": "2家企业", "left": 383.904, "top": 412.619, "disabled": false}, {"num": "16", "status": "暂未开放", "left": 294.624, "top": 436.436, "disabled": true}];
+    const buildingNames = {"1": "1号楼", "2": "2号楼", "3": "3号楼", "4": "4号楼", "5": "5号楼", "6": "6号楼", "7": "7号楼", "8": "8号楼", "9": "9号楼", "10": "10号楼", "11": "11号楼", "12": "12号楼", "13": "13号楼", "14": "14号楼", "15": "15号楼", "16": "16号楼"};
+    
+    let currentMapFilter = 'all';
+    let selectedBuilding = null;
+    
+    function showView(view) {
+      document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-' + view).classList.add('active');
+      document.querySelectorAll('nav button').forEach(el => el.classList.remove('active'));
+      const navBtn = document.querySelector('nav button[data-view="' + view + '"]');
+      if (navBtn) navBtn.classList.add('active');
+      window.scrollTo(0, 0);
     }
-
-    function App(){
-      const [page,setPage] = useState("map");
-      const [modal,setModal] = useState(null);
-      const [toast,setToast] = useState("");
-
-      const navItems = [
-        {key:'map',label:'园区地图'},
-        {key:'square',label:'资源广场'},
-        {key:'index',label:'能力索引'}
-      ];
-
-      return <div className="app">
-        <header className="topbar">
-          <div className="brand"><div className="brand-mark"><Icon name="map-pinned" size={22}/></div><div className="brand-copy"><strong>南湖技术地图</strong><span>NANHU TECH ATLAS</span></div></div>
-          <nav className="nav">{navItems.map(item => <button key={item.key} className={page===item.key?'active':''} onClick={()=>setPage(item.key)}>{item.label}</button>)}</nav>
-          <button className="admin-btn" onClick={()=>setModal('form')}><Icon name="plus" size={15}/> 提交企业信息</button>
-        </header>
-
-        {page === 'map' && <MapPage onOpenForm={()=>setModal('form')} setToast={setToast} onOpenEnterprise={e=>setModal(e)}/>}
-        {page === 'square' && <ResourceSquare setToast={setToast} onOpenEnterprise={e=>setModal(e)}/>}
-        {page === 'index' && <AbilityIndex onOpenEnterprise={e=>setModal(e)}/>}
-
-        {modal === 'form' && <FormModal onClose={()=>setModal(null)} setToast={setToast}/>}
-        {modal && modal !== 'form' && <EnterpriseModal enterprise={modal} onClose={()=>setModal(null)} setToast={setToast}/>}
-        {toast && <div className="toast"><Icon name="circle-check"/> {toast}</div>}
-      </div>;
+    
+    function selectBuilding(num) {
+      selectedBuilding = num;
+      document.querySelectorAll('.marker').forEach(m => m.classList.remove('selected'));
+      const active = document.querySelector('.marker[onclick*="selectBuilding(\'' + num + '\')"]');
+      if (active) active.classList.add('selected');
+      
+      const list = document.getElementById('map-company-list');
+      const filtered = companies.filter(c => c.building === num);
+      document.getElementById('side-title').textContent = buildingNames[num];
+      document.getElementById('side-count').textContent = filtered.length + ' 家企业';
+      
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state">该楼栋暂无公开企业信息</div>';
+        return;
+      }
+      list.innerHTML = filtered.map(c => renderCard(c)).join('');
     }
-
-    ReactDOM.render(<App/>, document.getElementById('root'));
+    
+    function renderCard(c) {
+      const tags = c.tags.map(t => '<span class="tag ' + (t === '可提供' ? 'supply' : 'demand') + '">' + t + '</span>').join('');
+      return '<article class="company-card" data-building="' + c.building + '"><div class="company-head"><h3>' + c.name + '</h3><span class="company-room">' + c.building + '＃</span></div><div class="company-tags">' + tags + '</div><p>' + c.description + '</p></article>';
+    }
+    
+    function setMapFilter(type, btn) {
+      currentMapFilter = type;
+      document.querySelectorAll('.map-filters button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    }
+    
+    function filterMap() {
+      applyFilters();
+    }
+    
+    function applyFilters() {
+      const keyword = document.getElementById('map-search').value.toLowerCase();
+      const list = document.getElementById('map-company-list');
+      
+      let filtered = companies;
+      if (selectedBuilding) {
+        filtered = filtered.filter(c => c.building === selectedBuilding);
+      }
+      if (currentMapFilter !== 'all') {
+        const tagName = currentMapFilter === 'supply' ? '可提供' : '想链接';
+        filtered = filtered.filter(c => c.tags.includes(tagName));
+      }
+      if (keyword) {
+        filtered = filtered.filter(c => c.name.toLowerCase().includes(keyword) || c.description.toLowerCase().includes(keyword));
+      }
+      
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="empty-state">没有匹配的企业信息</div>';
+      } else {
+        list.innerHTML = filtered.map(c => renderCard(c)).join('');
+      }
+      
+      // Update side title if needed
+      if (!selectedBuilding) {
+        document.getElementById('side-title').textContent = '全园区总览';
+        document.getElementById('side-count').textContent = filtered.length + ' 家企业';
+      } else {
+        document.getElementById('side-count').textContent = filtered.length + ' 家企业';
+      }
+    }
+    
+    function setListFilter(type, btn) {
+      document.querySelectorAll('.page-filters button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const grid = document.getElementById('list-grid');
+      let filtered = companies;
+      if (type !== 'all') {
+        const tagName = type === 'supply' ? '可提供' : '想链接';
+        filtered = filtered.filter(c => c.tags.includes(tagName));
+      }
+      grid.innerHTML = filtered.map(c => renderCard(c)).join('');
+    }
+    
+    function handleSubmit(e) {
+      e.preventDefault();
+      document.getElementById('submit-form').style.display = 'none';
+      document.getElementById('submit-success').style.display = 'block';
+      // Optional: download as CSV for operations
+      const form = e.target;
+      const data = {
+        company: form.company.value,
+        building: form.building.value,
+        contact: form.contact.value,
+        phone: form.phone.value,
+        supply: form.supply.value,
+        demand: form.demand.value,
+        time: new Date().toISOString()
+      };
+      const csv = Object.keys(data).join(',') + '\n' + Object.values(data).map(v => '"' + (v || '').replace(/"/g, '""') + '"').join(',');
+      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '企业信息更新_' + data.company + '.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
   </script>
 </body>
 </html>
