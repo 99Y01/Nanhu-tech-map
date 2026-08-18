@@ -7,12 +7,12 @@
   <link rel="icon" type="image/svg+xml" href="./assets/1d-favicon-light.svg">
   <style>
     :root {
-      --ink: #1a3a4a;
-      --muted: #5a6d78;
+      --ink: #1e2d3d;
+      --muted: #7a8fa6;
       --paper: #f0f3f7;
-      --cream: #fffdf7;
+      --cream: #f8fafc;
       --lake: #36b7ad;
-      --lake-deep: #087d76;
+      --lake-deep: #2d5f8a;
       --line: rgba(91, 141, 184, 0.18);
       --shadow: 0 24px 70px rgba(25, 70, 64, 0.12);
       --map-bg: rgb(221, 228, 238);
@@ -115,7 +115,7 @@
     .field input, .field textarea, .field select { border: 1px solid var(--line); border-radius: 12px; padding: 11px 13px; background: white; font-size: 14px; color: var(--ink); outline: none; }
     .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--lake); }
     .field textarea { min-height: 90px; resize: vertical; }
-    .update-type { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .update-type { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .update-type button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-height: 64px; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: white; color: var(--ink); cursor: pointer; transition: 0.18s; }
     .update-type button.active { border-color: var(--lake-deep); background: rgba(54, 183, 173, 0.08); color: var(--lake-deep); }
     .update-type button b { font-size: 13px; }
@@ -491,7 +491,6 @@
                 <div class="update-type">
                   <button type="button" class="active" onclick="setUpdateType('update', this)"><b>信息更新</b><span>更新现有信息</span></button>
                   <button type="button" onclick="setUpdateType('new', this)"><b>新增企业</b><span>首次录入</span></button>
-                  <button type="button" onclick="setUpdateType('correct', this)"><b>信息纠错</b><span>修正错误信息</span></button>
                 </div>
                 <div class="form-row" style="margin-top:14px;">
                   <div class="field full"><label>补充说明（选填）</label><textarea name="remarks" rows="2" placeholder="其他需要说明的内容…"></textarea></div>
@@ -640,7 +639,7 @@
     function handleSubmit(e) {
       e.preventDefault();
       const form = e.target;
-      const labels = {update:'信息更新', new:'新增企业', correct:'信息纠错'};
+      const labels = {update:'信息更新', new:'新增企业'};
       const data = {
         time: new Date().toLocaleString('zh-CN'),
         companyName: form.companyName.value,
