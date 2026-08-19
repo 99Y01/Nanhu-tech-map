@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #1e2d3d;
+  --muted: #7a8fa6;
+  --paper: #f0f3f7;
+  --cream: #f8fafc;
+  --lake: #5b8db8;
+  --lake-deep: #2d5f8a;
+  --moss: #7a9ab5;
+  --orange: #7eb8d4;
+  --yellow: #a8c8e0;
+  --line: rgba(30, 45, 61, .12);
+  --shadow: 0 24px 70px rgba(30, 60, 100, .14);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  min-height: 100%;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Aptos", "PingFang SC", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #c5d9ec;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(30,45,61,.18); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(30,45,61,.32); }
