@@ -133,7 +133,8 @@ export default function SubmitPage() {
 
       await fetch(signedUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({
           msgtype: 'markdown',
           markdown: {
