@@ -131,17 +131,19 @@ export default function SubmitPage() {
         ...(formData.remarks ? [``, `**补充说明：**`, `${formData.remarks}`] : []),
       ].join('\n');
 
-      await fetch(signedUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({
+      await new Promise<void>((resolve) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', signedUrl);
+        xhr.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8');
+        xhr.onloadend = () => resolve();
+        xhr.onerror = () => resolve();
+        xhr.send(JSON.stringify({
           msgtype: 'markdown',
           markdown: {
             title: `新企业信息提交：${formData.companyName}`,
             text: messageText,
           },
-        }),
+        }));
       });
     } catch {
       // Webhook 发送失败不阻断用户流程，静默处理
