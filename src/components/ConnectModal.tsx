@@ -30,16 +30,24 @@ const getToken = () => {
 async function sendNotification(target: ConnectTarget, form: FormData) {
   const kindLabel = target.kind === 'supply' ? '可提供能力' : '链接需求';
   const issueBody = [
-    `**目标企业：** ${target.companyName}`,
-    `**对接类型：** ${kindLabel}`,
-    `**内容摘要：** ${target.content}`,
+    `**目标企业：**`,
+    `${target.companyName}`,
+    ``,
+    `**对接类型：**`,
+    `${kindLabel}`,
+    ``,
+    `**内容摘要：**`,
+    `${target.content}`,
     ``,
     `---`,
     ``,
-    `**发起方姓名：** ${form.name}`,
-    `**联系电话：** ${form.phone}`,
-    ...(form.company ? [`**所在企业：** ${form.company}`] : []),
-    ...(form.message ? [``, `**对接说明：** ${form.message}`] : []),
+    `**发起方姓名：**`,
+    `${form.name}`,
+    ``,
+    `**联系电话：**`,
+    `${form.phone}`,
+    ...(form.company ? [``, `**所在企业：**`, `${form.company}`] : []),
+    ...(form.message ? [``, `**对接说明：**`, `${form.message}`] : []),
   ].join('\n');
 
   await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
