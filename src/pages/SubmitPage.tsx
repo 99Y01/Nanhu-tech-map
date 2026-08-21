@@ -67,31 +67,7 @@ export default function SubmitPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const buildSignedWebhookUrl = async (): Promise<string> => {
-    const WEBHOOK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=719f9b3614dea0f1b5e92a45cabc755f2970a812e17d920377817504fad580b5';
-    const SECRET = 'SEC0f52bd34ead88a54fcee67fe2a6a4369b6340161300684ac51e36b84bb070e55';
-
-    const timestamp = Date.now();
-    const stringToSign = `${timestamp}\n${SECRET}`;
-
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(SECRET);
-    const messageData = encoder.encode(stringToSign);
-
-    const cryptoKey = await window.crypto.subtle.importKey(
-      'raw',
-      keyData,
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign'],
-    );
-
-    const signatureBuffer = await window.crypto.subtle.sign('HMAC', cryptoKey, messageData);
-    const signatureBase64 = btoa(String.fromCharCode(...new Uint8Array(signatureBuffer)));
-    const encodedSign = encodeURIComponent(signatureBase64);
-
-    return `${WEBHOOK_URL}&timestamp=${timestamp}&sign=${encodedSign}`;
-  };
+  const PROXY_URL = 'https://nanhu-tech-map.yyt01327607.workers.dev';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,8 +75,6 @@ export default function SubmitPage() {
     setIsSubmitting(true);
 
     try {
-      const signedUrl = await buildSignedWebhookUrl();
-
       const buildingDisplay = formData.building
         ? `${formData.building}号楼 ${formData.room || ''}`.trim()
         : formData.room || '未填写';
@@ -131,22 +105,19 @@ export default function SubmitPage() {
         ...(formData.remarks ? [``, `**补充说明：**`, `${formData.remarks}`] : []),
       ].join('\n');
 
-      await new Promise<void>((resolve) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', signedUrl);
-        xhr.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8');
-        xhr.onloadend = () => resolve();
-        xhr.onerror = () => resolve();
-        xhr.send(JSON.stringify({
+      await fetch(PROXY_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           msgtype: 'markdown',
           markdown: {
             title: `新企业信息提交：${formData.companyName}`,
             text: messageText,
           },
-        }));
+        }),
       });
     } catch {
-      // Webhook 发送失败不阻断用户流程，静默处理
+      // 发送失败不阻断用户流程，静默处理
     }
 
     setIsSubmitting(false);
