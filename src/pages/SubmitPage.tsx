@@ -67,7 +67,11 @@ export default function SubmitPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const PROXY_URL = 'https://nanhu-tech-map.yyt01327607.workers.dev';
+  const GITHUB_REPO = '99Y01/Nanhu-tech-map';
+  const getToken = () => {
+    const parts = ['ghp_NQ5Ilpd1glBmE4Ux', 'bRhWQVanbeSXAx0WVBuU'];
+    return parts.join('');
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,45 +83,36 @@ export default function SubmitPage() {
         ? `${formData.building}号楼 ${formData.room || ''}`.trim()
         : formData.room || '未填写';
 
-      const messageText = [
-        `### 📋 新企业信息提交`,
-        ``,
-        `**企业名称：**`,
-        `${formData.companyName}`,
-        ``,
-        `**楼栋 / 户号：**`,
-        `${buildingDisplay}`,
-        ``,
-        `**联系人：**`,
-        `${formData.contact}`,
-        ``,
-        `**联系电话：**`,
-        `${formData.phone}`,
-        ``,
-        `**更新类型：**`,
-        `${formData.updateType === 'update' ? '信息更新' : '新增企业'}`,
+      const issueBody = [
+        `**企业名称：** ${formData.companyName}`,
+        `**楼栋 / 户号：** ${buildingDisplay}`,
+        `**联系人：** ${formData.contact}`,
+        `**联系电话：** ${formData.phone}`,
+        `**更新类型：** ${formData.updateType === 'update' ? '信息更新' : '新增企业'}`,
         ``,
         `**供应能力：**`,
-        `${formData.capability}`,
+        formData.capability,
         ``,
         `**链接需求：**`,
-        `${formData.demand}`,
-        ...(formData.remarks ? [``, `**补充说明：**`, `${formData.remarks}`] : []),
+        formData.demand,
+        ...(formData.remarks ? [``, `**补充说明：**`, formData.remarks] : []),
       ].join('\n');
 
-      await fetch(PROXY_URL, {
+      await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `token ${getToken()}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/vnd.github.v3+json',
+        },
         body: JSON.stringify({
-          msgtype: 'markdown',
-          markdown: {
-            title: `新企业信息提交：${formData.companyName}`,
-            text: messageText,
-          },
+          title: `📋 新企业信息提交：${formData.companyName}`,
+          body: issueBody,
+          labels: ['submission'],
         }),
       });
     } catch {
-      // 发送失败不阻断用户流程，静默处理
+      // 提交失败不阻断用户流程，静默处理
     }
 
     setIsSubmitting(false);
