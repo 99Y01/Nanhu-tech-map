@@ -177,26 +177,50 @@ export default function MapPageNew() {
     : (currentLayout?.open ? `${filteredCompanies.length} 家企业` : '暂未开放');
 
   return (
-    <div style={{ padding: '24px 28px 34px' }}>
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 24, margin: '4px 0 18px' }}>
+    <div style={{ padding: '20px 20px 34px' }}>
+      <style>{`
+        @media (max-width: 700px) {
+          .map-hero-title { font-size: 28px !important; }
+          .map-hero-desc { display: none !important; }
+          .map-hero-stats { gap: 8px !important; }
+          .map-hero-stat { padding: 12px !important; }
+          .map-hero-stat b { font-size: 22px !important; }
+          .map-main-section {
+            grid-template-columns: 1fr !important;
+            grid-template-rows: 52vw auto !important;
+            height: auto !important;
+          }
+          .map-panel-aside {
+            border-left: none !important;
+            border-top: 1px solid var(--line) !important;
+            max-height: 420px !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .map-page-wrap { padding: 12px 12px 24px !important; }
+          .map-hero-section { margin-bottom: 12px !important; }
+        }
+      `}</style>
+
+      <section className="map-hero-section" style={{ display: 'flex', flexDirection: 'column', gap: 16, margin: '4px 0 16px' }}>
         <div>
           <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center', color: 'var(--lake-deep)', fontSize: 12, fontWeight: 800, letterSpacing: '0.12em' }}>
             <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--lake)', boxShadow: '0 0 0 6px rgba(54,183,173,.13)', display: 'inline-block' }} />
             园区能力实时索引 · 2026
           </div>
-          <h1 style={{ fontFamily: '"Arial Black", "PingFang SC", sans-serif', margin: '11px 0 7px', fontSize: 'clamp(35px, 4.3vw, 66px)', lineHeight: 1.1, letterSpacing: '-0.07em' }}>
+          <h1 className="map-hero-title" style={{ fontFamily: '"Arial Black", "PingFang SC", sans-serif', margin: '10px 0 6px', fontSize: 'clamp(28px, 4.3vw, 66px)', lineHeight: 1.1, letterSpacing: '-0.07em' }}>
             让每一栋楼<br />成为一张<em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>连接入口</em>
           </h1>
-          <p style={{ maxWidth: 610, color: 'var(--muted)', lineHeight: 1.9, fontSize: 14, margin: '10px 0 0' }}>
+          <p className="map-hero-desc" style={{ maxWidth: 610, color: 'var(--muted)', lineHeight: 1.9, fontSize: 14, margin: '10px 0 0' }}>
             从楼栋进入企业档案，快速发现园区内正在寻找的资源与可开放的技术能力。
           </p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, maxWidth: 320 }}>
+        <div className="map-hero-stats" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, maxWidth: 320 }}>
           {[
             { value: companies.length, label: '已收录企业' },
             { value: Object.keys(buildingLayout).filter(k => buildingLayout[k].open).length, label: '开放楼栋' },
           ].map(({ value, label }) => (
-            <div key={label} style={{ padding: 17, borderTop: '1px solid var(--ink)', background: 'rgba(255,255,255,.36)' }}>
+            <div key={label} className="map-hero-stat" style={{ padding: 17, borderTop: '1px solid var(--ink)', background: 'rgba(255,255,255,.36)' }}>
               <b style={{ display: 'block', fontFamily: 'Georgia, serif', fontSize: 30, fontWeight: 'normal' }}>{value}</b>
               <span style={{ color: 'var(--muted)', fontSize: 11 }}>{label}</span>
             </div>
@@ -204,7 +228,7 @@ export default function MapPageNew() {
         </div>
       </section>
 
-      <section style={{
+      <section className="map-main-section" style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(0, 1fr) 385px',
         height: 680,
@@ -609,7 +633,7 @@ export default function MapPageNew() {
           )}
         </div>
 
-        <aside style={{
+        <aside className="map-panel-aside" style={{
           background: 'var(--cream)',
           borderLeft: '1px solid var(--line)',
           display: 'flex',
