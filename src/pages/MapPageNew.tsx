@@ -267,6 +267,13 @@ export default function MapPageNew() {
             }}
           />
 
+          <style>{`
+            .map-info-card { display: flex !important; }
+            @media (max-width: 640px) {
+              .map-info-card { display: none !important; }
+            }
+          `}</style>
+
           <div
             style={{
               position: 'absolute', left: 16, right: 16, top: 14, zIndex: 10,
@@ -274,7 +281,7 @@ export default function MapPageNew() {
             }}
             onClick={e => e.stopPropagation()}
           >
-            <div style={{
+            <div className="map-info-card" style={{
               background: 'rgba(255,255,255,.88)', border: '1px solid rgba(91,141,184,.2)',
               borderRadius: 13, padding: '9px 14px',
               boxShadow: '0 4px 18px rgba(91,141,184,.14)',
@@ -411,7 +418,8 @@ export default function MapPageNew() {
                     const pinColor = debugMode
                       ? '#7b1fa2'
                       : (isSelected ? '#0d3d8a' : (hasCompanies ? '#1565c0' : '#6fa8d6'));
-                    const pinSize = isSelected ? 47 : 38;
+                    const isMobile = imageRect.width > 0 && imageRect.width < 400;
+                    const pinSize = isSelected ? (isMobile ? 34 : 47) : (isMobile ? 26 : 38);
                     const pinWidth = pinSize;
                     const pinHeight = Math.round(pinSize * 1.22);
                     const r = pinWidth / 2;
