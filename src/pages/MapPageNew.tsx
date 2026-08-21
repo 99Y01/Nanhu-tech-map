@@ -180,14 +180,14 @@ export default function MapPageNew() {
     <div style={{ padding: '20px 20px 34px' }}>
       <style>{`
         @media (max-width: 700px) {
-          .map-hero-title { font-size: 28px !important; }
-          .map-hero-desc { display: none !important; }
+          .map-hero-title { font-size: 26px !important; }
+          .map-hero-desc { font-size: 13px !important; }
           .map-hero-stats { gap: 8px !important; }
           .map-hero-stat { padding: 12px !important; }
           .map-hero-stat b { font-size: 22px !important; }
           .map-main-section {
             grid-template-columns: 1fr !important;
-            grid-template-rows: 52vw auto !important;
+            grid-template-rows: 75vw auto !important;
             height: auto !important;
           }
           .map-panel-aside {
@@ -418,8 +418,8 @@ export default function MapPageNew() {
                     const pinColor = debugMode
                       ? '#7b1fa2'
                       : (isSelected ? '#0d3d8a' : (hasCompanies ? '#1565c0' : '#6fa8d6'));
-                    const isMobile = imageRect.width > 0 && imageRect.width < 400;
-                    const pinSize = isSelected ? (isMobile ? 34 : 47) : (isMobile ? 26 : 38);
+                    const isMobile = imageRect.width > 0 && imageRect.width < 500;
+                    const pinSize = isSelected ? (isMobile ? 30 : 47) : (isMobile ? 22 : 38);
                     const pinWidth = pinSize;
                     const pinHeight = Math.round(pinSize * 1.22);
                     const r = pinWidth / 2;
@@ -505,7 +505,7 @@ export default function MapPageNew() {
                             textAnchor="middle"
                             dominantBaseline="central"
                             fill="#fff"
-                            fontSize={isSelected ? 24 : 20}
+                            fontSize={isSelected ? (isMobile ? 15 : 24) : (isMobile ? 11 : 20)}
                             fontWeight="900"
                             fontFamily='"Nunito","Varela Round","PingFang SC","Arial Rounded MT Bold",sans-serif'
                             style={{ userSelect: 'none' }}
@@ -517,15 +517,15 @@ export default function MapPageNew() {
                         {/* 企业数量角标 */}
                         {hasCompanies && !debugMode && (
                           <span style={{
-                            position: 'absolute', right: -7, top: -7,
-                            minWidth: 22, height: 22, padding: '0 5px',
+                            position: 'absolute', right: isMobile ? -4 : -7, top: isMobile ? -4 : -7,
+                            minWidth: isMobile ? 15 : 22, height: isMobile ? 15 : 22, padding: isMobile ? '0 3px' : '0 5px',
                             borderRadius: 999,
                             background: isSelected
                               ? 'linear-gradient(135deg, #ff8c00, #f05a00)'
                               : 'linear-gradient(135deg, #ff9a1a, #e85d00)',
                             border: '2.5px solid rgba(255,255,255,.98)',
                             display: 'grid', placeItems: 'center',
-                            color: '#fff', fontSize: 11, fontWeight: 900,
+                            color: '#fff', fontSize: isMobile ? 8 : 11, fontWeight: 900,
                             boxShadow: '0 2px 8px rgba(220,90,0,.45)',
                             lineHeight: 1,
                             transition: 'all 0.22s ease',
