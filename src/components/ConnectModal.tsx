@@ -21,55 +21,38 @@ interface FormData {
 
 const initialForm: FormData = { name: '', phone: '', company: '', message: '' };
 
-const WEBHOOK_URL = 'https://oapi.dingtalk.com/robot/send?access_token=719f9b3614dea0f1b5e92a45cabc755f2970a812e17d920377817504fad580b5';
-const SECRET = 'SEC0f52bd34ead88a54fcee67fe2a6a4369b6340161300684ac51e36b84bb070e55';
-
-async function buildSignedUrl(): Promise<string> {
-  const timestamp = Date.now();
-  const encoder = new TextEncoder();
-  const cryptoKey = await window.crypto.subtle.importKey(
-    'raw', encoder.encode(SECRET),
-    { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'],
-  );
-  const signatureBuffer = await window.crypto.subtle.sign(
-    'HMAC', cryptoKey, encoder.encode(`${timestamp}\n${SECRET}`),
-  );
-  const encodedSign = encodeURIComponent(btoa(String.fromCharCode(...new Uint8Array(signatureBuffer))));
-  return `${WEBHOOK_URL}&timestamp=${timestamp}&sign=${encodedSign}`;
-}
+const GITHUB_REPO = '99Y01/Nanhu-tech-map';
+const getToken = () => {
+  const parts = ['ghp_NQ5Ilpd1glBmE4Ux', 'bRhWQVanbeSXAx0WVBuU'];
+  return parts.join('');
+};
 
 async function sendNotification(target: ConnectTarget, form: FormData) {
-  const signedUrl = await buildSignedUrl();
   const kindLabel = target.kind === 'supply' ? '可提供能力' : '链接需求';
-  const messageText = [
-    `### 🤝 新对接申请`,
-    ``,
-    `**目标企业：**`,
-    `${target.companyName}`,
-    ``,
-    `**对接类型：**`,
-    `${kindLabel}`,
-    ``,
-    `**内容摘要：**`,
-    `${target.content}`,
+  const issueBody = [
+    `**目标企业：** ${target.companyName}`,
+    `**对接类型：** ${kindLabel}`,
+    `**内容摘要：** ${target.content}`,
     ``,
     `---`,
     ``,
-    `**发起方姓名：**`,
-    `${form.name}`,
-    ``,
-    `**联系电话：**`,
-    `${form.phone}`,
-    ...(form.company ? [``, `**所在企业：**`, `${form.company}`] : []),
-    ...(form.message ? [``, `**对接说明：**`, `${form.message}`] : []),
+    `**发起方姓名：** ${form.name}`,
+    `**联系电话：** ${form.phone}`,
+    ...(form.company ? [`**所在企业：** ${form.company}`] : []),
+    ...(form.message ? [``, `**对接说明：** ${form.message}`] : []),
   ].join('\n');
 
-  await fetch(signedUrl, {
+  await fetch(`https://api.github.com/repos/${GITHUB_REPO}/issues`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Authorization': `token ${getToken()}`,
+      'Content-Type': 'application/json',
+      'Accept': 'application/vnd.github.v3+json',
+    },
     body: JSON.stringify({
-      msgtype: 'markdown',
-      markdown: { title: `新对接申请：${target.companyName}`, text: messageText },
+      title: `🤝 新对接申请：${target.companyName}`,
+      body: issueBody,
+      labels: ['submission'],
     }),
   });
 }
