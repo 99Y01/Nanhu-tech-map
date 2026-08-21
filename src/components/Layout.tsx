@@ -29,7 +29,7 @@ export default function Layout() {
           .desktop-submit-btn { display: none; }
           .mobile-bottom-nav { display: flex; }
           .header-inner { padding: 0 16px !important; }
-          .brand-subtitle { display: none !important; }
+          .brand-subtitle { font-size: 9px !important; }
           main { padding-bottom: 68px; }
         }
       `}</style>
