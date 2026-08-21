@@ -1,6 +1,12 @@
 import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import { MapPinned, Map, LayoutGrid, Tag, Plus } from 'lucide-react';
+
+const NAV_ITEMS = [
+  { to: '/', label: '园区全览', icon: <Map size={20} />, end: true },
+  { to: '/list', label: '资源广场', icon: <LayoutGrid size={20} />, end: false },
+  { to: '/submit', label: '信息更新', icon: <Tag size={20} />, end: false },
+];
 
 export default function Layout() {
   return (
@@ -15,13 +21,16 @@ export default function Layout() {
       backgroundSize: 'auto, 26px 26px, 26px 26px, auto',
     }}>
       <style>{`
-        .nav-label-desktop { display: inline; }
-        .submit-btn-desktop { display: flex; }
-        @media (max-width: 600px) {
-          .nav-label-desktop { display: none; }
-          .submit-btn-desktop { display: none; }
+        .desktop-nav { display: flex; }
+        .desktop-submit-btn { display: flex; }
+        .mobile-bottom-nav { display: none; }
+        @media (max-width: 640px) {
+          .desktop-nav { display: none; }
+          .desktop-submit-btn { display: none; }
+          .mobile-bottom-nav { display: flex; }
           .header-inner { padding: 0 16px !important; }
           .brand-subtitle { display: none !important; }
+          main { padding-bottom: 68px; }
         }
       `}</style>
 
@@ -70,20 +79,15 @@ export default function Layout() {
             </div>
           </div>
 
-          {/* 导航 */}
-          <nav style={{
-            display: 'flex',
+          {/* 桌面端导航 */}
+          <nav className="desktop-nav" style={{
             gap: 4,
             padding: 4,
             background: 'rgba(255,255,255,.55)',
             border: '1px solid var(--line)',
             borderRadius: 999,
           }}>
-            {[
-              { to: '/', label: '园区全览', icon: <Map size={14} />, end: true },
-              { to: '/list', label: '资源广场', icon: <LayoutGrid size={14} />, end: false },
-              { to: '/submit', label: '信息更新', icon: <Tag size={14} />, end: false },
-            ].map(({ to, label, icon, end }) => (
+            {NAV_ITEMS.map(({ to, label, icon, end }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -105,15 +109,15 @@ export default function Layout() {
                 })}
               >
                 {icon}
-                <span className="nav-label-desktop">{label}</span>
+                {label}
               </NavLink>
             ))}
           </nav>
 
-          {/* 提交按钮（桌面端显示） */}
+          {/* 桌面端提交按钮 */}
           <NavLink
             to="/submit"
-            className="submit-btn-desktop"
+            className="desktop-submit-btn"
             style={({ isActive }) => ({
               alignItems: 'center',
               gap: 8,
@@ -138,6 +142,45 @@ export default function Layout() {
       <main>
         <Outlet />
       </main>
+
+      {/* 手机端底部导航栏 */}
+      <nav className="mobile-bottom-nav" style={{
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        background: 'rgba(240,243,247,.95)',
+        backdropFilter: 'blur(16px)',
+        borderTop: '1px solid var(--line)',
+        padding: '8px 0 max(8px, env(safe-area-inset-bottom))',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+      }}>
+        {NAV_ITEMS.map(({ to, label, icon, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            style={({ isActive }) => ({
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 3,
+              flex: 1,
+              padding: '4px 0',
+              textDecoration: 'none',
+              color: isActive ? 'var(--ink)' : 'var(--muted)',
+              fontWeight: isActive ? 700 : 400,
+              fontSize: 10,
+              transition: 'color .15s ease',
+            })}
+          >
+            {icon}
+            {label}
+          </NavLink>
+        ))}
+      </nav>
     </div>
   );
 }
