@@ -1,0 +1,27 @@
+name: 钉钉通知 - 新企业信息提交
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'submission')
+    steps:
+      - name: 发送钉钉通知
+        run: |
+          TITLE="${{ github.event.issue.title }}"
+          BODY=$(echo '${{ toJSON(github.event.issue.body) }}' | python3 -c "import sys,json; print(json.load(sys.stdin))")
+
+          TIMESTAMP=$(date +%s%3N)
+          SECRET="${{ secrets.DINGTALK_SECRET }}"
+          SIGN=$(printf "%s\n%s" "$TIMESTAMP" "$SECRET" | openssl dgst -sha256 -hmac "$SECRET" -binary | base64 | python3 -c "import sys,urllib.parse; print(urllib.parse.quote(sys.stdin.read().strip()))")
+
+          WEBHOOK_URL="https://oapi.dingtalk.com/robot/send?access_token=${{ secrets.DINGTALK_TOKEN }}&timestamp=${TIMESTAMP}&sign=${SIGN}"
+
+          MESSAGE="### 📋 新企业信息提交\n\n${BODY}"
+
+          curl -s -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "{\"msgtype\":\"markdown\",\"markdown\":{\"title\":\"${TITLE}\",\"text\":\"${MESSAGE}\"}}"
