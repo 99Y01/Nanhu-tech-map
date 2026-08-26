@@ -1,6 +1,7 @@
 import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import HomePage from './pages/HomePage';
 import MapPageNew from './pages/MapPageNew';
 import ListPage from './pages/ListPage';
 import SubmitPage from './pages/SubmitPage';
@@ -10,7 +11,8 @@ export default function App() {
     <HashRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={<MapPageNew />} />
+          <Route index element={<HomePage />} />
+          <Route path="map" element={<MapPageNew />} />
           <Route path="list" element={<ListPage />} />
           <Route path="submit" element={<SubmitPage />} />
         </Route>
