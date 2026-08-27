@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import MapPageNew from './pages/MapPageNew';
 import ListPage from './pages/ListPage';
 import SubmitPage from './pages/SubmitPage';
+import ExplorePage from './pages/ExplorePage';
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
+          <Route path="explore" element={<ExplorePage />} />
           <Route path="map" element={<MapPageNew />} />
           <Route path="list" element={<ListPage />} />
           <Route path="submit" element={<SubmitPage />} />
