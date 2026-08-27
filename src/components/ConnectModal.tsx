@@ -71,7 +71,7 @@ async function sendNotification(target: ConnectTarget, form: FormData) {
       body: issueBody,
       labels: ['submission'],
     }),
-  });
+  }).catch(() => undefined);
 }
 
 const inputStyle: React.CSSProperties = {
@@ -114,7 +114,7 @@ export default function ConnectModal({ target, onClose }: ConnectModalProps) {
     setIsSubmitting(true);
     try {
       await sendNotification(target, form);
-    } catch {
+    } catch (_error) {
       // 静默处理，不阻断用户流程
     }
     setIsSubmitting(false);
