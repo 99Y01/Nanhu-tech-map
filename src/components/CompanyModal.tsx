@@ -18,21 +18,24 @@ interface CompanyModalProps {
 function inferIndustryTags(company: Company): string[] {
   const text = `${company.name} ${company.capability} ${company.demand}`;
   const tagMap: [string, string][] = [
-    ['AI', 'AI'],
-    ['AIGC', 'AIGC'],
-    ['算法', 'AI算法'],
-    ['大模型', '大模型'],
-    ['智能体', 'AI智能体'],
+    ['新能源', '新能源'],
+    ['储能', '储能'],
+    ['液冷', '液冷'],
+    ['供配电', '供配电'],
+    ['电池', '新能源'],
     ['无人机', '低空经济'],
     ['低空', '低空经济'],
     ['飞控', '飞控系统'],
     ['机器人', '机器人'],
     ['具身智能', '具身智能'],
     ['医疗', '医疗健康'],
+    ['大模型', '大模型'],
+    ['AIGC', 'AIGC'],
+    ['算法', 'AI算法'],
+    ['智能体', 'AI智能体'],
+    ['AI', 'AI'],
     ['算力', '算力'],
     ['巡检', '智慧巡检'],
-    ['储能', '储能'],
-    ['液冷', '液冷'],
     ['检测', '检测认证'],
     ['培训', '教育培训'],
     ['设计', '工业设计'],
@@ -288,7 +291,7 @@ export default function CompanyModal({ company, onClose }: CompanyModalProps) {
                   borderRadius: 16,
                   background: 'white',
                   padding: '14px 16px',
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                  display: 'flex', alignItems: 'center',
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{
@@ -307,26 +310,6 @@ export default function CompanyModal({ company, onClose }: CompanyModalProps) {
                       </div>
                     </div>
                   </div>
-                  <button
-                    onClick={handleGoToMap}
-                    style={{
-                      border: '1px solid var(--line)', background: 'transparent',
-                      color: 'var(--lake-deep)', borderRadius: 9, padding: '7px 12px',
-                      fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                      display: 'flex', alignItems: 'center', gap: 4,
-                      transition: 'all .15s',
-                    }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'var(--lake-deep)';
-                      (e.currentTarget as HTMLElement).style.color = 'white';
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'transparent';
-                      (e.currentTarget as HTMLElement).style.color = 'var(--lake-deep)';
-                    }}
-                  >
-                    在地图中查看 <ChevronRight size={13} />
-                  </button>
                 </section>
               )}
 
@@ -340,14 +323,13 @@ export default function CompanyModal({ company, onClose }: CompanyModalProps) {
               background: 'white',
               borderTop: '1px solid var(--line)',
               padding: '14px 22px max(14px, env(safe-area-inset-bottom))',
-              display: 'flex', gap: 10,
             }}>
               <button
                 onClick={() => setShowConnect(true)}
                 style={{
-                  flex: 2,
+                  width: '100%',
                   border: 0, background: 'var(--ink)',
-                  color: 'white', borderRadius: 13, padding: '13px',
+                  color: 'white', borderRadius: 13, padding: '14px',
                   fontWeight: 800, fontSize: 14, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
                   transition: 'opacity .15s',
@@ -355,31 +337,7 @@ export default function CompanyModal({ company, onClose }: CompanyModalProps) {
                 onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                 onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
               >
-                <ArrowRight size={16} /> 发起合作
-              </button>
-              <button
-                onClick={() => {
-                  onClose();
-                  window.location.hash = '/submit';
-                }}
-                style={{
-                  flex: 1,
-                  border: '1px solid var(--line)', background: 'transparent',
-                  color: 'var(--ink)', borderRadius: 13, padding: '13px',
-                  fontWeight: 700, fontSize: 13, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5,
-                  transition: 'all .15s',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.background = 'var(--ink)';
-                  (e.currentTarget as HTMLElement).style.color = 'white';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.background = 'transparent';
-                  (e.currentTarget as HTMLElement).style.color = 'var(--ink)';
-                }}
-              >
-                <Users size={14} /> 联系服务团队
+                <ArrowRight size={16} /> 发起对接
               </button>
             </div>
           </div>
