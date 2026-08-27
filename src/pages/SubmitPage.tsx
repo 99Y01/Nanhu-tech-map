@@ -25,11 +25,11 @@ const initialFormData: FormData = {
   remarks: '',
 };
 
-const buildingOptions = ["1", "2", "3", "4", "5", "6", "8", "9", "10", "11", "15", "其他"];
+const buildingOptions = ['1', '2', '3', '4', '5', '6', '8', '9', '10', '11', '15', '其他'];
 
 const updateTypeOptions = [
-  { value: "update", label: "信息更新", desc: "更新现有信息" },
-  { value: "new", label: "新增企业", desc: "首次录入" },
+  { value: 'update', label: '信息更新', desc: '更新现有信息' },
+  { value: 'new', label: '新增企业', desc: '首次录入' },
 ];
 
 const inputStyle: React.CSSProperties = {
@@ -205,7 +205,6 @@ export default function SubmitPage() {
 
   return (
     <div style={{ padding: '24px 28px 34px', maxWidth: 680, margin: '0 auto' }}>
-      {/* 页头 — 与 MapPage / ListPage 保持一致的 Hero 样式 */}
       <section style={{ margin: '4px 0 28px' }}>
         <div style={{ display: 'inline-flex', gap: 8, alignItems: 'center', color: 'var(--lake-deep)', fontSize: 12, fontWeight: 800, letterSpacing: '0.12em' }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--lake)', boxShadow: '0 0 0 6px rgba(91,141,184,.15)', display: 'inline-block' }} />
@@ -227,7 +226,6 @@ export default function SubmitPage() {
       </section>
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        {/* 基本信息 */}
         <div style={sectionStyle}>
           <div style={sectionTitleStyle}>
             <Building2 size={15} /> 基本信息
@@ -296,7 +294,6 @@ export default function SubmitPage() {
           </div>
         </div>
 
-        {/* 供应能力与链接需求 */}
         <div style={sectionStyle}>
           <div style={sectionTitleStyle}>
             <Zap size={15} /> 供应能力与链接需求
@@ -331,7 +328,6 @@ export default function SubmitPage() {
           </div>
         </div>
 
-        {/* 更新类型 */}
         <div style={sectionStyle}>
           <div style={sectionTitleStyle}>更新类型</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10, marginBottom: 14 }}>
@@ -365,7 +361,6 @@ export default function SubmitPage() {
           </div>
         </div>
 
-        {/* 操作按钮 */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 9, marginTop: 5 }}>
           <button
             type="button"
