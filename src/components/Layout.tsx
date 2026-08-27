@@ -3,9 +3,9 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { MapPinned, Home, LayoutGrid, HeartHandshake, ChevronDown, UserCircle, FilePlus, RefreshCw } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { to: '/',      label: '首页',   icon: <Home size={16} />,        end: true  },
-  { to: '/list',  label: '找企业', icon: <LayoutGrid size={16} />,  end: false },
-  { to: '/explore', label: '找资源', icon: <MapPinned size={16} />, end: false },
+  { to: '/',        label: '首页',   icon: <Home size={16} />,        end: true  },
+  { to: '/list',    label: '资源广场', icon: <LayoutGrid size={16} />, end: false },
+  { to: '/explore', label: '探索南湖', icon: <MapPinned size={16} />, end: false },
 ];
 
 export default function Layout() {
