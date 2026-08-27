@@ -1,9 +1,10 @@
 import React from 'react';
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { MapPinned, Map, LayoutGrid, Tag, Plus } from 'lucide-react';
+import { Outlet, NavLink } from 'react-router-dom';
+import { MapPinned, Home, Compass, LayoutGrid, Tag, Plus } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { to: '/', label: '园区全览', icon: <Map size={20} />, end: true },
+  { to: '/', label: '首页', icon: <Home size={20} />, end: true },
+  { to: '/explore', label: '探索南湖', icon: <Compass size={20} />, end: false },
   { to: '/list', label: '资源广场', icon: <LayoutGrid size={20} />, end: false },
   { to: '/submit', label: '信息更新', icon: <Tag size={20} />, end: false },
 ];
@@ -34,7 +35,6 @@ export default function Layout() {
         }
       `}</style>
 
-      {/* 顶部导航栏 */}
       <header style={{
         height: 64,
         borderBottom: '1px solid var(--line)',
@@ -51,7 +51,6 @@ export default function Layout() {
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
-          {/* 品牌 */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 11 }}>
             <div style={{
               width: 38, height: 38,
@@ -79,7 +78,6 @@ export default function Layout() {
             </div>
           </div>
 
-          {/* 桌面端导航 */}
           <nav className="desktop-nav" style={{
             gap: 4,
             padding: 4,
@@ -114,7 +112,6 @@ export default function Layout() {
             ))}
           </nav>
 
-          {/* 桌面端提交按钮 */}
           <NavLink
             to="/submit"
             className="desktop-submit-btn"
@@ -143,7 +140,6 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      {/* 手机端底部导航栏 */}
       <nav className="mobile-bottom-nav" style={{
         position: 'fixed',
         bottom: 0,
