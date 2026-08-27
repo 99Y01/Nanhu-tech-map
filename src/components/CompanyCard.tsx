@@ -1,97 +1,63 @@
 import React from 'react';
-import { Company, buildingColors } from '../data/companyData';
-import { Building2, User, Sparkles, Link } from 'lucide-react';
+
+interface Company {
+  id: number;
+  name: string;
+  industry: string;
+  tags: string[];
+  coreTech: string;
+  description: string;
+  seeking: string;
+  logo: string;
+}
 
 interface CompanyCardProps {
   company: Company;
-  onClick: (company: Company) => void;
 }
 
-const keywords = {
-  ability: ["无人机","AI","巡检","培训","设计","平台","智能制造","低空","检测","AIGC"],
-  need: ["客户资源","应用场景","融资","渠道","政企合作","院校","产业合作","供应链","市场拓展"],
-};
-
-function tagsFor(text: string, type: 'ability' | 'need'): string[] {
-  return keywords[type].filter(k => text.includes(k)).slice(0, 3);
-}
-
-export default function CompanyCard({ company, onClick }: CompanyCardProps) {
-  const buildingColor = buildingColors[company.building] || '#163b3b';
-
+export default function CompanyCard({ company }: CompanyCardProps) {
   return (
-    <div
-      onClick={() => onClick(company)}
-      style={{
-        border: '1px solid var(--line)',
-        borderRadius: 18,
-        padding: 18,
-        background: 'white',
-        cursor: 'pointer',
-        transition: '0.18s ease',
-      }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = 'rgba(8,125,118,.55)';
-        (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)';
-        (e.currentTarget as HTMLElement).style.boxShadow = '0 14px 30px rgba(22,59,59,.1)';
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLElement).style.borderColor = 'var(--line)';
-        (e.currentTarget as HTMLElement).style.transform = '';
-        (e.currentTarget as HTMLElement).style.boxShadow = '';
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
-        <h3 style={{ margin: 0, fontSize: 14, lineHeight: 1.35 }}>{company.name}</h3>
+    <div className="bg-white rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-200 p-5 flex flex-col gap-3">
+      <div className="flex items-center gap-3">
+        <img
+          src={company.logo}
+          alt={company.name}
+          className="w-12 h-12 rounded-full object-cover bg-gray-100 flex-shrink-0"
+        />
+        <div className="flex-1 min-w-0">
+          <div className="font-bold text-gray-900 text-base truncate">{company.name}</div>
+          <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+            {company.industry}
+          </span>
+        </div>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10, fontSize: 11, color: 'var(--muted)' }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-          <Building2 size={11} />
-          {company.building !== '-' ? `${company.building}号楼` : '楼栋待确认'}
-        </span>
-      </div>
-
-      {company.capability && (
-        <div style={{ marginBottom: 8 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
-            <Sparkles size={11} color="#087d76" />
-            <span style={{ fontSize: 11, color: '#087d76', fontWeight: 700 }}>供应能力</span>
-          </div>
-          <p style={{
-            margin: 0, fontSize: 11, color: '#536966', lineHeight: 1.55,
-            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-            paddingLeft: 16,
-          }}>
-            {company.capability}
-          </p>
-        </div>
-      )}
-
-      {company.demand && (
-        <div style={{ marginBottom: 10 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
-            <Link size={11} color="#ad4f27" />
-            <span style={{ fontSize: 11, color: '#ad4f27', fontWeight: 700 }}>链接需求</span>
-          </div>
-          <p style={{
-            margin: 0, fontSize: 11, color: '#536966', lineHeight: 1.55,
-            display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
-            paddingLeft: 16,
-          }}>
-            {company.demand}
-          </p>
-        </div>
-      )}
-
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 8 }}>
-        {tagsFor(company.capability, 'ability').slice(0, 2).map(t => (
-          <span key={t} style={{ fontSize: 9, padding: '4px 7px', borderRadius: 999, background: '#edf3e7', color: '#54702c' }}>{t}</span>
-        ))}
-        {tagsFor(company.demand, 'need').slice(0, 1).map(t => (
-          <span key={t} style={{ fontSize: 9, padding: '4px 7px', borderRadius: 999, background: '#fff0e8', color: '#ad4f27' }}>{t}</span>
+      <div className="flex flex-wrap gap-1">
+        {company.tags.map((tag) => (
+          <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+            {tag}
+          </span>
         ))}
       </div>
+
+      <div>
+        <span className="text-xs font-medium text-gray-400 uppercase tracking-wide">核心技术</span>
+        <p className="text-sm text-gray-600 mt-0.5">{company.coreTech}</p>
+      </div>
+
+      <p className="text-sm text-gray-500 line-clamp-2">{company.description}</p>
+
+      <div className="bg-blue-50 rounded-lg p-2">
+        <p className="text-sm text-blue-600">
+          <span className="mr-1">🔍</span>
+          <span className="font-medium">正在寻找：</span>
+          {company.seeking}
+        </p>
+      </div>
+
+      <button className="w-full mt-auto py-2 rounded-xl text-white text-sm font-medium bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 transition-all duration-200">
+        查看企业
+      </button>
     </div>
   );
 }
