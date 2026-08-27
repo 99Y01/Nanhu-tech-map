@@ -709,17 +709,16 @@ export default function HomePage() {
           margin: '0 0 18px',
           fontWeight: 900,
         }}>
-          在南湖<br />
-          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>找到技术、资源与合作伙伴</em>
+          南湖技术地图<br />
+          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>园区企业合作枢纽</em>
         </h1>
 
         {/* 副标题 */}
         <p className="hp-hero-sub" style={{
           color: 'var(--muted)', lineHeight: 1.8,
-          maxWidth: 540, margin: '0 auto 36px',
+          maxWidth: 560, margin: '0 auto 36px',
         }}>
-          南湖技术地图汇聚园区企业的技术能力、开放资源与合作需求<br />
-          帮助你快速发现企业、寻找资源、连接合作
+          汇聚技术能力、开放资源与真实需求，一键连接你的下一个合作伙伴
         </p>
 
         {/* 搜索框 */}
