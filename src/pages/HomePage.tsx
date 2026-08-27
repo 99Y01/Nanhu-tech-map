@@ -1,92 +1,26 @@
 import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Search, ArrowRight, ChevronRight,
-  Cpu, Wind, Bot, HeartPulse,
-  Building2, Zap, Link as LinkIcon,
-  MapPin, Users, Package, Layers,
-  FlaskConical, Server, TestTube, Database, Wrench,
-  ExternalLink,
+  Search, ArrowRight,
+  Building2, FlaskConical, HeartHandshake,
+  ChevronRight, ExternalLink,
 } from 'lucide-react';
 import { companies } from '../data/companyData';
 import CompanyModal from '../components/CompanyModal';
 import ConnectModal, { ConnectTarget } from '../components/ConnectModal';
 import type { Company } from '../data/companyData';
 
-// ─── 产业方向 ─────────────────────────────────────────────────
+// ─── 产业筛选 Tab ──────────────────────────────────────────────
 
-const INDUSTRY_TABS = [
-  { key: 'all', label: '全部', icon: null, color: '#1e2d3d', keyword: '' },
-  { key: 'ai', label: 'AI & 大模型', icon: <Cpu size={14} />, color: '#2d5f8a', keyword: 'AI' },
-  { key: 'lowalt', label: '低空经济', icon: <Wind size={14} />, color: '#087d76', keyword: '低空' },
-  { key: 'robot', label: '具身智能', icon: <Bot size={14} />, color: '#6b3fa0', keyword: '具身智能' },
-  { key: 'med', label: '未来医疗', icon: <HeartPulse size={14} />, color: '#b84a10', keyword: '医疗' },
+const INDUSTRY_FILTER_TABS = [
+  { key: 'all',    label: '全部',    keyword: '' },
+  { key: 'ai',     label: 'AI',      keyword: 'AI' },
+  { key: 'lowalt', label: '低空经济', keyword: '低空' },
+  { key: 'robot',  label: '具身智能', keyword: '具身智能' },
+  { key: 'med',    label: '未来医疗', keyword: '医疗' },
 ];
 
-// ─── 开放资源分类 ─────────────────────────────────────────────
-
-const RESOURCE_TYPES = [
-  { key: 'compute', label: '算力', icon: <Server size={18} />, color: '#2d5f8a', bg: '#e8f2fb', keyword: '算力' },
-  { key: 'lab', label: '实验空间', icon: <FlaskConical size={18} />, color: '#087d76', bg: '#e0f5f4', keyword: '实验' },
-  { key: 'test', label: '测试场景', icon: <TestTube size={18} />, color: '#6b3fa0', bg: '#f0eaf8', keyword: '测试' },
-  { key: 'data', label: '数据/模型', icon: <Database size={18} />, color: '#b84a10', bg: '#fef0e6', keyword: '数据' },
-  { key: 'service', label: '产业服务', icon: <Wrench size={18} />, color: '#1a7a45', bg: '#e4f7ed', keyword: '服务' },
-];
-
-// ─── 工具函数 ─────────────────────────────────────────────────
-
-function inferIndustryTags(company: Company): string[] {
-  const text = `${company.capability} ${company.demand}`;
-  const tagMap: [string, string][] = [
-    ['新能源', '新能源'],
-    ['储能', '储能'],
-    ['液冷', '液冷'],
-    ['供配电', '供配电'],
-    ['电池', '新能源'],
-    ['无人机', '低空经济'],
-    ['低空', '低空经济'],
-    ['飞控', '飞控系统'],
-    ['机器人', '机器人'],
-    ['具身智能', '具身智能'],
-    ['医疗', '医疗健康'],
-    ['大模型', '大模型'],
-    ['AIGC', 'AIGC'],
-    ['AI', 'AI'],
-    ['算力', '算力'],
-    ['巡检', '智慧巡检'],
-    ['培训', '教育培训'],
-    ['检测', '检测认证'],
-  ];
-  const found: string[] = [];
-  for (const [keyword, tag] of tagMap) {
-    if (text.includes(keyword) && !found.includes(tag)) {
-      found.push(tag);
-      if (found.length >= 2) break;
-    }
-  }
-  return found;
-}
-
-function extractOneLiner(capability: string): string {
-  if (!capability) return '';
-  const firstSentence = capability.split(/[。！？\n]/)[0];
-  return firstSentence.length > 44 ? firstSentence.slice(0, 44) + '…' : firstSentence;
-}
-
-function matchesIndustryKeyword(company: Company, keyword: string): boolean {
-  if (!keyword) return true;
-  const text = `${company.capability} ${company.demand} ${company.name}`;
-  return text.includes(keyword);
-}
-
-function getResourcesFromCompanies(keyword: string): Company[] {
-  return companies.filter(c => {
-    const text = `${c.capability} ${c.demand}`;
-    return text.includes(keyword);
-  }).slice(0, 3);
-}
-
-// ─── 探索南湖地图常量（与 ExplorePage 保持一致）─────────────────
+// ─── 地图常量（与 ExplorePage 保持一致）──────────────────────
 
 const MAP_IMAGE_URL = 'https://1d-static.alibaba-inc.com/oneday/source/ab44ae18-0e98-4e82-9a3b-54e4b9007eb4.png';
 const MAP_IMAGE_ASPECT_RATIO = 8492 / 5097;
@@ -125,10 +59,12 @@ const INDUSTRY_TAG_COLORS: Record<string, { bg: string; color: string }> = {
   '其他':   { bg: '#f1f5f9', color: '#475569' },
 };
 
-const AI_KW = ['AI', '人工智能', '大模型', '算法', 'AIGC', '智能体', '机器学习', '深度学习', '视觉', '语音', '自然语言'];
+const AI_KW  = ['AI', '人工智能', '大模型', '算法', 'AIGC', '智能体', '机器学习', '深度学习', '视觉', '语音', '自然语言'];
 const LOW_KW = ['低空', '无人机', '飞行', '航空', '飞控', '起降', '空域', '航线', '飞手', '旋翼', '固定翼'];
 const EMB_KW = ['具身', '机器人', '机械臂', '运动控制', '多智能体', '协同', '巡检机器人'];
 const MED_KW = ['医疗', '医学', '健康', '诊断', '手术', '药物', '生物', '基因', '心理'];
+
+// ─── 工具函数 ─────────────────────────────────────────────────
 
 function inferExploreTag(company: Company): string {
   const text = `${company.capability} ${company.demand} ${company.name}`.toLowerCase();
@@ -145,9 +81,19 @@ function extractShortLine(text: string): string {
   return first.length > 60 ? first.slice(0, 60) + '…' : first;
 }
 
-// ─── 内嵌探索地图组件 ─────────────────────────────────────────
+function matchesIndustryKeyword(company: Company, keyword: string): boolean {
+  if (!keyword) return true;
+  const text = `${company.capability} ${company.demand} ${company.name}`;
+  return text.includes(keyword);
+}
 
-function InlineExploreMap() {
+// ─── 内嵌地图组件 ─────────────────────────────────────────────
+
+interface InlineMapProps {
+  industryKeyword: string;
+}
+
+function InlineMap({ industryKeyword }: InlineMapProps) {
   const navigate = useNavigate();
   const [resourceTab, setResourceTab] = useState('all');
   const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null);
@@ -180,18 +126,20 @@ function InlineExploreMap() {
     return () => observer.disconnect();
   }, [recalculateImageRect]);
 
+  // 产业筛选 + 资源 Tab 双重过滤
   const filteredCompanies = useMemo(() => {
     return companies.filter(company => {
+      if (!matchesIndustryKeyword(company, industryKeyword)) return false;
       if (resourceTab === 'capability' && !company.capability) return false;
       if (resourceTab === 'demand' && !company.demand) return false;
       return true;
     });
-  }, [resourceTab]);
+  }, [resourceTab, industryKeyword]);
 
   const buildingCompanyCount = useMemo(() => {
-    const map: Record<string, number> = {};
-    filteredCompanies.forEach(c => { map[c.building] = (map[c.building] || 0) + 1; });
-    return map;
+    const countMap: Record<string, number> = {};
+    filteredCompanies.forEach(c => { countMap[c.building] = (countMap[c.building] || 0) + 1; });
+    return countMap;
   }, [filteredCompanies]);
 
   const buildingsWithCompanies = useMemo(
@@ -203,6 +151,11 @@ function InlineExploreMap() {
     if (!selectedBuilding) return filteredCompanies;
     return filteredCompanies.filter(c => c.building === selectedBuilding);
   }, [selectedBuilding, filteredCompanies]);
+
+  // 产业筛选变化时重置楼栋选中
+  useEffect(() => {
+    setSelectedBuilding(null);
+  }, [industryKeyword]);
 
   const handleBuildingClick = useCallback((buildingNo: string) => {
     const layout = BUILDING_LAYOUT[buildingNo];
@@ -234,30 +187,28 @@ function InlineExploreMap() {
           100% { transform: scale(1.18); }
         }
         @media (max-width: 700px) {
-          .hp-explore-section {
+          .hp-map-section {
             grid-template-columns: 1fr !important;
             height: auto !important;
           }
-          .hp-explore-map { height: 72vw !important; min-height: 260px !important; max-height: 380px !important; }
-          .hp-explore-sidebar {
-            height: auto !important;
+          .hp-map-canvas { height: 72vw !important; min-height: 260px !important; max-height: 380px !important; }
+          .hp-map-sidebar {
             max-height: 360px !important;
             overflow-y: auto !important;
             border-left: none !important;
             border-top: 1px solid var(--line) !important;
           }
-          .hp-explore-tab-row {
-            flex-wrap: wrap !important;
-            gap: 8px !important;
-          }
-          .hp-explore-tab-row > div { flex: 1 1 auto !important; min-width: 0 !important; }
-          .hp-explore-tab-row > div button { font-size: 12px !important; padding: 6px 10px !important; }
-          .hp-explore-tab-row > button:last-child { flex-shrink: 0 !important; font-size: 12px !important; }
+          .hp-map-tab-row { flex-wrap: wrap !important; gap: 8px !important; }
+          .hp-map-tab-row > div { flex: 1 1 auto !important; }
+          .hp-map-tab-row > div button { font-size: 12px !important; padding: 6px 10px !important; }
         }
       `}</style>
 
-      {/* 资源 Tab */}
-      <div className="hp-explore-tab-row" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14, gap: 10 }}>
+      {/* 资源类型 Tab + 进入完整地图 */}
+      <div className="hp-map-tab-row" style={{
+        display: 'flex', alignItems: 'center',
+        justifyContent: 'space-between', marginBottom: 14, gap: 10,
+      }}>
         <div style={{
           display: 'flex',
           background: 'rgba(255,255,255,.6)',
@@ -313,7 +264,7 @@ function InlineExploreMap() {
       </div>
 
       {/* 地图 + 侧边栏 */}
-      <section className="hp-explore-section" style={{
+      <section className="hp-map-section" style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(0, 1fr) 320px',
         height: 520,
@@ -323,9 +274,9 @@ function InlineExploreMap() {
         overflow: 'hidden',
         boxShadow: 'var(--shadow)',
       }}>
-        {/* 地图 */}
+        {/* 地图画布 */}
         <div
-          className="hp-explore-map"
+          className="hp-map-canvas"
           ref={mapContainerRef}
           style={{ position: 'relative', overflow: 'hidden', background: '#dde4ee', cursor: 'default' }}
           onClick={() => setSelectedBuilding(null)}
@@ -428,6 +379,7 @@ function InlineExploreMap() {
             })}
           </div>
 
+          {/* 地图提示 */}
           <div style={{
             position: 'absolute', bottom: 12, left: 12, zIndex: 10,
             background: 'rgba(255,255,255,.88)', backdropFilter: 'blur(8px)',
@@ -435,12 +387,12 @@ function InlineExploreMap() {
             padding: '6px 11px', fontSize: 11, color: 'var(--muted)',
             boxShadow: '0 2px 10px rgba(0,0,0,.1)',
           }}>
-            点击楼栋查看企业
+            点击楼栋，查看企业技术能力与合作需求
           </div>
         </div>
 
         {/* 侧边栏 */}
-        <aside className="hp-explore-sidebar" style={{
+        <aside className="hp-map-sidebar" style={{
           background: 'var(--cream)',
           borderLeft: '1px solid var(--line)',
           display: 'flex', flexDirection: 'column',
@@ -449,7 +401,7 @@ function InlineExploreMap() {
           <div style={{ padding: '16px 18px 12px', borderBottom: '1px solid var(--line)', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
               <span style={{ fontSize: 11, fontWeight: 900, color: 'var(--lake-deep)', letterSpacing: '0.1em' }}>
-                {selectedBuilding ? `${selectedBuilding} 号楼 · 开放资源` : '开放资源企业'}
+                {selectedBuilding ? `${selectedBuilding} 号楼 · 企业` : '园区企业'}
               </span>
               {selectedBuilding && (
                 <button
@@ -480,7 +432,7 @@ function InlineExploreMap() {
             {companiesInView.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--muted)' }}>
                 <Search size={24} style={{ margin: '0 auto 8px' }} />
-                <p style={{ margin: 0, fontSize: 12 }}>该楼栋暂无开放资源</p>
+                <p style={{ margin: 0, fontSize: 12 }}>该楼栋暂无匹配企业</p>
               </div>
             ) : (
               companiesInView.map(company => {
@@ -565,7 +517,7 @@ function InlineExploreMap() {
                           fontSize: 11, fontWeight: 700, cursor: 'pointer',
                         }}
                       >
-                        查看企业
+                        查看详情
                       </button>
                       <button
                         onClick={e => {
@@ -589,7 +541,7 @@ function InlineExploreMap() {
 
           <div style={{ padding: '10px 14px', borderTop: '1px solid var(--line)', flexShrink: 0 }}>
             <button
-              onClick={() => navigate('/explore')}
+              onClick={() => navigate('/list')}
               style={{
                 width: '100%', border: '1px solid var(--line)', background: 'white',
                 color: 'var(--ink)', borderRadius: 9, padding: '9px 0',
@@ -600,8 +552,8 @@ function InlineExploreMap() {
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#f8fafc'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'white'; }}
             >
-              <ExternalLink size={12} />
-              进入完整探索地图
+              <Search size={12} />
+              查看全部企业列表
             </button>
           </div>
         </aside>
@@ -650,21 +602,10 @@ export default function HomePage() {
   const [searchInput, setSearchInput] = useState('');
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [activeIndustry, setActiveIndustry] = useState('all');
-  const [activeResource, setActiveResource] = useState('compute');
 
-  const totalCompanies = companies.length;
-  const totalWithCapability = useMemo(() => companies.filter(c => c.capability).length, []);
-
-  const filteredCompanies = useMemo(() => {
-    const tab = INDUSTRY_TABS.find(t => t.key === activeIndustry);
-    const keyword = tab?.keyword ?? '';
-    return companies.filter(c => matchesIndustryKeyword(c, keyword)).slice(0, 6);
-  }, [activeIndustry]);
-
-  const activeResourceType = RESOURCE_TYPES.find(r => r.key === activeResource) ?? RESOURCE_TYPES[0];
-  const resourceCompanies = useMemo(
-    () => getResourcesFromCompanies(activeResourceType.keyword),
-    [activeResource]
+  const activeIndustryKeyword = useMemo(
+    () => INDUSTRY_FILTER_TABS.find(t => t.key === activeIndustry)?.keyword ?? '',
+    [activeIndustry]
   );
 
   const handleSearch = (keyword?: string) => {
@@ -680,86 +621,85 @@ export default function HomePage() {
   return (
     <div style={{ minHeight: '100vh' }}>
       <style>{`
-        .hp-hero { padding: 80px 40px 60px; }
-        .hp-hero-eyebrow { font-size: 13px; }
-        .hp-hero-title { font-size: clamp(38px, 5.5vw, 72px); }
-        .hp-hero-sub { font-size: 16px; }
-        .hp-search-wrap { max-width: 680px; }
-        .hp-search-input { height: 62px; }
-        .hp-search-btn { height: 62px; padding: 0 30px; }
-        .hp-industry-tags { gap: 8px; }
-        .hp-stats-bar { padding: 28px 40px; }
-        .hp-stats-grid { grid-template-columns: repeat(3, 1fr); }
-        .hp-map-wrap { padding: 32px 40px 44px; }
+        /* ── 首屏 ── */
+        .hp-hero { padding: 72px 40px 56px; }
+        .hp-hero-title { font-size: clamp(32px, 4.8vw, 62px); }
+        .hp-hero-sub { font-size: 15px; }
+        .hp-search-wrap { max-width: 660px; }
+        .hp-search-input { height: 60px; }
+        .hp-search-btn { height: 60px; padding: 0 28px; }
+
+        /* ── 行动入口卡片 ── */
+        .hp-action-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+        /* ── 地图区 ── */
+        .hp-map-wrap { padding: 40px 40px 48px; }
+        .hp-industry-filter { gap: 8px; }
+
+        /* ── 三类信息 ── */
+        .hp-info-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
 
         @media (max-width: 900px) {
-          .hp-stats-grid { grid-template-columns: repeat(3, 1fr) !important; }
+          .hp-action-grid { grid-template-columns: repeat(3, 1fr) !important; }
+          .hp-info-grid { grid-template-columns: repeat(3, 1fr) !important; }
         }
         @media (max-width: 640px) {
-          .hp-hero { padding: 48px 20px 40px !important; }
-          .hp-hero-title { font-size: 32px !important; }
-          .hp-hero-sub { font-size: 14px !important; }
+          .hp-hero { padding: 44px 20px 36px !important; }
+          .hp-hero-title { font-size: 28px !important; }
+          .hp-hero-sub { font-size: 13px !important; }
           .hp-search-row { flex-direction: column !important; gap: 10px !important; }
           .hp-search-btn { width: 100% !important; justify-content: center !important; height: 52px !important; }
           .hp-search-input { height: 52px !important; }
-          .hp-stats-bar { padding: 20px 16px !important; }
-          .hp-stats-grid { grid-template-columns: repeat(3, 1fr) !important; }
-          .hp-industry-tags { flex-wrap: wrap !important; }
-          .hp-map-wrap { padding: 20px 16px 28px !important; }
+          .hp-action-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+          .hp-map-wrap { padding: 24px 16px 32px !important; }
+          .hp-industry-filter { flex-wrap: wrap !important; }
+          .hp-info-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
         }
       `}</style>
 
       {/* ══════════════════════════════════════════════════════
           01 首屏 Hero
       ══════════════════════════════════════════════════════ */}
-      <section className="hp-hero" style={{ maxWidth: 860, margin: '0 auto', textAlign: 'center' }}>
+      <section className="hp-hero" style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center' }}>
 
-        {/* 第一层：用途标签 */}
+        {/* 辅助提示标签 */}
         <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 16,
-          marginBottom: 28,
+          display: 'inline-flex', alignItems: 'center', gap: 6,
+          background: 'rgba(45,95,138,.08)',
+          border: '1px solid rgba(45,95,138,.18)',
+          borderRadius: 999,
+          padding: '5px 14px',
+          marginBottom: 24,
         }}>
-          {[
-            { icon: <Building2 size={13} />, label: '找企业' },
-            { icon: <Zap size={13} />, label: '找资源' },
-            { icon: <LinkIcon size={13} />, label: '找合作' },
-          ].map(({ icon, label }, i) => (
-            <React.Fragment key={label}>
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
-                fontSize: 13, fontWeight: 800, color: 'var(--lake-deep)',
-                letterSpacing: '0.04em',
-              }}>
-                {icon} {label}
-              </span>
-              {i < 2 && (
-                <span style={{ color: 'var(--line)', fontSize: 16, fontWeight: 300 }}>·</span>
-              )}
-            </React.Fragment>
-          ))}
+          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--lake)', display: 'inline-block', flexShrink: 0 }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--lake-deep)', letterSpacing: '0.06em' }}>
+            找企业 · 找资源 · 找合作
+          </span>
         </div>
 
         {/* 主标题 */}
         <h1 className="hp-hero-title" style={{
           fontFamily: '"Arial Black", "PingFang SC", sans-serif',
-          lineHeight: 1.08,
-          letterSpacing: '-0.05em',
-          margin: '0 0 18px',
+          lineHeight: 1.1,
+          letterSpacing: '-0.04em',
+          margin: '0 0 16px',
           fontWeight: 900,
         }}>
-          看见技术 · 找到伙伴<br />
-          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>链接产业</em>
+          在南湖，找到你的<br />
+          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>下一项技术、资源与合作伙伴</em>
         </h1>
+
+        {/* 副标题 */}
         <p className="hp-hero-sub" style={{
-          color: 'var(--muted)', lineHeight: 1.75,
-          maxWidth: 500, margin: '0 auto 36px',
+          color: 'var(--muted)', lineHeight: 1.8,
+          maxWidth: 560, margin: '0 auto 36px',
         }}>
-          汇聚南湖园区企业、产业能力与开放资源<br />
-          快速发现合作机会
+          南湖技术地图汇聚园区企业的技术能力、开放资源与合作需求<br />
+          按产业、技术和空间快速发现企业，促进供需对接
         </p>
 
-        {/* 第三层：搜索框 */}
-        <div className="hp-search-wrap" style={{ margin: '0 auto 20px' }}>
+        {/* 搜索框 */}
+        <div className="hp-search-wrap" style={{ margin: '0 auto 32px' }}>
           <div className="hp-search-row" style={{ display: 'flex', gap: 10 }}>
             <div
               className="hp-search-input"
@@ -778,7 +718,7 @@ export default function HomePage() {
                 value={searchInput}
                 onChange={e => setSearchInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="搜索企业、技术、资源……"
+                placeholder="搜索企业名称、技术方向、资源类型……"
                 style={{
                   border: 0, outline: 0, background: 'transparent',
                   width: '100%', fontSize: 15, color: 'var(--ink)',
@@ -802,122 +742,270 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 产业快速入口 */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 12, color: 'var(--muted)', fontWeight: 600 }}>按产业探索：</span>
-          <div className="hp-industry-tags" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {INDUSTRY_TABS.slice(1).map(({ key, label, icon, color, keyword }) => (
-              <button
-                key={key}
-                onClick={() => navigate(`/list?q=${encodeURIComponent(keyword)}`)}
-                style={{
-                  display: 'inline-flex', alignItems: 'center', gap: 5,
-                  border: `1px solid ${color}28`,
-                  background: `${color}0a`,
-                  color,
-                  borderRadius: 999, padding: '6px 14px',
-                  fontSize: 12, fontWeight: 700, cursor: 'pointer',
-                  transition: 'all .15s ease',
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.background = color;
-                  (e.currentTarget as HTMLElement).style.color = 'white';
-                  (e.currentTarget as HTMLElement).style.borderColor = color;
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.background = `${color}0a`;
-                  (e.currentTarget as HTMLElement).style.color = color;
-                  (e.currentTarget as HTMLElement).style.borderColor = `${color}28`;
-                }}
-              >
-                {icon} {label}
-              </button>
-            ))}
-          </div>
+        {/* 三个行动入口卡片 */}
+        <div className="hp-action-grid" style={{ display: 'grid', maxWidth: 760, margin: '0 auto' }}>
+          {[
+            {
+              icon: <Building2 size={22} />,
+              title: '找企业',
+              desc: '发现南湖创新企业与技术能力',
+              color: '#2d5f8a',
+              bg: 'linear-gradient(135deg, #e8f2fb 0%, #d4e8f7 100%)',
+              border: 'rgba(45,95,138,.2)',
+              onClick: () => navigate('/list'),
+            },
+            {
+              icon: <FlaskConical size={22} />,
+              title: '找资源',
+              desc: '发现可开放的设备、场景与实验室',
+              color: '#087d76',
+              bg: 'linear-gradient(135deg, #e0f5f4 0%, #c8eeec 100%)',
+              border: 'rgba(8,125,118,.2)',
+              onClick: () => navigate('/explore'),
+            },
+            {
+              icon: <HeartHandshake size={22} />,
+              title: '找合作',
+              desc: '查看企业需求，寻找产业伙伴',
+              color: '#6b3fa0',
+              bg: 'linear-gradient(135deg, #f0eaf8 0%, #e4d8f4 100%)',
+              border: 'rgba(107,63,160,.2)',
+              onClick: () => navigate('/list?q=合作'),
+            },
+          ].map(({ icon, title, desc, color, bg, border, onClick }) => (
+            <button
+              key={title}
+              onClick={onClick}
+              style={{
+                background: bg,
+                border: `1px solid ${border}`,
+                borderRadius: 18,
+                padding: '22px 20px',
+                cursor: 'pointer',
+                textAlign: 'left',
+                transition: 'all .18s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(-3px)';
+                (e.currentTarget as HTMLElement).style.boxShadow = `0 12px 32px ${border.replace('.2)', '.25)')}`;
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.transform = '';
+                (e.currentTarget as HTMLElement).style.boxShadow = '';
+              }}
+            >
+              <div style={{
+                width: 44, height: 44, borderRadius: 12,
+                background: 'white',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color,
+                boxShadow: `0 4px 12px ${border.replace('.2)', '.15)')}`,
+              }}>
+                {icon}
+              </div>
+              <div>
+                <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--ink)', marginBottom: 4 }}>
+                  {title}
+                </div>
+                <div style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.5 }}>
+                  {desc}
+                </div>
+              </div>
+              <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 4, color, fontSize: 12, fontWeight: 700 }}>
+                立即查看 <ChevronRight size={13} />
+              </div>
+            </button>
+          ))}
         </div>
       </section>
 
       {/* ══════════════════════════════════════════════════════
-          02 南湖正在发生什么
+          02 企业地图
       ══════════════════════════════════════════════════════ */}
       <section style={{
         background: 'rgba(255,255,255,.65)',
         borderTop: '1px solid var(--line)',
         borderBottom: '1px solid var(--line)',
       }}>
-        {/* 数据统计条 */}
-        <div className="hp-stats-bar" style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div className="hp-stats-grid" style={{ display: 'grid', gap: 0 }}>
-            {[
-              { value: '200+', label: '入驻企业', sub: '覆盖多个产业方向', icon: <Users size={18} /> },
-              { value: '3', label: '大产业方向', sub: 'AI · 低空经济 · 具身智能', icon: <Layers size={18} /> },
-              { value: `${totalWithCapability}+`, label: '开放资源', sub: '可对接 · 可使用 · 可合作', icon: <Package size={18} /> },
-            ].map(({ value, label, sub, icon }, index) => (
-              <div key={label} style={{
-                textAlign: 'center',
-                padding: '16px 0',
-                borderRight: index < 2 ? '1px solid var(--line)' : 'none',
-              }}>
-                <div style={{ color: 'var(--lake)', marginBottom: 8, display: 'flex', justifyContent: 'center' }}>
-                  {icon}
-                </div>
-                <b style={{
-                  display: 'block',
-                  fontFamily: 'Georgia, serif',
-                  fontSize: 'clamp(26px, 3.2vw, 38px)',
-                  fontWeight: 'normal',
-                  color: 'var(--ink)',
-                  lineHeight: 1.1,
-                }}>
-                  {value}
-                </b>
-                <span style={{ fontSize: 12, color: 'var(--ink)', fontWeight: 700, display: 'block', marginTop: 5 }}>
-                  {label}
-                </span>
-                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginTop: 2 }}>
-                  {sub}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <div className="hp-map-wrap" style={{ maxWidth: 1100, margin: '0 auto' }}>
 
-        {/* 探索南湖地图（内嵌交互版） */}
-        <div className="hp-map-wrap" style={{ borderTop: '1px solid var(--line)', maxWidth: 1100, margin: '0 auto' }}>
+          {/* 区块标题 */}
           <div style={{ marginBottom: 20 }}>
             <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--lake-deep)', letterSpacing: '0.14em', marginBottom: 8 }}>
-              NANHU MAP
+              COMPANY MAP
             </div>
-            <h2 style={{
-              fontFamily: '"Arial Black", "PingFang SC", sans-serif',
-              fontSize: 'clamp(20px, 2.4vw, 28px)',
-              letterSpacing: '-0.04em', margin: '0 0 6px',
-            }}>
-              探索南湖
-            </h2>
-            <p style={{ color: 'var(--muted)', fontSize: 13, margin: 0, lineHeight: 1.7 }}>
-              从地图出发，点击楼栋发现企业与开放资源
-            </p>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+              <div>
+                <h2 style={{
+                  fontFamily: '"Arial Black", "PingFang SC", sans-serif',
+                  fontSize: 'clamp(20px, 2.4vw, 28px)',
+                  letterSpacing: '-0.04em', margin: '0 0 5px',
+                }}>
+                  看看南湖有哪些企业
+                </h2>
+                <p style={{ color: 'var(--muted)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+                  点击企业，查看技术能力、开放资源与合作需求
+                </p>
+              </div>
+
+              {/* 产业筛选 */}
+              <div className="hp-industry-filter" style={{ display: 'flex', alignItems: 'center' }}>
+                {INDUSTRY_FILTER_TABS.map(tab => {
+                  const isActive = activeIndustry === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => setActiveIndustry(tab.key)}
+                      style={{
+                        border: isActive ? '1.5px solid var(--ink)' : '1px solid var(--line)',
+                        background: isActive ? 'var(--ink)' : 'white',
+                        color: isActive ? 'white' : 'var(--ink)',
+                        borderRadius: 999,
+                        padding: '6px 14px',
+                        fontSize: 12, fontWeight: isActive ? 700 : 500,
+                        cursor: 'pointer',
+                        transition: 'all .15s ease',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
-          <InlineExploreMap />
+
+          <InlineMap industryKeyword={activeIndustryKeyword} />
         </div>
       </section>
 
+      {/* ══════════════════════════════════════════════════════
+          03 三类核心信息
+      ══════════════════════════════════════════════════════ */}
+      <section style={{ padding: '48px 40px', maxWidth: 1100, margin: '0 auto' }}>
+        <div style={{ marginBottom: 28, textAlign: 'center' }}>
+          <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--lake-deep)', letterSpacing: '0.14em', marginBottom: 8 }}>
+            WHAT YOU CAN FIND
+          </div>
+          <h2 style={{
+            fontFamily: '"Arial Black", "PingFang SC", sans-serif',
+            fontSize: 'clamp(20px, 2.4vw, 28px)',
+            letterSpacing: '-0.04em', margin: '0 0 8px',
+          }}>
+            这里不只有企业
+          </h2>
+          <p style={{ color: 'var(--muted)', fontSize: 13, margin: 0 }}>
+            三类核心信息，帮你快速找到所需
+          </p>
+        </div>
+
+        <div className="hp-info-grid" style={{ display: 'grid' }}>
+          {[
+            {
+              icon: <Building2 size={24} />,
+              label: '技术能力',
+              title: '看企业能做什么',
+              desc: '汇聚园区企业的核心技术、产品与服务，快速了解每家企业的技术方向与能力边界。',
+              color: '#2d5f8a',
+              bg: '#e8f2fb',
+              cta: '浏览技术能力',
+              onClick: () => navigate('/list?q=技术'),
+            },
+            {
+              icon: <FlaskConical size={24} />,
+              label: '开放资源',
+              title: '看园区有什么可共享',
+              desc: '包括算力、实验室、测试场景、数据集等可开放使��的园区资源，降低创新门槛。',
+              color: '#087d76',
+              bg: '#e0f5f4',
+              cta: '查看开放资源',
+              onClick: () => navigate('/explore'),
+            },
+            {
+              icon: <HeartHandshake size={24} />,
+              label: '合作需求',
+              title: '看企业正在寻找什么',
+              desc: '企业发布的合作需求，包括技术引进、场景落地、资金对接、供应链合作等。',
+              color: '#6b3fa0',
+              bg: '#f0eaf8',
+              cta: '查看合作需求',
+              onClick: () => navigate('/list?q=合作'),
+            },
+          ].map(({ icon, label, title, desc, color, bg, cta, onClick }) => (
+            <div
+              key={label}
+              style={{
+                background: 'white',
+                border: '1px solid var(--line)',
+                borderRadius: 20,
+                padding: '28px 24px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 14,
+                transition: 'all .18s ease',
+                cursor: 'pointer',
+              }}
+              onClick={onClick}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = color;
+                (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 28px rgba(0,0,0,.08)`;
+                (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.borderColor = 'var(--line)';
+                (e.currentTarget as HTMLElement).style.boxShadow = '';
+                (e.currentTarget as HTMLElement).style.transform = '';
+              }}
+            >
+              <div style={{
+                width: 52, height: 52, borderRadius: 14,
+                background: bg,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color,
+              }}>
+                {icon}
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 800, color, letterSpacing: '0.06em', marginBottom: 5 }}>
+                  {label}
+                </div>
+                <h3 style={{ margin: '0 0 8px', fontSize: 16, fontWeight: 800, color: 'var(--ink)' }}>
+                  {title}
+                </h3>
+                <p style={{ margin: 0, fontSize: 13, color: 'var(--muted)', lineHeight: 1.7 }}>
+                  {desc}
+                </p>
+              </div>
+              <div style={{
+                marginTop: 'auto',
+                display: 'inline-flex', alignItems: 'center', gap: 5,
+                color, fontSize: 13, fontWeight: 700,
+              }}>
+                {cta} <ArrowRight size={14} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* ══════════════════════════════════════════════════════
           底部 CTA
       ══════════════════════════════════════════════════════ */}
       <section style={{
         background: 'var(--ink)', color: 'white',
-        padding: '56px 40px', textAlign: 'center',
+        padding: '52px 40px', textAlign: 'center',
       }}>
-        <div style={{ maxWidth: 560, margin: '0 auto' }}>
+        <div style={{ maxWidth: 520, margin: '0 auto' }}>
           <div style={{ fontSize: 11, fontWeight: 900, letterSpacing: '0.14em', opacity: 0.4, marginBottom: 14 }}>
-            JOIN THE ATLAS
+            JOIN THE MAP
           </div>
           <h2 style={{
             fontFamily: '"Arial Black", "PingFang SC", sans-serif',
-            fontSize: 'clamp(22px, 3.5vw, 36px)',
+            fontSize: 'clamp(22px, 3.5vw, 34px)',
             letterSpacing: '-0.04em', margin: '0 0 12px',
           }}>
             让更多人找到你
@@ -939,7 +1027,7 @@ export default function HomePage() {
               onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
               onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
             >
-              更新企业名片 <ArrowRight size={16} />
+              提交企业信息 <ArrowRight size={16} />
             </button>
             <button
               onClick={() => navigate('/list')}
@@ -959,7 +1047,7 @@ export default function HomePage() {
                 (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,.7)';
               }}
             >
-              先浏览资源广场
+              先浏览企业资源
             </button>
           </div>
         </div>
