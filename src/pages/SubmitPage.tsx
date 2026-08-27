@@ -110,8 +110,8 @@ export default function SubmitPage() {
           body: issueBody,
           labels: ['submission'],
         }),
-      });
-    } catch {
+      }).catch(() => undefined);
+    } catch (_error) {
       // 提交失败不阻断用户流程，静默处理
     }
 
