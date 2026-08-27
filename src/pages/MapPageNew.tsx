@@ -448,8 +448,6 @@ export default function MapPageNew() {
                           viewBox={`0 0 ${pinWidth} ${pinHeight}`}
                           style={{ display: 'block', overflow: 'visible' }}
                         >
-                          {/* 圆润 pin 形：上半圆 + 两侧平滑收拢到底部尖点 */}
-                          {/* 白色描边层（始终显示，让 pin 在底图上清晰"抠"出来） */}
                           <path
                             d={`
                               M ${r} ${tailY}
@@ -466,7 +464,6 @@ export default function MapPageNew() {
                             stroke="rgba(255,255,255,.95)"
                             strokeWidth={isSelected ? 3.5 : 3}
                           />
-                          {/* 主体填色 */}
                           <path
                             d={`
                               M ${r} ${tailY}
@@ -514,7 +511,6 @@ export default function MapPageNew() {
                           </text>
                         </svg>
 
-                        {/* 企业数量角标 */}
                         {hasCompanies && !debugMode && (
                           <span style={{
                             position: 'absolute', right: isMobile ? -4 : -7, top: isMobile ? -4 : -7,
@@ -537,7 +533,6 @@ export default function MapPageNew() {
                           </span>
                         )}
 
-                        {/* 选中脉冲光晕：与 pin 同形 SVG */}
                         {isSelected && !debugMode && (
                           <svg
                             width={pinWidth + 16}
@@ -582,10 +577,6 @@ export default function MapPageNew() {
             @keyframes pinPulse {
               0%, 100% { opacity: 1; transform: scale(1); }
               50% { opacity: 0.6; transform: scale(1.12); }
-            }
-            @keyframes badgePop {
-              0% { transform: scale(0.5); opacity: 0; }
-              100% { transform: scale(1.15); opacity: 1; }
             }
             @keyframes labelBounce {
               0%   { transform: scale(1); }
