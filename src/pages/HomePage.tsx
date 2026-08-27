@@ -709,8 +709,8 @@ export default function HomePage() {
           margin: '0 0 18px',
           fontWeight: 900,
         }}>
-          在南湖，找到你的<br />
-          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>下一项技术、资源与合作伙伴</em>
+          在南湖<br />
+          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>找到技术、资源与合作伙伴</em>
         </h1>
 
         {/* 副标题 */}
