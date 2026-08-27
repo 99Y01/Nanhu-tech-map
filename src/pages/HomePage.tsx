@@ -710,7 +710,7 @@ export default function HomePage() {
           fontWeight: 900,
         }}>
           南湖技术地图<br />
-          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>园区企业合作枢纽</em>
+          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>技术合作枢纽</em>
         </h1>
 
         {/* 副标题 */}
