@@ -1,10 +1,9 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { MapPinned, Home, Compass, LayoutGrid, Tag, Plus } from 'lucide-react';
+import { MapPinned, Home, LayoutGrid, Tag, Plus } from 'lucide-react';
 
 const NAV_ITEMS = [
   { to: '/', label: '首页', icon: <Home size={20} />, end: true },
-  { to: '/explore', label: '探索南湖', icon: <Compass size={20} />, end: false },
   { to: '/list', label: '资源广场', icon: <LayoutGrid size={20} />, end: false },
   { to: '/submit', label: '信息更新', icon: <Tag size={20} />, end: false },
 ];
@@ -72,8 +71,8 @@ export default function Layout() {
                 letterSpacing: '-0.04em',
                 fontSize: 17,
               }}>南湖技术地图</strong>
-              <span className="brand-subtitle" style={{ display: 'block', color: 'var(--muted)', fontSize: 10, letterSpacing: '0.16em', marginTop: 1 }}>
-                NANHU TECH ATLAS
+              <span className="brand-subtitle" style={{ display: 'block', color: 'var(--muted)', fontSize: 10, letterSpacing: '0.16em', marginTop: 1, textAlign: 'justify', textAlignLast: 'justify', width: '100%' }}>
+                NANHU TECH MAP
               </span>
             </div>
           </div>
