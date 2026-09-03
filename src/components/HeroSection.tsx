@@ -41,14 +41,8 @@ export default function HeroSection({ onSearch }: HeroSectionProps) {
       />
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
-        <div className="mb-4">
-          <span className="inline-block px-3 py-1 rounded-full text-xs font-medium text-blue-300 border border-blue-500/30 bg-blue-500/10 mb-6">
-            南湖未来科学园 · 技术地图
-          </span>
-        </div>
-
         <h1 className="text-4xl md:text-6xl font-bold text-white mb-5 leading-tight tracking-tight">
-          看见技术 · 找到伙伴 · 连接产业
+          南湖技术地图 · 园区企业合作枢纽
         </h1>
 
         <p className="text-lg md:text-xl text-gray-300 mb-10">
