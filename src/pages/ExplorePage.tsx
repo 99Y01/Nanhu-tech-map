@@ -663,7 +663,6 @@ export default function ExplorePage() {
 
             {/* 标题框 */}
             <div style={{
-              border: '2px solid #e05a5a',
               borderRadius: 16,
               padding: '14px 20px',
               marginBottom: 16,
