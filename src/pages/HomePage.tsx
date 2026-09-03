@@ -4,7 +4,7 @@ import {
   Search, ArrowRight, ChevronRight,
   Cpu, Wind, Bot, HeartPulse,
   Building2, Zap, Link as LinkIcon,
-  FlaskConical, HeartHandshake,
+  FlaskConical, HeartHandshake, MapPin,
   ExternalLink,
 } from 'lucide-react';
 import { companies } from '../data/companyData';
@@ -439,7 +439,7 @@ function InlineExploreMap() {
           <div style={{ padding: '16px 18px 12px', borderBottom: '1px solid var(--line)', flexShrink: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
               <span style={{ fontSize: 11, fontWeight: 900, color: 'var(--lake-deep)', letterSpacing: '0.1em' }}>
-                {selectedBuilding ? `${selectedBuilding} 号楼 · 开放资源` : '开放资源企业'}
+                {selectedBuilding ? `${selectedBuilding} 号楼 · 企业` : '园区企业'}
               </span>
               {selectedBuilding && (
                 <button
@@ -470,7 +470,7 @@ function InlineExploreMap() {
             {companiesInView.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '32px 16px', color: 'var(--muted)' }}>
                 <Search size={24} style={{ margin: '0 auto 8px' }} />
-                <p style={{ margin: 0, fontSize: 12 }}>该楼栋暂无开放资源</p>
+                <p style={{ margin: 0, fontSize: 12 }}>该楼栋暂无企业信息</p>
               </div>
             ) : (
               companiesInView.map(company => {
@@ -610,7 +610,7 @@ function InlineExploreMap() {
             <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#e8f3fb', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
               <Building2 size={34} color="#5b8db8" strokeWidth={1.5} />
             </div>
-            <div style={{ border: '2px solid #e05a5a', borderRadius: 16, padding: '14px 20px', marginBottom: 16, width: '100%', boxSizing: 'border-box' }}>
+            <div style={{ borderRadius: 16, padding: '14px 20px', marginBottom: 16, width: '100%', boxSizing: 'border-box' }}>
               <span style={{ fontSize: 20, fontWeight: 700, color: '#1e2d3d' }}>暂无企业合作信息</span>
             </div>
             <p style={{ margin: '0 0 24px', color: '#7a8fa6', fontSize: 13, lineHeight: 1.9 }}>
@@ -687,20 +687,6 @@ export default function HomePage() {
       <section className="hp-hero" style={{ maxWidth: 860, margin: '0 auto', textAlign: 'center' }}>
 
         {/* 定位标签 */}
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          background: 'rgba(45,95,138,.07)',
-          border: '1px solid rgba(45,95,138,.16)',
-          borderRadius: 999,
-          padding: '5px 14px',
-          marginBottom: 24,
-        }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--lake)', display: 'inline-block', flexShrink: 0 }} />
-          <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--lake-deep)', letterSpacing: '0.06em' }}>
-            找企业 · 找资源 · 找合作
-          </span>
-        </div>
-
         {/* 主标题 */}
         <h1 className="hp-hero-title" style={{
           fontFamily: '"Arial Black", "PingFang SC", sans-serif',
@@ -709,8 +695,8 @@ export default function HomePage() {
           margin: '0 0 18px',
           fontWeight: 900,
         }}>
-          南湖技术地图<br />
-          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>技术合作枢纽</em>
+          在南湖，找到你的<br />
+          <em style={{ color: 'var(--lake-deep)', fontStyle: 'normal' }}>下一位合作伙伴</em>
         </h1>
 
         {/* 副标题 */}
@@ -718,7 +704,7 @@ export default function HomePage() {
           color: 'var(--muted)', lineHeight: 1.8,
           maxWidth: 560, margin: '0 auto 36px',
         }}>
-          汇聚技术能力、开放资源与真实需求，一键连接你的下一个合作伙伴
+          快速发现南湖企业的技术能力、产品服务与合作方向
         </p>
 
         {/* 搜索框 */}
@@ -741,7 +727,7 @@ export default function HomePage() {
                 value={searchInput}
                 onChange={e => setSearchInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="搜索企业名称、技术方向、资源类型……"
+                placeholder="搜索企业、技术能力或产品……"
                 style={{
                   border: 0, outline: 0, background: 'transparent',
                   width: '100%', fontSize: 15, color: 'var(--ink)',
@@ -775,33 +761,36 @@ export default function HomePage() {
         }}>
           {[
             {
-              icon: <Building2 size={20} />,
-              title: '找企业',
-              desc: '发现南湖创新企业与技术能力',
+              icon: <Cpu size={20} />,
+              title: '找技术能力',
+              desc: '从你需要的技术出发，发现南湖有哪些企业可以提供相关能力',
+              cta: '探索能力',
               color: '#2d5f8a',
               bg: 'rgba(45,95,138,.07)',
               border: 'rgba(45,95,138,.18)',
               onClick: () => navigate('/list'),
             },
             {
-              icon: <FlaskConical size={20} />,
-              title: '找资源',
-              desc: '发现园区开放的设备、场景与实验室',
+              icon: <Building2 size={20} />,
+              title: '找企业',
+              desc: '浏览南湖企业，了解企业技术能力、产品服务与合作方向',
+              cta: '浏览企业',
               color: '#087d76',
               bg: 'rgba(8,125,118,.07)',
               border: 'rgba(8,125,118,.18)',
-              onClick: () => navigate('/explore'),
+              onClick: () => navigate('/list'),
             },
             {
-              icon: <HeartHandshake size={20} />,
-              title: '找合作',
-              desc: '查看企业合作需求，寻找产业伙伴',
+              icon: <MapPin size={20} />,
+              title: '看地图',
+              desc: '在园区地图上发现企业，了解企业所在楼栋与产业分布',
+              cta: '进入地图',
               color: '#6b3fa0',
               bg: 'rgba(107,63,160,.07)',
               border: 'rgba(107,63,160,.18)',
-              onClick: () => navigate('/list?q=合作'),
+              onClick: () => navigate('/explore'),
             },
-          ].map(({ icon, title, desc, color, bg, border, onClick }) => (
+          ].map(({ icon, title, desc, cta, color, bg, border, onClick }) => (
             <button
               key={title}
               onClick={onClick}
@@ -834,7 +823,7 @@ export default function HomePage() {
                 {desc}
               </p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 3, color, fontSize: 11, fontWeight: 700, marginTop: 2 }}>
-                立即查看 <ChevronRight size={12} />
+                {cta} <ChevronRight size={12} />
               </div>
             </button>
           ))}
@@ -869,104 +858,6 @@ export default function HomePage() {
           <InlineExploreMap />
         </div>
       </section>
-
-      {/* ══════════════════════════════════════════════════════
-          03 这里不只有企业
-      ══════════════════════════════════════════════════════ */}
-      <section style={{ padding: '44px 40px', maxWidth: 1100, margin: '0 auto' }}>
-        <div style={{ marginBottom: 24, textAlign: 'center' }}>
-          <div style={{ fontSize: 11, fontWeight: 900, color: 'var(--lake-deep)', letterSpacing: '0.14em', marginBottom: 8 }}>
-            WHAT YOU CAN FIND
-          </div>
-          <h2 style={{
-            fontFamily: '"Arial Black", "PingFang SC", sans-serif',
-            fontSize: 'clamp(18px, 2.2vw, 26px)',
-            letterSpacing: '-0.04em', margin: '0 0 6px',
-          }}>
-            这里不只有企业
-          </h2>
-          <p style={{ color: 'var(--muted)', fontSize: 13, margin: 0 }}>
-            三类核心信息，帮你快速找到所需
-          </p>
-        </div>
-
-        <div className="hp-info-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
-          {[
-            {
-              icon: <Building2 size={22} />,
-              label: '技术能力',
-              desc: '看企业能做什么',
-              detail: '汇聚园区企业的核心技术、产品与服务，快速了解每家企业的技术方向与能力边界。',
-              color: '#2d5f8a',
-              bg: '#e8f2fb',
-              onClick: () => navigate('/list'),
-            },
-            {
-              icon: <FlaskConical size={22} />,
-              label: '开放资源',
-              desc: '看园区有什么可以共享',
-              detail: '包括算力、实验室、测试场景、数据集等可开放使用的园区资源，降低创新门槛。',
-              color: '#087d76',
-              bg: '#e0f5f4',
-              onClick: () => navigate('/explore'),
-            },
-            {
-              icon: <HeartHandshake size={22} />,
-              label: '合作需求',
-              desc: '看企业正在寻找什么',
-              detail: '企业发布的合作需求，包括技术引进、场景落地、资金对接、供应链合作等。',
-              color: '#6b3fa0',
-              bg: '#f0eaf8',
-              onClick: () => navigate('/list?q=合作'),
-            },
-          ].map(({ icon, label, desc, detail, color, bg, onClick }) => (
-            <div
-              key={label}
-              onClick={onClick}
-              style={{
-                background: 'white',
-                border: '1px solid var(--line)',
-                borderRadius: 18,
-                padding: '24px 20px',
-                cursor: 'pointer',
-                transition: 'all .18s ease',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = color;
-                (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
-                (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(0,0,0,.07)';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLElement).style.borderColor = 'var(--line)';
-                (e.currentTarget as HTMLElement).style.transform = '';
-                (e.currentTarget as HTMLElement).style.boxShadow = '';
-              }}
-            >
-              <div style={{
-                width: 46, height: 46, borderRadius: 12,
-                background: bg,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color, marginBottom: 14,
-              }}>
-                {icon}
-              </div>
-              <div style={{ fontSize: 10, fontWeight: 800, color, letterSpacing: '0.06em', marginBottom: 4 }}>
-                {label}
-              </div>
-              <h3 style={{ margin: '0 0 8px', fontSize: 15, fontWeight: 800, color: 'var(--ink)' }}>
-                {desc}
-              </h3>
-              <p style={{ margin: '0 0 14px', fontSize: 12, color: 'var(--muted)', lineHeight: 1.7 }}>
-                {detail}
-              </p>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color, fontSize: 12, fontWeight: 700 }}>
-                查看 <ChevronRight size={13} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
 
       {/* ══════════════════════════════════════════════════════
           底部 CTA
@@ -1023,7 +914,7 @@ export default function HomePage() {
                 (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,.7)';
               }}
             >
-              先浏览资源广场
+              先浏览企业列表
             </button>
           </div>
         </div>
